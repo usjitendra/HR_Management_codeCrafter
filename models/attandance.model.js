@@ -42,7 +42,7 @@ const attandanceSchema=new Schema(
         },
         status:{
             type:String,
-            enum:["present","absent",,"wfh"]
+            enum:["present","absent","wfh"]
         },
         reasonForLeave:{
             type:String

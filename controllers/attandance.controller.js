@@ -16,10 +16,8 @@ const  attandanceLogin=async(req,res,next)=>{
        
         const now=new Date()
 
-
         const allEmployeeAttandance=await AttandanceModel.find({employeeId:validEmployee._id})
         
-
         const filterEmployee = allEmployeeAttandance.find((val) => {
             const loginDate = new Date(val.loginTime).toLocaleDateString(); // India Format: DD/MM/YYYY
             const today = now.toLocaleDateString();

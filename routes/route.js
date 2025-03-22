@@ -1,11 +1,11 @@
 import express from 'express';
-import {employee_registration,employee_update,all_employee} from '../controllers/employeeController.js'
+import {employee_registration,employee_update,all_employee,employee_Delete} from '../controllers/employeeController.js'
 import multer from 'multer';
 const route=express.Router();
 import employee from '../middlewares/employeeMiddleware.js'
 import {registrationMiddleware} from '../middlewares/registrationMiddleware.js'
 import {registration,login} from '../controllers/registrationController.js';
-import  {verify_token,token_vailidate,token_validate} from '../middlewares/auth.js';
+import  {token_validate} from '../middlewares/auth.js';
 // import { log } from 'console';
 const storage=multer.memoryStorage();
 const upload=multer();
@@ -18,10 +18,14 @@ route.post('/registration',upload.single('image'),registrationMiddleware,registr
 route.post('/login',login)
 
 
-
-route.post('/employee/registration', upload.single('files'),token_validate,employee.employeMiddleware,employee_registration)
-route.put('/employee/update:id',upload.single('files'),employee.employeMiddleware,employee_update)
+// *****************_____Employee start___________//
 route.get('/all/employee',all_employee)
+route.post('/employee/registration', upload.single('files'),employee.employeMiddleware,employee_registration)
+route.put('/employee/update/:id',upload.single('files'),employee.employeMiddleware,employee_update)
+route.get('/employee/delete/:id',employee_Delete)
+// ********************_____End_________//
+
+
 // route.post('/employee/registration',employee.employeMiddleware,employee_registration)
 
 

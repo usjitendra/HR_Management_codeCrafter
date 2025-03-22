@@ -65,12 +65,12 @@ const employeeSchema=new Schema(
         addtional3:{
             type:String,
             default:""
-        },
-        addtional6:{
-            type:String,
-            default:"",
-            enum:["false","true","default"]
         }
+        // addtional6:{
+        //     type:String,
+        //     default:"",
+        //     enum:["false","true","default"]
+        // }
     },
     {
       timestamps:true

@@ -130,4 +130,18 @@ const all_employee=async(req,res,next)=>{
   }
 }
 
-export { employee_registration, employee_update,all_employee };
+const employee_Delete=async(req,res,next)=>{
+          try{
+                const id=req.params.id;
+                const result=await employeModel.findByIdAndDelete(id)
+                if(result){
+                  return res.status(200).json({message:"Employee delete successfully",success:true});
+                }else{
+                  return next(new AppError("Record not found",500));
+                }
+          }catch(err){
+            return next(new AppError(err.message,500));
+          }
+}
+
+export { employee_registration, employee_update,all_employee,employee_Delete };

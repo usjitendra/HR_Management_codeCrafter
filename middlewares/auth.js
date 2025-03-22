@@ -7,7 +7,7 @@ const generate_Token = (data) => {
     console.log("sjd",key)
     try {
         const id = data.id;
-        const token = jwt.sign({ id }, key, { expiresIn: '1h' });
+        const token = jwt.sign({ id }, key, { expiresIn: '1m' });
         console.log(token);
         return token;
     } catch (err) {
@@ -21,8 +21,8 @@ const token_validate = async (req, res, next) => {
         if (!token) {
             return next(new AppError("Unauthorized: No token provided", 401));
         }
-        const email = req.body.email;
-        console.log("Email:", email);
+        // const email = req.body.email;
+        // console.log("Email:", email);
 
         // Find user in the database
         const employeeData = await registrationModel.findOne({ email });
@@ -30,13 +30,14 @@ const token_validate = async (req, res, next) => {
             return next(new AppError("User not found", 404));
         }
 
-        console.log("Stored Token:", employeeData.token);
 
         if (employeeData.token !== token) {
             return next(new AppError("Invalid token", 401));
         }
 
         const decoded = jwt.verify(token, key);
+        console.log("t++++",decoded);
+
         const currentTime = Math.floor(Date.now() / 1000);
 
         if (decoded.exp && decoded.exp < currentTime) {
@@ -51,43 +52,9 @@ const token_validate = async (req, res, next) => {
 };
 
 
-const verify_token = async (req, res, next) => {
-  try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return next(new AppError("Unauthorized: No token provided", 401));
-    }
-    const token = authHeader.split(" ")[1]; 
-    const decoded = await jwt.verify(token,key);
-    //   console.log("code",decoded)
-     if(decoded){
-        next();
-     }
-  } catch (err) {
-    return next(new AppError(err.message, 401));
-  }
-};
 
 
-const token_vailidate=async(req,res,next)=>{
-    try{
-            let token=req.headers.authorization;
-            token = token.split(" ")[1];
-            const email=req.body.email;
-            console.log(email);
-            const emolyeedata=await registrationModel.findOne({email});
-            console.log(emolyeedata.token);
-            if(emolyeedata.token==token){
-                
-            }
-            
-    }catch(err){
-        return next(new AppError(err.message,404))
-    }
-}
-
-
-export { generate_Token,verify_token,token_vailidate,token_validate };
+export { generate_Token,token_validate };
 
 
 
