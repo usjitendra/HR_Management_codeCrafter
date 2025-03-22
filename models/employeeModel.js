@@ -69,7 +69,7 @@ const employeeSchema=new Schema(
         addtional6:{
             type:String,
             default:"",
-            enum:["false","true"]
+            enum:["false","true","default"]
         }
     },
     {
