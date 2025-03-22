@@ -6,6 +6,7 @@ import bodyParser from 'body-parser'
 import multer from 'multer';
 import dbConnection from "./config/dbConnection.js";
 import errorMiddleware from "./middlewares/errorMiddleware.js";
+import employeRoute from "./routes/employe.routes.js";
 
 
 const app=express();
@@ -18,6 +19,7 @@ app.use(express.json())
 app.use(bodyParser.urlencoded({extended:true}));
 
 app.use('/api',route)
+app.use("/api/v1/employee/attandance",employeRoute)
 
 app.get('/',(req,res)=>{
       try{

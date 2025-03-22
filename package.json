@@ -11,5 +11,19 @@
     "node": "^20.19.0",
     "nodemon": "^3.1.9",
     "path": "^0.12.7"
-  }
+  },
+  "name": "hr_management_codecrafter",
+  "version": "1.0.0",
+  "description": "��#\u0000 \u0000H\u0000R\u0000_\u0000M\u0000a\u0000n\u0000a\u0000g\u0000e\u0000m\u0000e\u0000n\u0000t\u0000_\u0000c\u0000o\u0000d\u0000e\u0000C\u0000r\u0000a\u0000f\u0000t\u0000e\u0000r\u0000\r\u0000 \u0000",
+  "main": "express.js",
+  "type":"module" ,
+  "devDependencies": {},
+  "scripts": {
+  "test": "echo \"Error: no test specified\" && exit 1",
+  "dev": "nodemon express.js",
+  "start": "node express.js"
+},
+
+  "author": "",
+  "license": "ISC"
 }
