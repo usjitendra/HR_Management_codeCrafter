@@ -28,6 +28,9 @@ app.get('/',(req,res)=>{
       }
 })
 
+app.get("checking")
+app.get("/chcking1")
+
 
 
 app.use("*", (req, res) => {
