@@ -115,4 +115,19 @@ const employee_update = async (req, res, next) => {
   }
 };
 
-export { employee_registration, employee_update };
+
+const all_employee=async(req,res,next)=>{
+  try{
+         const all_data= await employeModel.find();
+          if(all_data){
+            return res.status(200).json({message:"Success",data:all_data});
+          }else{
+            return res.status(500).json({message:"Data not foun"});
+          }
+         
+  }catch(err){
+    return next(new AppError(err.message,500))
+  }
+}
+
+export { employee_registration, employee_update,all_employee };

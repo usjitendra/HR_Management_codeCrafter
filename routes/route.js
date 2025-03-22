@@ -1,5 +1,5 @@
 import express from 'express';
-import {employee_registration,employee_update} from '../controllers/employeeController.js'
+import {employee_registration,employee_update,all_employee} from '../controllers/employeeController.js'
 import multer from 'multer';
 const route=express.Router();
 import employee from '../middlewares/employeeMiddleware.js'
@@ -21,6 +21,7 @@ route.post('/login',login)
 
 route.post('/employee/registration', upload.single('files'),token_validate,employee.employeMiddleware,employee_registration)
 route.put('/employee/update:id',upload.single('files'),employee.employeMiddleware,employee_update)
+route.get('/all/employee',all_employee)
 // route.post('/employee/registration',employee.employeMiddleware,employee_registration)
 
 
