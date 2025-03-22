@@ -21,7 +21,7 @@ app.use('/api',route)
 
 app.get('/',(req,res)=>{
       try{
-           console.log("request++ succ");
+           console.log("request++ successfully");
             return res.status(200).json({message:"suceesss"})
       }catch(err){
         return res.send({status:500,message:err.message});
