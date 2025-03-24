@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json())
 app.use(bodyParser.urlencoded({extended:true}));
 
-app.use('/api',route)
+app.use('/api/v1/employee',route)
 app.use("/api/v1/employee/attandance",employeRoute)
 
 app.get('/',(req,res)=>{

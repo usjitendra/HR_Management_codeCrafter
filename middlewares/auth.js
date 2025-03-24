@@ -21,7 +21,7 @@ const token_validate = async (req, res, next) => {
         if (!token) {
             return next(new AppError("Unauthorized: No token provided", 401));
         }
-        // const email = req.body.email;
+        const email = req.body.email;
         // console.log("Email:", email);
 
         // Find user in the database
@@ -35,14 +35,18 @@ const token_validate = async (req, res, next) => {
             return next(new AppError("Invalid token", 401));
         }
 
-        const decoded = jwt.verify(token, key);
+        const decoded =await jwt.verify(token, key);
         console.log("t++++",decoded);
 
         const currentTime = Math.floor(Date.now() / 1000);
 
-        if (decoded.exp && decoded.exp < currentTime) {
-            return next(new AppError("Token expired", 401));
-        }
+        // if (decoded.exp && decoded.exp < currentTime) {
+        //     return next(new AppError("Token expired", 401));
+        // }
+        // console
+          if(!decoded){
+            return next(new AppError("Token expired ",401));
+          }
         // req.user = decoded;
         next(); 
 
