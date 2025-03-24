@@ -20,7 +20,7 @@ route.post('/login',login)
 
 // *****************_____Employee start___________//
 route.get('/all/employee',all_employee)
-route.post('/employee/registration', upload.single('files'),token_validate,employee.employeMiddleware,employee_registration)
+route.post('/employee/registration', upload.single('files'),employee_registration)
 route.put('/employee/update/:id',upload.single('files'),employee.employeMiddleware,employee_update)
 route.get('/employee/delete/:id',employee_Delete)
 // ********************_____End_________//

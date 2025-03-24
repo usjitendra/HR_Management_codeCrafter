@@ -6,7 +6,8 @@ import AppError from "../util/appError.js";
 
 const employee_registration = async (req, res, next) => {
   try {
-    // console.log(req.body);
+    console.log(req.body);
+    // return
     const { name, email, phone, department, designation, salary, joiningDate } =
       req.body;
     console.log("name++", name, email, phone);
