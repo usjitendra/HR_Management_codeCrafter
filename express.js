@@ -7,16 +7,20 @@ import multer from 'multer';
 import dbConnection from "./config/dbConnection.js";
 import errorMiddleware from "./middlewares/errorMiddleware.js";
 import employeRoute from "./routes/employe.routes.js";
-
+import cookieParser from 'cookie-parser'
 
 const app=express();
 dotenv.config();
 
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:5177", // ✅ Frontend ka URL
+  credentials: true, // ✅ Cookies allow honi chahiye
+}));
 // app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json())
 app.use(bodyParser.urlencoded({extended:true}));
+app.use(cookieParser());
 
 app.use('/api/v1/employee',route)
 app.use("/api/v1/employee/attandance",employeRoute)

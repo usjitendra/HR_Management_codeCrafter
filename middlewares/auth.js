@@ -7,7 +7,7 @@ const generate_Token = (data) => {
     console.log("sjd",key)
     try {
         const id = data.id;
-        const token = jwt.sign({ id }, key, { expiresIn: '1m' });
+        const token = jwt.sign({ id }, key, { expiresIn: '1D' });
         console.log(token);
         return token;
     } catch (err) {
