@@ -128,7 +128,7 @@ const logout=async(req,res,next)=>{
             path:"/",
             httpOnly:"true",
             secure:false,
-            sameSite:"none"
+            sameSite:"lax"
           });
           req.session?.destroy();
           res.status(200).json({message:"Logout Successfully",});
