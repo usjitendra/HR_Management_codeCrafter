@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import employeModel from "../models/employeeModel.js";
 import AppError from "../util/appError.js";
+import { body } from "express-validator";
 
 const employee_registration = async (req, res, next) => {
   try {
@@ -60,16 +61,18 @@ const employee_registration = async (req, res, next) => {
 
 const employee_update = async (req, res, next) => {
   try {
+       
+    const {id}=req.params
 
-   console.log(req.originalUrl,req.method);
+    const data=req.body
 
-   console.log("ip++++",req.ip);
-   
-    
-      const id=req.params.id;
-    const { name, email, phone, department, designation, salary, joiningDate } =
+    console.log(id,data)
+    // return;
+      // console.log("name++",req.body);
+      // return res.send({status:200,data:"successfully"})
+    const {name, email, phone, department, designation, salary, joiningDate } =
       req.body;
-    // console.log("name++", name, email, phone);
+    // return;
     if (req.file) {
       console.log(req.file);
       const uploadPath = `image/employeeImage/${Date.now()}-${
@@ -95,7 +98,7 @@ const employee_update = async (req, res, next) => {
         message: "Employee update successfully",
       });
     } else {
-      const addEmp = await employeModel.create({
+      const addEmp = await employeModel.findByIdAndUpdate(id,{
         name,
         email,
         phone,
@@ -134,6 +137,7 @@ const all_employee=async(req,res,next)=>{
 const employee_Delete=async(req,res,next)=>{
           try{
                 const id=req.params.id;
+                //  return console.log("ye h id",id);
                 const result=await employeModel.findByIdAndDelete(id)
                 if(result){
                   return res.status(200).json({message:"Employee delete successfully",success:true});

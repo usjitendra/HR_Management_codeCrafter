@@ -95,7 +95,7 @@ const isLogin = async (req, res, next) => {
         const token = req.cookies?.authToken; // Token from coo
         const loginData = await registrationModel.find();
 
-        console.log("Token received:", token);
+        // console.log("Token received:", token);
 
         if (!token) {
             return next(new AppError("Unauthorized: No token provided", 401));
@@ -103,7 +103,7 @@ const isLogin = async (req, res, next) => {
 
         const decoded = jwt.verify(token,key); 
 
-        console.log("Decoded Token:", decoded);
+        // console.log("Decoded Token:", decoded);
 
         // return
         if (!decoded) {
@@ -113,7 +113,7 @@ const isLogin = async (req, res, next) => {
         return res.status(200).json({
             success:true,
             message:"get are:-",
-            data:decoded
+            data:"success"
         })
      
     } catch (err) {

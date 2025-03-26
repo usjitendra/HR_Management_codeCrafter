@@ -1,48 +1,41 @@
 import dotenv from "dotenv";
 import express from'express'
 import cors from 'cors'
-import route from "./routes/route.js";
 import bodyParser from 'body-parser'
 import multer from 'multer';
 import dbConnection from "./config/dbConnection.js";
 import errorMiddleware from "./middlewares/errorMiddleware.js";
-import employeRoute from "./routes/employe.routes.js";
 import cookieParser from 'cookie-parser'
+import employee from "./routes/employee.routes.js";
+import attandance from "./routes/attandance.routes.js";
+import admin from "./routes/admin.routes.js";
 
 const app=express();
 dotenv.config();
 
 app.use(cors({
-  origin: "http://localhost:5177", // ✅ Frontend ka URL
-  credentials: true, // ✅ Cookies allow honi chahiye
+  origin: "http://localhost:5173", 
+  credentials: true,
 }));
-// app.use(bodyParser.json());
+
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json())
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(cookieParser());
 
-app.use('/api/v1/employee',route)
-app.use("/api/v1/employee/attandance",employeRoute)
 
-app.get('/',(req,res)=>{
-      try{
-           console.log("request++ successfully");
-            return res.status(200).json({message:"suceesss"})
-      }catch(err){
-        return res.send({status:500,message:err.message});
-      }
-})
+app.use('/api/v1/admin',admin)
+app.use('/api/v1/employee',employee)
+app.use("/api/v1/employee/attandance",attandance)
 
-app.get("checking")
-app.get("/chcking21")
+
 
 
 
 app.use("*", (req, res) => {
     return res.status(404).json({ Message: "Route not found", path: req.originalUrl, method: req.method });
 });
-
 
 app.use(errorMiddleware)
 
