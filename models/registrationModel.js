@@ -1,6 +1,6 @@
 import { model,Schema } from "mongoose";
 import { type } from "os";
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 const registrationSchema=new Schema(
     {
        name:{
@@ -21,7 +21,7 @@ const registrationSchema=new Schema(
        },
        role:{
         type:String,
-        enum:["admin"],
+        enum:["admin","employee"],
          default:"admin"
        },
        image:{

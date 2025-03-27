@@ -25,7 +25,7 @@ const registrationMiddleware = [
 
     body("role")
         .optional()
-        .isIn(["admin", "user"]).withMessage("Role must be either 'admin' or 'user'"),
+        .isIn(["admin", "user","employee"]).withMessage("Role must be either 'admin' or 'user'"),
 
     (req, res, next) => {
         const errors = validationResult(req);

@@ -1,6 +1,6 @@
 import { model, Schema } from "mongoose";
 import { type } from "os";
-
+import bcrypt from 'bcryptjs';
 
 const employeeSchema=new Schema(
     {
@@ -49,23 +49,30 @@ const employeeSchema=new Schema(
                 default:""
             }
         },
-        // role:{
-        //     type:String,
-        //     enum:["employee","manager","admin"],
-        //     default:"employee"
-        // },
-        addtional1:{
+        role:{
             type:String,
-            default:""
+            enum:["employee","manager","admin"],
+            default:"employee",
         },
-        addtional2:{
+        password:{
+            type:String,
+            require:true,
+            trim:true
+        },
+        token:{
             type:String,
             default:""
         },
         addtional3:{
             type:String,
-            default:""
-        }
+        },
+        addtional4:{
+            type:String,
+        },
+        addtional5:{
+            type:String,
+        },
+        
         // addtional6:{
         //     type:String,
         //     default:"",
@@ -77,6 +84,17 @@ const employeeSchema=new Schema(
     }
 )
 
+
+employeeSchema.pre("save",async function (next) {
+      if(!this.isModified("password")) return next()
+        try{
+                const salt=await bcrypt.genSalt(10)
+                this.password=await bcrypt.hash(this.password,salt);
+                next();
+    }catch(err){
+        next(err)
+    }
+  })
 
 const employeModel=model("Employee",employeeSchema)
 
