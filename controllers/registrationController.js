@@ -1,7 +1,7 @@
 import {registrationModel} from "../models/registrationModel.js";
 import AppError from "../util/appError.js";
 import fs from "fs"
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 const key="abcdef";
 import jwt from 'jsonwebtoken';
 
