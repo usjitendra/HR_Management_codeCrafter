@@ -14,10 +14,14 @@ const app=express();
 dotenv.config();
 
 app.use(cors({
-  origin: "http://localhost:5173", 
+  origin: ["http://localhost:5173","https://hrmsdashboard4.netlify.app/login"], 
+  
   credentials: true,
 }));
 
+app.get('/',()=>{
+  res.send({satatu:200,message:"server start"})
+})
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json())
