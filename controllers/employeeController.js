@@ -181,7 +181,9 @@ const registration_employee=async(req,res,next)=>{
 
 const employee_login= async(req,res,next)=>{
   try{
-       const{email,password}=req.body;
+       const{email,password,role}=req.body;
+       console.log(email,password,role);
+      //  return
        const result=await employeModel.findOne({email})
         if(!result){
           return next(new AppError("Email password have wronge",500))

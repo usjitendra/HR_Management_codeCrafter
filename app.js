@@ -15,7 +15,6 @@ dotenv.config();
 
 app.use(cors({
   origin: ["http://localhost:5173","https://hrmsdashboard4.netlify.app"], 
-  
   credentials: true,
 }));
 
@@ -31,7 +30,7 @@ app.use(cookieParser());
 
 app.use('/api/v1/admin',admin)
 app.use('/api/v1/employee',employee)
-app.use("/api/v1/employee/attandance",attandance)
+app.use("/api/v1/employee/attendance",attandance)
 
 
 

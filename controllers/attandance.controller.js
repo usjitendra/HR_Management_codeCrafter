@@ -6,6 +6,8 @@ import AttandanceModel from "../models/attandance.model.js";
 const attandanceLogin = async (req, res, next) => {
   try {
     const { id } = req.params;
+    // console.log("aaaaa",id);
+    // return;
     const validEmployee = await employeModel.findById(id);
     if (!validEmployee) {
       return next(new AppError("Employee is Not Valid", 400));
@@ -46,7 +48,7 @@ const attandanceLogin = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: "Attandance Mark Succesfully",
-      data: addEmployee,
+      addEmployee,
     });
   } catch (error) {
     console.log(error);
@@ -58,6 +60,8 @@ const attandanceLogin = async (req, res, next) => {
 const attandanceLogout = async (req, res, next) => {
   try {
     const { id } = req.params;
+    // console.log("con+++",id)
+    // return;
     const validEmployee = await employeModel.findById(id);
 
     if (!validEmployee) {
@@ -88,16 +92,18 @@ const attandanceLogout = async (req, res, next) => {
     }
 
     if (filterEmployee && filterEmployee.logoutTime) {
-      return next(new AppError("Employee is Not Logout", 400));
+      return next(new AppError("Employee is Already logged out", 400));
     }
     filterEmployee.logoutTime = now;
 
     const data = await filterEmployee.save();
-
+     console.log("dddd",data);
+     
     res.status(200).json({
       success: true,
       message: "Logout Succesfully",
-      data,
+      filterEmployee,
+
     });
   } catch (error) {
     return next(new AppError(error.message, 500));
