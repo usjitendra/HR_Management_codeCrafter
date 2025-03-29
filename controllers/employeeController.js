@@ -194,7 +194,7 @@ const employee_login= async(req,res,next)=>{
          await employeModel.findByIdAndUpdate(result._id, { token });
          res.cookie("employeeToken", token, {
             httpOnly: false,  
-            secure: true, 
+            secure: false, 
             sameSite: "none", 
             maxAge: 7 * 24 * 60 * 60 * 1000 
         });

@@ -72,6 +72,8 @@ const employeeSchema=new Schema(
         addtional5:{
             type:String,
         },
+
+        
         
         // addtional6:{
         //     type:String,

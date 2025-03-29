@@ -2,6 +2,7 @@ import { log } from "node:console";
 import employeModel from "../models/employeeModel.js";
 import AppError from "../util/appError.js";
 import AttandanceModel from "../models/attandance.model.js";
+import employee from "../routes/employee.routes.js";
 
 const attandanceLogin = async (req, res, next) => {
   try {
@@ -97,13 +98,12 @@ const attandanceLogout = async (req, res, next) => {
     filterEmployee.logoutTime = now;
 
     const data = await filterEmployee.save();
-     console.log("dddd",data);
-     
+    console.log("dddd", data);
+
     res.status(200).json({
       success: true,
       message: "Logout Succesfully",
       filterEmployee,
-
     });
   } catch (error) {
     return next(new AppError(error.message, 500));
@@ -139,4 +139,23 @@ const absent = async (req, res, next) => {
   }
 };
 
-export { attandanceLogin, attandanceLogout, absent };
+const attendence_detail = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    console.log(id);
+    const result = await AttandanceModel.findOne({ employeeId: id }).populate({
+      path: "employeeId",
+      select: "name email phone department position",
+    });
+      if(result){
+         const data={
+            result
+         }
+          return res.status(200).json({success:true,message:"Employee show Detail",data})
+      }
+  } catch (err) {
+    return next(new AppError(err.message, 500));
+  }
+};
+
+export { attandanceLogin, attandanceLogout, absent, attendence_detail };

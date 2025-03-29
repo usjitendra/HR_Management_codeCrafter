@@ -1,12 +1,13 @@
 import { Router } from "express";
-import { attandanceLogin,attandanceLogout,absent } from "../controllers/attandance.controller.js";
+import { attandanceLogin,attandanceLogout,absent,attendence_detail } from "../controllers/attandance.controller.js";
 
 
-const employeRoute=Router()
+const attandanceRoute=Router()
 
 
-employeRoute.post("/:id",attandanceLogin)
-employeRoute.post("/logout/:id",attandanceLogout)
-employeRoute.put("/absent/:id",absent)
+attandanceRoute.post("/:id",attandanceLogin)
+attandanceRoute.post("/logout/:id",attandanceLogout)
+attandanceRoute.put("/absent/:id",absent)
+attandanceRoute.get("/all/detail/:id",attendence_detail)
 
-export default employeRoute
+export default attandanceRoute
