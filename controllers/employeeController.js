@@ -11,65 +11,30 @@ import bcrypt from 'bcryptjs';
 import { json } from "node:stream/consumers";
 import { generate_Token } from "../middlewares/auth.js";
 
-const  add_employee= async (req, res, next) => {
+const add_employee = async (req, res, next) => {
   try {
-    console.log(req.body);
-    // return
-    const { name, email, phone, department, designation, salary, joiningDate,role,password} =
-      req.body;
-    // console.log("name++", role);
-    // return
+    // console.log(req.body);
+    const { name, email, phone, department, designation, salary, joiningDate, role, password } = req.body;
+      console.log("file",req.file.mimetype);
+    let employImage = {};
     if (req.file) {
-      console.log(req.file);
-      const uploadPath = `image/employeeImage/${Date.now()}-${
-        req.file.originalname
-      }`;
+      const uploadPath = `image/employeeImage/${Date.now()}-${req.file.originalname}`;
       fs.writeFileSync(uploadPath, req.file.buffer);
-      console.log("path++", uploadPath);
-      const validRole = ["employee", "manager", "admin"].includes(role) ? role : "employee";
-      const addEmp = await employeModel.create({
-        name,
-        email,
-        phone,
-        department,
-        designation,
-        salary,
-        joiningDate,
-        password,
-        role:role,
-        employImage: {
-        public_id: uploadPath?.public_id || "",
-          secure_url: uploadPath,
-        },
-      });
-      return res.status(200).json({
-        success: true,
-        message: "Employee registration Successfully",
-        data:addEmp,
-      });
-    } else {
-      const addEmp = await employeModel.create({
-        name,
-        email,
-        phone,
-        department,
-        designation,
-        password,
-        salary,
-          role:role,
-        joiningDate,
-      });
-      res.status(200).json({
-        success: true,
-        message: "Employee registration Successfully",
-        data: addEmp,
-      });
+      employImage = { public_id: uploadPath?.public_id || "", secure_url: uploadPath };
     }
+    
+    // return
+    const addEmp = await employeModel.create({
+      name, email, phone, department, designation, salary, joiningDate, role, password, employImage
+    });
+
+    res.status(200).json({ success: true, message: "Employee registered successfully", data: addEmp });
   } catch (err) {
-    console.log(err);
-    return next(new AppError(err.message, 500));
+    console.error(err);
+    next(new AppError(err.message, 500));
   }
 };
+
 
 const employee_update = async (req, res, next) => {
   try {
@@ -184,6 +149,9 @@ const employee_login= async(req,res,next)=>{
        const{email,password,role}=req.body;
        console.log(email,password,role);
       //  return
+      if(!role=="employee"){
+          return next(new AppError("Please enter a correct Role"));
+      }
        const result=await employeModel.findOne({email})
         if(!result){
           return next(new AppError("Email password have wronge",500))

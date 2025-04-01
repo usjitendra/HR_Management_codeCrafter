@@ -11,7 +11,6 @@ import path from "path";
 const registration=async(req,res,next)=>{
     try{
            const{name,email,password,mobile,role}=req.body;
-           console.log("a+++",email);
            const existingUser=await registrationModel.findOne({email})
            if(existingUser){
              return next(new AppError("Record already exists"));
@@ -39,7 +38,6 @@ const registration=async(req,res,next)=>{
 
 const login = async (req, res, next) => {
     try {
-        console.log("b+++");
         const { email, password, role } = req.body;
         console.log(email, password, role);
         // return;
@@ -48,7 +46,6 @@ const login = async (req, res, next) => {
             return next(new AppError("Invalid email or password.", 401));
         }
         const isPasswordValid = await bcrypt.compare(password, loginData.password);
-        console.log(isPasswordValid);
         if (!isPasswordValid) {
             return next(new AppError("Invalid email or password.", 401));
         }
@@ -91,14 +88,12 @@ const login = async (req, res, next) => {
 const isLogin = async (req, res, next) => {
     try {
       
-    
         const token = req.cookies?.authToken; // Token from coo
        
-        console.log("new token",token);
-
+        console.log("111new token+++",token);
+    // return;
         const loginData = await registrationModel.find();
 
-        // console.log("Token received:", token);
 
         if (!token) {
             return next(new AppError("Unauthorized: No token provided", 401));
@@ -106,7 +101,6 @@ const isLogin = async (req, res, next) => {
 
         const decoded = jwt.verify(token,key); 
 
-        console.log("Decoded Token:", decoded);
 
         // return
         if (!decoded) {
@@ -115,12 +109,11 @@ const isLogin = async (req, res, next) => {
       
         return res.status(200).json({
             success:true,
-            message:"get are:-",
+            message:"success",
             data:"success"
         })
      
     } catch (err) {
-        console.error("JWT Error:", err.message);
         return next(new AppError("Invalid or expired token", 401));
     }
 };

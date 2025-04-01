@@ -21,7 +21,7 @@ app.use(cookieParser());
 // *****************_____Employee start____*********//
 // employee.post("/registration",upload.none(),registrationMiddleware,registration_employee)
 employee.post("/login",employee_login)
-employee.post("/add",upload.single("files"),add_employee);
+employee.post("/add",upload.single("photo"),add_employee);
 employee.get("/all", all_employee);
 employee.put("/update/:id",employee_update,);
 employee.delete("/delete/:id", employee_Delete);
