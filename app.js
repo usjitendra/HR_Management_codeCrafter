@@ -31,8 +31,12 @@ app.use(cors({
 const upload=multer({dist:"uploads/"})
 
 
-app.get('/',()=>{
-  res.send({satatu:200,message:"server start"})
+app.get('/',(req,res)=>{
+  // res.send({satatu:200,message:"server start"})
+  req.status(200).json({
+     success:true,
+     message:"Service is Running "
+  })
 })
 
 app.use(express.urlencoded({ extended: true }));
