@@ -9,6 +9,16 @@ import cookieParser from 'cookie-parser'
 import employee from "./routes/employee.routes.js";
 import attandance from "./routes/attandance.routes.js";
 import admin from "./routes/admin.routes.js";
+import cloudinary from 'cloudinary'
+// import multer from "multer";
+
+
+
+cloudinary.v2.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+})
 
 const app=express();
 dotenv.config();
@@ -17,6 +27,9 @@ app.use(cors({
   origin: ["http://localhost:5173","https://hrmsdashboard4.netlify.app","http://localhost:3000"], 
   credentials: true,
 }));
+
+const upload=multer({dist:"uploads/"})
+
 
 app.get('/',()=>{
   res.send({satatu:200,message:"server start"})

@@ -1,17 +1,14 @@
 import {Router} from "express";
 import { add_employee,employee_update,all_employee,employee_Delete,
     registration_employee,employee_login}from "../controllers/employeeController.js";
-import multer from "multer";
 import express from "express";
 const app=express()
 const employee =Router();
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
-
 import { registrationMiddleware } from "../middlewares/registrationMiddleware.js";
 import { token_validate } from "../middlewares/auth.js";
-const storage = multer.memoryStorage();
-const upload = multer();
+import upload from '../middlewares/multer.middleware.js'
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json())
@@ -23,7 +20,7 @@ app.use(cookieParser());
 employee.post("/login",employee_login)
 employee.post("/add",upload.single("photo"),add_employee);
 employee.get("/all", all_employee);
-employee.put("/update/:id",employee_update,);
+employee.put("/update/:id",upload.single("photo"),employee_update,);
 employee.delete("/delete/:id", employee_Delete);
 
 // ***************_____End_______****************//

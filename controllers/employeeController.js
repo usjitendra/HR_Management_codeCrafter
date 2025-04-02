@@ -10,24 +10,27 @@ import { create } from "node:domain";
 import bcrypt from 'bcryptjs';
 import { json } from "node:stream/consumers";
 import { generate_Token } from "../middlewares/auth.js";
+import cloudinary from "cloudinary"
 
 const add_employee = async (req, res, next) => {
   try {
-    // console.log(req.body);
     const { name, email, phone, department, designation, salary, joiningDate, role, password } = req.body;
-      console.log("file",req.file.mimetype);
-    let employImage = {};
-    if (req.file) {
-      const uploadPath = `image/employeeImage/${Date.now()}-${req.file.originalname}`;
-      fs.writeFileSync(uploadPath, req.file.buffer);
-      employImage = { public_id: uploadPath?.public_id || "", secure_url: uploadPath };
-    }
-    
-    // return
     const addEmp = await employeModel.create({
-      name, email, phone, department, designation, salary, joiningDate, role, password, employImage
+      name, email, phone, department, designation, salary, joiningDate, role, password,
+      employImage:{
+        public_id:"",
+        secure_url:"",
+      }
     });
-
+      if(req.file){
+          const result =await cloudinary.v2.uploader.upload(req.file.path,{
+            folder:"Employee Photo"
+          });
+          if(result){
+            (addEmp.employImage.public_id=result.public_id),
+            (addEmp.employImage.secure_url=result.secure_url)
+          }    
+      }
     res.status(200).json({ success: true, message: "Employee registered successfully", data: addEmp });
   } catch (err) {
     console.error(err);
@@ -38,61 +41,34 @@ const add_employee = async (req, res, next) => {
 
 const employee_update = async (req, res, next) => {
   try {
-       
-    const {id}=req.params
-
-    const data=req.body
-
-    console.log(id,data)
-    // return;
-      // console.log("name++",req.body);
-      // return res.send({status:200,data:"successfully"})
-    const {name, email, phone, department, designation, salary, joiningDate } =
-      req.body;
-    // return;
-    if (req.file) {
-      console.log(req.file);
-      const uploadPath = `image/employeeImage/${Date.now()}-${
-        req.file.originalname
-      }`;
-      fs.writeFileSync(uploadPath, req.file.buffer);
-      console.log("path++", uploadPath);
-      const addEmp = await employeModel.findByIdAndUpdate(id,{
-        name,
-        email,
-        phone,
-        department,
-        designation,
-        salary,
-        joiningDate,
-        employImage: {
-          public_id: uploadPath?.public_id || "",
-          secure_url: uploadPath,
-        },
-      });
-      return res.status(200).json({
-        success: true,
-        message: "Employee update successfully",
-      });
-    } else {
-      const addEmp = await employeModel.findByIdAndUpdate(id,{
-        name,
-        email,
-        phone,
-        department,
-        designation,
-        salary,
-        joiningDate,
-      });
-      res.status(200).json({
-        success: true,
-        message: "Employee update Successfully",
-        // data: addEmp,
-      });
-    }
+      const {id}=req.params;
+      console.log(id);
+      // console.log(req.body);
+      // return;
+    const { name, email, phone, department, designation, salary, joiningDate, role, password } = req.body;
+    const addEmp = await employeModel.findByIdAndUpdate(id,{
+      name, email, phone, department, designation, salary, joiningDate, role, password,
+      employImage:{
+        public_id:"",
+        secure_url:"",
+      }
+    });
+      // if(addEmp){
+      //   return next(new AppError("Employee not found",400));
+      // }
+      if(req.file){
+          const result =await cloudinary.v2.uploader.upload(req.file.path,{
+            folder:"Employee Photo"
+          });
+          if(result){
+            (addEmp.employImage.public_id=result.public_id),
+            (addEmp.employImage.secure_url=result.secure_url)
+          }    
+      }
+    res.status(200).json({ success: true, message: "Employee update successfully", data: addEmp });
   } catch (err) {
-    console.log(err);
-    return next(new AppError(err.message, 500));
+    console.error(err);
+    next(new AppError(err.message, 500));
   }
 };
 
