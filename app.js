@@ -24,7 +24,7 @@ const app=express();
 dotenv.config();
 
 app.use(cors({
-  origin: ["http://localhost:5173","https://hrmsdashboard4.netlify.app","http://localhost:3001"], 
+  origin: ["http://localhost:5173","https://hrmsdashboard4.netlify.app","http://localhost:3001","https://hrms112.netlify.app/"], 
   credentials: true,
 }));
 
