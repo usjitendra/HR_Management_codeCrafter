@@ -43,7 +43,7 @@ const attandanceLogin = async (req, res, next) => {
       loginTime: now,
       date: now,
       status: "present",
-      //  date:date.toLocaleDateString()
+      //date:date.toLocaleDateString()
     });
 
     res.status(200).json({
@@ -139,23 +139,54 @@ const absent = async (req, res, next) => {
   }
 };
 
-const attendence_detail = async (req, res, next) => {
+const employee_attendence = async (req, res, next) => {
   try {
     const { id } = req.params;
     console.log(id);
     const result = await AttandanceModel.findOne({ employeeId: id }).populate({
       path: "employeeId",
-      select: "name email phone department position",
+      select: "name email mobile department position",
     });
       if(result){
          const data={
             result
          }
           return res.status(200).json({success:true,message:"Employee show Detail",data})
+      }else{
+        return next(new AppError("Employee not found",400));
+
       }
   } catch (err) {
     return next(new AppError(err.message, 500));
   }
 };
 
-export { attandanceLogin, attandanceLogout, absent, attendence_detail };
+const all_employee_aatendance=async(req,res,next)=>{
+    try{
+           const result=await AttandanceModel.find().populate({
+            path:"employeeId",
+            select:"name email mobile department position"
+           })
+           if(!result){
+            return next(new AppError("Employee not found",400));
+           }else{
+             return res.status(200).json({success:true,result});
+           }
+           
+    }catch(err){
+        return next(new AppError(err.message,500));
+    }
+}
+
+
+const testApi=async(req,res,next)=>{
+      try{  
+           console.log("jitendra");
+
+           return next(new AppError("data not fond",500));
+                
+      }catch(err){
+
+      }
+}
+export { attandanceLogin, attandanceLogout, absent, employee_attendence,all_employee_aatendance,testApi};

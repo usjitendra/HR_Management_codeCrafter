@@ -14,9 +14,11 @@ import cloudinary from "cloudinary"
 
 const add_employee = async (req, res, next) => {
   try {
-    const { name, email, phone, department, designation, salary, joiningDate, role, password } = req.body;
+      // console.log(req.body);
+      
+    const { name, email,  mobile, department, designation, salary, joiningDate, role, password } = req.body;
     const addEmp = await employeModel.create({
-      name, email, phone, department, designation, salary, joiningDate, role, password,
+      name, email,  mobile, department, designation, salary, joiningDate, role, password,
       employImage:{
         public_id:"",
         secure_url:"",
@@ -45,9 +47,9 @@ const employee_update = async (req, res, next) => {
       console.log(id);
       // console.log(req.body);
       // return;
-    const { name, email, phone, department, designation, salary, joiningDate, role, password } = req.body;
+    const { name, email,  mobile, department, designation, salary, joiningDate, role, password } = req.body;
     const addEmp = await employeModel.findByIdAndUpdate(id,{
-      name, email, phone, department, designation, salary, joiningDate, role, password,
+      name, email,  mobile, department, designation, salary, joiningDate, role, password,
       employImage:{
         public_id:"",
         secure_url:"",

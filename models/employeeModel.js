@@ -14,7 +14,7 @@ const employeeSchema=new Schema(
             require:true,
             trim:true
         },
-        phone:{
+        mobile:{
             type:Number,
             require:true,
             trim:true
