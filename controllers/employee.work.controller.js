@@ -7,9 +7,6 @@ import { log } from "node:console";
 const work_Add = async (req, res, next) => {
   try {
     const { id } = req.params;
-      // console.log(id);
-      // console.log(req.body);
-      // return;
     const {
       department,
       shiftInformation,
@@ -22,16 +19,17 @@ const work_Add = async (req, res, next) => {
       joiningDate,
       tags,
     } = req.body;
-    // const checkworkData=await employeeWorkModel.find({employeeId:id})
-    // if(checkworkData){
-    //     return next(new AppError("Record have all ready exist",4004))
-    // }
-    const validateEmployee = await employeModel.findById(id);
-    if (!validateEmployee) {
-      return next(new AppError("Employee have not validat", 400));
+
+    const checkworkData = await employeeWorkModel.find({ employeeId: id });
+    if (checkworkData.length > 0) {
+      return next(new AppError("Record already exists", 409));
     }
 
-    const result = await  employeeWorkModel.create({
+    const validateEmployee = await employeModel.findById(id);
+    if (!validateEmployee) {
+      return next(new AppError("Invalid Employee ID", 400));
+    }
+    const result = await employeeWorkModel.create({
       employeeId: id,
       department,
       shiftInformation,
@@ -45,14 +43,15 @@ const work_Add = async (req, res, next) => {
       tags,
     });
 
-    if(result){
-        return res.status(200).json({success:true,message:"Success",data:result})
+    if (result) {
+      return res.status(200).json({ success: true, message: "Success", data: result });
     }
-    return next(new AppError("Some Error Accured",400));
+    return next(new AppError("Some Error Occurred", 400));
   } catch (err) {
     return next(new AppError(err.message, 500));
   }
 };
+
 
 const worka_update = async (req, res, next) => {
     try {
