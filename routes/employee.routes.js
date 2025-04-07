@@ -15,12 +15,19 @@ app.use(express.json())
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(cookieParser());
 
+ const multiUploda= upload.fields([
+  { name: "photo", maxCount: 1 },
+  { name: "idCard", maxCount: 1 },
+  { name: "document", maxCount: 1 },
+]);
+
 // *****************_____Employee start____*********//
 // employee.post("/registration",upload.none(),registrationMiddleware,registration_employee)
+
+employee.post("/add",multiUploda,add_employee);
 employee.post("/login",employee_login)
-employee.post("/add",upload.single("photo"),add_employee);
+employee.put("/update/:id",multiUploda,employee_update,);
 employee.get("/all", all_employee);
-employee.put("/update/:id",upload.single("photo"),employee_update,);
 employee.delete("/delete/:id", employee_Delete);
 
 // ***************_____End_______****************//

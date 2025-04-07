@@ -39,7 +39,7 @@ const registration=async(req,res,next)=>{
 const login = async (req, res, next) => {
     try {
         const { email, password, role } = req.body;
-        console.log(email, password, role);
+        // console.log(req.body);
         // return;
         const loginData = await registrationModel.findOne({ email });
         if (!loginData) {
@@ -52,7 +52,7 @@ const login = async (req, res, next) => {
          const token=await generate_Token(loginData);
          await registrationModel.findByIdAndUpdate(loginData._id, { token });
          res.cookie("authToken", token, {
-            httpOnly: true,  
+            httpOnly: false,  
             secure: true, 
             sameSite: "none", 
             maxAge: 7 * 24 * 60 * 60 * 1000 
@@ -87,32 +87,20 @@ const login = async (req, res, next) => {
 
 const isLogin = async (req, res, next) => {
     try {
-      
         const token = req.cookies?.authToken; // Token from coo
-       
-        console.log("111new token+++",token);
-    // return;
         const loginData = await registrationModel.find();
-
-
         if (!token) {
             return next(new AppError("Unauthorized: No token provided", 401));
         }
-
         const decoded = jwt.verify(token,key); 
-
-
-        // return
         if (!decoded) {
             return next(new AppError("Token expired", 401));
         }
-      
         return res.status(200).json({
             success:true,
             message:"success",
             data:decoded
         })
-     
     } catch (err) {
         return next(new AppError("Invalid or expired token", 401));
     }

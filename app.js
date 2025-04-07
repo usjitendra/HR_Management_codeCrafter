@@ -10,7 +10,8 @@ import employee from "./routes/employee.routes.js";
 import attandance from "./routes/attandance.routes.js";
 import admin from "./routes/admin.routes.js";
 import cloudinary from 'cloudinary'
-// import multer from "multer";
+import bank from "./routes/bank.routes.js";
+import work from "./routes/employee.work.routes.js"
 
 
 
@@ -24,7 +25,7 @@ const app=express();
 dotenv.config();
 
 app.use(cors({
-  origin: ["http://localhost:5173","http://localhost:3000","https://hrms112.netlify.app","hrms112.netlify.app"], 
+  origin: ["http://localhost:5173","http://localhost:3000","https://hrms112.netlify.app","hrms112.netlify.app","http://localhost:3001"], 
   credentials: true,
 }));
 
@@ -48,6 +49,8 @@ app.use(cookieParser());
 app.use('/api/v1/admin',admin)
 app.use('/api/v1/employee',employee)
 app.use("/api/v1/employee/attendance",attandance)
+app.use('/api/v1/employee/bank',bank)
+app.use('/api/v1/employee/work',work)
 
 
 

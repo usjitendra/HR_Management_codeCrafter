@@ -12,28 +12,95 @@ import { json } from "node:stream/consumers";
 import { generate_Token } from "../middlewares/auth.js";
 import cloudinary from "cloudinary"
 
+// const add_emploddyee = async (req, res, next) => {
+//   try {
+      
+//     const { name, email,  mobile, department, designation, salary, joiningDate, role, password } = req.body;
+//     const addEmp = await employeModel.create({
+//       name, email,  mobile, department, designation, salary, joiningDate, role, password,
+//       employImage:{
+//         public_id:"",
+//         secure_url:"",
+//       }
+//     });
+//       if(req.file){
+//           const result =await cloudinary.v2.uploader.upload(req.file.path,{
+//             folder:"Employee Photo"
+//           });
+//           if(result){
+//             (addEmp.employImage.public_id=result.public_id),
+//             (addEmp.employImage.secure_url=result.secure_url)
+//           }    
+//       }
+//     res.status(200).json({ success: true, message: "Employee registered successfully", data: addEmp });
+//   } catch (err) {
+//     console.error(err);
+//     next(new AppError(err.message, 500));
+//   }
+// };
+
+
 const add_employee = async (req, res, next) => {
   try {
-      // console.log(req.body);
-      
-    const { name, email,  mobile, department, designation, salary, joiningDate, role, password } = req.body;
-    const addEmp = await employeModel.create({
-      name, email,  mobile, department, designation, salary, joiningDate, role, password,
-      employImage:{
-        public_id:"",
-        secure_url:"",
-      }
+          // console.log(req.body);
+          // return;
+    const {
+      name, email, workEmail, alternateMobile, mobile, dob,
+      gender, address, state, city, qualification, experience,
+      maritalStatus, children, emergencyContact, role,password
+    } = req.body;
+
+    const newEmpData = {
+      name, email, workEmail, alternateMobile, mobile, dob,
+      gender, address, state, city, qualification, experience,
+      maritalStatus, children, emergencyContact, role,password,
+      employeeImage: {},
+      employeeIdCard: {},
+      employeeDocument: {},
+      new:true
+    };
+
+    const files = req.files;
+
+    if (files?.photo) {
+      const result = await cloudinary.v2.uploader.upload(files.photo[0].path, {
+        folder: "EmployeePhoto"
+      });
+      newEmpData.employeeImage = {
+        public_id: result.public_id,
+        secure_url: result.secure_url
+      };
+    }
+
+    // Upload ID Card
+    if (files?.idCard) {
+      const result = await cloudinary.v2.uploader.upload(files.idCard[0].path, {
+        folder: "EmployeeIDCard"
+      });
+      newEmpData.employeeIdCard = {
+        public_id: result.public_id,
+        secure_url: result.secure_url
+      };
+    }
+
+    // Upload Document
+    if (files?.document) {
+      const result = await cloudinary.v2.uploader.upload(files.document[0].path, {
+        folder: "EmployeeDocument"
+      });
+      newEmpData.employeeDocument = {
+        public_id: result.public_id,
+        secure_url: result.secure_url
+      };
+    }
+
+    const addEmp = await employeModel.create(newEmpData);
+
+    res.status(200).json({
+      success: true,
+      message: "Employee registered successfully",
+      data: addEmp,
     });
-      if(req.file){
-          const result =await cloudinary.v2.uploader.upload(req.file.path,{
-            folder:"Employee Photo"
-          });
-          if(result){
-            (addEmp.employImage.public_id=result.public_id),
-            (addEmp.employImage.secure_url=result.secure_url)
-          }    
-      }
-    res.status(200).json({ success: true, message: "Employee registered successfully", data: addEmp });
   } catch (err) {
     console.error(err);
     next(new AppError(err.message, 500));
@@ -43,33 +110,61 @@ const add_employee = async (req, res, next) => {
 
 const employee_update = async (req, res, next) => {
   try {
-      const {id}=req.params;
-      console.log(id);
-      // console.log(req.body);
-      // return;
-    const { name, email,  mobile, department, designation, salary, joiningDate, role, password } = req.body;
-    const addEmp = await employeModel.findByIdAndUpdate(id,{
-      name, email,  mobile, department, designation, salary, joiningDate, role, password,
-      employImage:{
-        public_id:"",
-        secure_url:"",
-      }
+        const{id}=req.params;
+    const {
+      name, email, workEmail, alternateMobile, mobile, dob,
+      gender, address, state, city, qualification, experience,
+      maritalStatus, children, emergencyContact, role,password
+    } = req.body;
+
+    const newEmpData = {
+      name, email, workEmail, alternateMobile, mobile, dob,
+      gender, address, state, city, qualification, experience,
+      maritalStatus, children, emergencyContact, role,password,
+
+    };
+
+    const files = req.files;
+
+    if (files?.photo) {
+      const result = await cloudinary.v2.uploader.upload(files.photo[0].path, {
+        folder: "EmployeePhoto"
+      });
+      newEmpData.employeeImage = {
+        public_id: result.public_id,
+        secure_url: result.secure_url
+      };
+    }
+
+    // Upload ID Card
+    if (files?.idCard) {
+      const result = await cloudinary.v2.uploader.upload(files.idCard[0].path, {
+        folder: "EmployeeIDCard"
+      });
+      newEmpData.employeeIdCard = {
+        public_id: result.public_id,
+        secure_url: result.secure_url
+      };
+    }
+
+    // Upload Document
+    if (files?.document) {
+      const result = await cloudinary.v2.uploader.upload(files.document[0].path, {
+        folder: "EmployeeDocument"
+      });
+      newEmpData.employeeDocument = {
+        public_id: result.public_id,
+        secure_url: result.secure_url
+      };
+    }
+    const addEmp = await employeModel.findByIdAndUpdate(id,newEmpData,{new:true});
+
+    res.status(200).json({
+      success: true,
+      message: "Employee update successfully",
+      data: addEmp,
     });
-      // if(addEmp){
-      //   return next(new AppError("Employee not found",400));
-      // }
-      if(req.file){
-          const result =await cloudinary.v2.uploader.upload(req.file.path,{
-            folder:"Employee Photo"
-          });
-          if(result){
-            (addEmp.employImage.public_id=result.public_id),
-            (addEmp.employImage.secure_url=result.secure_url)
-          }    
-      }
-    res.status(200).json({ success: true, message: "Employee update successfully", data: addEmp });
   } catch (err) {
-    console.error(err);
     next(new AppError(err.message, 500));
   }
 };

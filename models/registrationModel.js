@@ -21,7 +21,7 @@ const registrationSchema=new Schema(
        },
        role:{
         type:String,
-        enum:["admin","employee"],
+        enum:["Admin","employee"],
          default:"admin"
        },
        image:{

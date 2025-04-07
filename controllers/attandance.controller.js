@@ -1,4 +1,3 @@
-import { log } from "node:console";
 import employeModel from "../models/employeeModel.js";
 import AppError from "../util/appError.js";
 import AttandanceModel from "../models/attandance.model.js";
@@ -7,8 +6,6 @@ import employee from "../routes/employee.routes.js";
 const attandanceLogin = async (req, res, next) => {
   try {
     const { id } = req.params;
-    // console.log("aaaaa",id);
-    // return;
     const validEmployee = await employeModel.findById(id);
     if (!validEmployee) {
       return next(new AppError("Employee is Not Valid", 400));
@@ -52,7 +49,6 @@ const attandanceLogin = async (req, res, next) => {
       addEmployee,
     });
   } catch (error) {
-    console.log(error);
 
     return next(new AppError(error.message, 500));
   }
@@ -61,10 +57,7 @@ const attandanceLogin = async (req, res, next) => {
 const attandanceLogout = async (req, res, next) => {
   try {
     const { id } = req.params;
-    // console.log("con+++",id)
-    // return;
     const validEmployee = await employeModel.findById(id);
-
     if (!validEmployee) {
       return next(new AppError("Employee is Not Valid", 400));
     }
@@ -98,7 +91,6 @@ const attandanceLogout = async (req, res, next) => {
     filterEmployee.logoutTime = now;
 
     const data = await filterEmployee.save();
-    console.log("dddd", data);
 
     res.status(200).json({
       success: true,
@@ -142,7 +134,6 @@ const absent = async (req, res, next) => {
 const employee_attendence = async (req, res, next) => {
   try {
     const { id } = req.params;
-    console.log(id);
     const result = await AttandanceModel.findOne({ employeeId: id }).populate({
       path: "employeeId",
       select: "name email mobile department position",
