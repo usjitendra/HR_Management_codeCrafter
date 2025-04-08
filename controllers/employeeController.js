@@ -259,5 +259,19 @@ const employee_login= async(req,res,next)=>{
   }
 }
 
+const oneEmployee=async(req,res,next)=>{
+         try{
+               const{id}=req.params;
+               const data=await employeModel.findById(id);
+               if(data){
+                return res.status(200).json({success:true,message:"success",data})
+               }else{
+                return next(new AppError("employee not found",400))
+               }
+         }catch(err){
+          return next(new AppError(err.message,500))
+         }
+}
 
-export { add_employee, employee_update,all_employee,employee_Delete,registration_employee,employee_login };
+
+export { add_employee, employee_update,all_employee,employee_Delete,registration_employee,employee_login,oneEmployee };

@@ -4,6 +4,55 @@ import employeModel from "../models/employeeModel.js";
 import employeeWorkModel from "../models/employee.work.information.model.js";
 import { log } from "node:console";
 
+// const work_Add = async (req, res, next) => {
+//   try {
+//     const { id } = req.params;
+//     const {
+//       department,
+//       shiftInformation,
+//       reportingManger,
+//       workLocation,
+//       jobPosition,
+//       workType,
+//       salary,
+//       company,
+//       joiningDate,
+//       tags,
+//     } = req.body;
+
+//     const checkworkData = await employeeWorkModel.find({ employeeId: id });
+//     if (checkworkData.length > 0) {
+//       return next(new AppError("Record already exists", 409));
+//     }
+
+//     const validateEmployee = await employeModel.findById(id);
+//     if (!validateEmployee) {
+//       return next(new AppError("Invalid Employee ID", 400));
+//     }
+//     const result = await employeeWorkModel.create({
+//       employeeId: id,
+//       department,
+//       shiftInformation,
+//       reportingManger,
+//       workLocation,
+//       jobPosition,
+//       workType,
+//       salary,
+//       company,
+//       joiningDate,
+//       tags,
+//     });
+
+//     if (result) {
+//       return res.status(200).json({ success: true, message: "Success", data: result });
+//     }
+//     return next(new AppError("Some Error Occurred", 400));
+//   } catch (err) {
+//     return next(new AppError(err.message, 500));
+//   }
+// };
+
+
 const work_Add = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -20,16 +69,37 @@ const work_Add = async (req, res, next) => {
       tags,
     } = req.body;
 
-    const checkworkData = await employeeWorkModel.find({ employeeId: id });
-    if (checkworkData.length > 0) {
-      return next(new AppError("Record already exists", 409));
-    }
-
     const validateEmployee = await employeModel.findById(id);
     if (!validateEmployee) {
       return next(new AppError("Invalid Employee ID", 400));
     }
-    const result = await employeeWorkModel.create({
+
+    const existingWorkData = await employeeWorkModel.findOne({ employeeId: id });
+
+    if (existingWorkData) {
+      // 👇 Update if already exists
+      const updated = await employeeWorkModel.findOneAndUpdate(
+        { employeeId: id },
+        {
+          department,
+          shiftInformation,
+          reportingManger,
+          workLocation,
+          jobPosition,
+          workType,
+          salary,
+          company,
+          joiningDate,
+          tags,
+        },
+        { new: true }
+      );
+
+      return res.status(200).json({ success: true, message: "Work Info Updated", data: updated });
+    }
+
+    // 👇 Create if not found
+    const created = await employeeWorkModel.create({
       employeeId: id,
       department,
       shiftInformation,
@@ -42,11 +112,8 @@ const work_Add = async (req, res, next) => {
       joiningDate,
       tags,
     });
+    return res.status(200).json({ success: true, message: "Work Info Added", data: created });
 
-    if (result) {
-      return res.status(200).json({ success: true, message: "Success", data: result });
-    }
-    return next(new AppError("Some Error Occurred", 400));
   } catch (err) {
     return next(new AppError(err.message, 500));
   }
@@ -112,12 +179,10 @@ const work_delete = async (req, res, next) => {
 const getWork = async (req, res, next) => {
   try {
         const{id}=req.params;
-          // console.log(id);
-          // return;
-          
-        const result=await employeeWorkModel.find({employeeId:id})
-        if(id){
-            return res.status(200).json({success:true,result})
+        const result=await employeeWorkModel.findOne({employeeId:id})
+        
+        if(result){
+            return res.status(200).json({success:true,data:result})
         }
   } catch (err) {
     return next(new AppError(err.message, 500));
