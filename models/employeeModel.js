@@ -1,5 +1,6 @@
 import { model, Schema } from "mongoose";
 import bcrypt from "bcryptjs";
+import { type } from "os";
 
 const employeeSchema = new Schema(
   {
@@ -77,6 +78,19 @@ const employeeSchema = new Schema(
     additional3: { type: String },
     additional4: { type: String },
     additional5: { type: String },
+    workId:{
+         type:Schema.Types.ObjectId,
+         ref:"EmployeeWork"  
+    },
+    bankId:{
+      type:Schema.Types.ObjectId,
+      ref:"BankDetail"
+    },
+    attandanceId:{
+      type:Schema.Types.ObjectId,
+      ref:"AttandanceModel"
+    }
+
   },
   {
     timestamps: true,

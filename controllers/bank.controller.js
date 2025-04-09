@@ -46,29 +46,30 @@ const add_bank = async (req, res, next) => {
      const existingBankDetail = await employeeBankModel.findOne({ employeeId: id });
      let data;
      if (existingBankDetail) {
-       existingBankDetail.bankName = bankName;
-       existingBankDetail.accountNumber = accountNumber;
-       existingBankDetail.branch = branch;
-       existingBankDetail.ifscCode = ifscCode;
-       existingBankDetail.bankCode = bankCode;
-       existingBankDetail.bankAddress = bankAddress;
-       existingBankDetail.country = country;
- 
-       data = await existingBankDetail.save();
-     } else {
-       // Create new record
-       data = await employeeBankModel.create({
-         employeeId: id,
-         bankName,
-         accountNumber,
-         branch,
-         ifscCode,
+        existingBankDetail.bankName = bankName;
+        existingBankDetail.accountNumber = accountNumber;
+        existingBankDetail.branch = branch;
+        existingBankDetail.ifscCode = ifscCode;
+        existingBankDetail.bankCode = bankCode;
+        existingBankDetail.bankAddress = bankAddress;
+        existingBankDetail.country = country;
+        
+        data = await existingBankDetail.save();
+      } else {
+         // Create new record
+         data = await employeeBankModel.create({
+            employeeId: id,
+            bankName,
+            accountNumber,
+            branch,
+            ifscCode,
          bankCode,
          bankAddress,
          country,
-       });
-     }
- 
+      });
+   }
+   //   console.log(existingBankDetail)
+   await employeModel.findByIdAndUpdate(id,{bankId:data._id});
     
      return res.status(200).json({
        success: true,

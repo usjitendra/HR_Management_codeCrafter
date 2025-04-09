@@ -94,7 +94,7 @@ const work_Add = async (req, res, next) => {
         },
         { new: true }
       );
-
+      await employeModel.findByIdAndUpdate(id,{workId:updated._id})
       return res.status(200).json({ success: true, message: "Work Info Updated", data: updated });
     }
 
@@ -112,6 +112,7 @@ const work_Add = async (req, res, next) => {
       joiningDate,
       tags,
     });
+      await employeModel.findByIdAndUpdate(id,{workId:created._id})
     return res.status(200).json({ success: true, message: "Work Info Added", data: created });
 
   } catch (err) {
@@ -189,11 +190,18 @@ const getWork = async (req, res, next) => {
   }
 };
 
-const worask_Add = async (req, res, next) => {
+const allData = async (req, res, next) => {
   try {
+         const data=await employeeWorkModel.find({},'workType department').populate("employeeId","name")
+         if(data){
+            return res.status(200).json({success:true,data})
+         }else{
+          return next(new AppError("Data Not found",400))
+         }
+        
   } catch (err) {
     return next(new AppError(err.message, 500));
   }
 };
 
-export { work_Add,worka_update,work_delete,getWork };
+export { work_Add,worka_update,work_delete,getWork,allData };
