@@ -12,7 +12,7 @@ import admin from "./routes/admin.routes.js";
 import cloudinary from 'cloudinary'
 import bank from "./routes/bank.routes.js";
 import work from "./routes/employee.work.routes.js"
-
+import policy from "./routes/policy.js"
 
 
 cloudinary.v2.config({
@@ -51,6 +51,7 @@ app.use('/api/v1/employee',employee)
 app.use("/api/v1/employee/attendance",attandance)
 app.use('/api/v1/employee/bank',bank)
 app.use('/api/v1/employee/work',work)
+app.use('/api/v1/plocy',policy)
 
 
 
