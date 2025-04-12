@@ -89,8 +89,11 @@ const employeeSchema = new Schema(
     attandanceId:{
       type:Schema.Types.ObjectId,
       ref:"AttandanceModel"
-    }
-
+    },
+    leaveID:{
+        type:Schema.Types.ObjectId,
+        ref:"Leave"
+    },
   },
   {
     timestamps: true,

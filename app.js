@@ -13,7 +13,7 @@ import cloudinary from 'cloudinary'
 import bank from "./routes/bank.routes.js";
 import work from "./routes/employee.work.routes.js"
 import policy from "./routes/policy.js"
-
+import leave from "./routes/leave.routes.js";
 
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -52,6 +52,7 @@ app.use("/api/v1/employee/attendance",attandance)
 app.use('/api/v1/employee/bank',bank)
 app.use('/api/v1/employee/work',work)
 app.use('/api/v1/plocy',policy)
+app.use('/api/v1/leave',leave)
 
 
 
