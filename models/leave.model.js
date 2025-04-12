@@ -42,7 +42,10 @@ const leaveSchema=new Schema(
        appliedAt:{
         type:Date,
          default:Date.now
-       }
+       },
+       teast1:{
+          type:String
+       },
     },
     {
         timestamps:true
