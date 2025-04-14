@@ -13,7 +13,6 @@ const registrationSchema=new Schema(
        },
        mobile:{
         type:String,
-        required:true
        },
        password:{
         type:String,
@@ -22,7 +21,7 @@ const registrationSchema=new Schema(
        role:{
         type:String,
         enum:["Admin","employee"],
-         default:"admin"
+        require:true
        },
        image:{
             public_id:{

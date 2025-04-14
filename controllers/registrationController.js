@@ -39,8 +39,7 @@ const registration=async(req,res,next)=>{
 const login = async (req, res, next) => {
     try {
         const { email, password, role } = req.body;
-        // console.log(req.body);
-        // return;
+        
         const loginData = await registrationModel.findOne({ email });
         if (!loginData) {
             return next(new AppError("Invalid email or password.", 401));
@@ -53,7 +52,7 @@ const login = async (req, res, next) => {
          await registrationModel.findByIdAndUpdate(loginData._id, { token });
          res.cookie("authToken", token, {
             httpOnly: false,  
-            secure: true, 
+            secure: false, 
             sameSite: "none", 
             maxAge: 7 * 24 * 60 * 60 * 1000 
         });
@@ -98,12 +97,15 @@ const isLogin = async (req, res, next) => {
         }
         
         const data=await registrationModel.findById(decoded.id)
-        
-        console.log(data);
+            const newData={
+                name:data.name,
+                email:data.email,
+                role:data.role
+            }
         return res.status(200).json({
             success:true,
             message:"success",
-            data:data
+            data:newData
         })
     } catch (err) {
         return next(new AppError("Invalid or expired token", 401));

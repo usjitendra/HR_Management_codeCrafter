@@ -1,6 +1,6 @@
 import {Router} from "express";
 import { add_employee,employee_update,all_employee,employee_Delete,
-    registration_employee,employee_login,oneEmployee}from "../controllers/employeeController.js";
+    registration_employee,employee_login,oneEmployee,employeeAlldetail}from "../controllers/employeeController.js";
 import express from "express";
 const app=express()
 const employee =Router();
@@ -30,6 +30,7 @@ employee.put("/update/:id",multiUploda,employee_update,);
 employee.get("/all", all_employee);
 employee.delete("/delete/:id", employee_Delete);
 employee.get("/get/:id",oneEmployee)
+employee.get("/all/detail/:id",employeeAlldetail)
 
 // ***************_____End_______****************//
 
