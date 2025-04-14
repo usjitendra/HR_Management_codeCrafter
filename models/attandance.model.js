@@ -1,4 +1,5 @@
 import { model, Schema } from "mongoose";
+import { type } from "os";
 
 
 const attandanceSchema=new Schema(
@@ -57,6 +58,9 @@ const attandanceSchema=new Schema(
             type:Boolean
         },
         remark:{
+            type:String
+        },
+        workingHours:{
             type:String
         }
     },

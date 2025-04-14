@@ -96,10 +96,14 @@ const isLogin = async (req, res, next) => {
         if (!decoded) {
             return next(new AppError("Token expired", 401));
         }
+        
+        const data=await registrationModel.findById(decoded.id)
+        
+        console.log(data);
         return res.status(200).json({
             success:true,
             message:"success",
-            data:decoded
+            data:data
         })
     } catch (err) {
         return next(new AppError("Invalid or expired token", 401));

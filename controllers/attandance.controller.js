@@ -2,6 +2,8 @@ import employeModel from "../models/employeeModel.js";
 import AppError from "../util/appError.js";
 import AttandanceModel from "../models/attandance.model.js";
 import employee from "../routes/employee.routes.js";
+import { start } from "repl";
+import { allData } from "./employee.work.controller.js";
 
 const attandanceLogin = async (req, res, next) => {
   try {
@@ -77,21 +79,28 @@ const attandanceLogout = async (req, res, next) => {
       return loginDate === today;
     });
 
-    if (filterEmployee && filterEmployee.status === "absent") {
-      return next(new AppError("Employee is Absent", 400));
-    }
+    // if (filterEmployee && filterEmployee.status === "absent") {
+    //   return next(new AppError("Employee is Absent", 400));
+    // }
 
-    if (filterEmployee && !filterEmployee.loginTime) {
-      return next(new AppError("Employee is Not Login", 400));
-    }
+    // if (filterEmployee && !filterEmployee.loginTime) {
+    //   return next(new AppError("Employee is Not Login", 400));
+    // }
 
-    if (filterEmployee && filterEmployee.logoutTime) {
-      return next(new AppError("Employee is Already logged out", 400));
-    }
-    filterEmployee.logoutTime = now;
-
-    const data = await filterEmployee.save();
-
+    // if (filterEmployee && filterEmployee.logoutTime) {
+    //   return next(new AppError("Employee is Already logged out", 400));
+    // }
+    filterEmployee.logoutTime = now;  
+    const login = filterEmployee.loginTime;
+    const logout = filterEmployee.logoutTime;
+    const diffMs = logout - login;
+    
+    const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    const diffSecs = Math.floor((diffMs % (1000 * 60)) / 1000);              
+    const workingTime=`${diffHrs}h ${diffMins}m ${diffSecs}s`;
+    filterEmployee.workingHours=workingTime
+       await filterEmployee.save()
     res.status(200).json({
       success: true,
       message: "Logout Succesfully",
@@ -180,4 +189,45 @@ const testApi=async(req,res,next)=>{
 
       }
 }
-export { attandanceLogin, attandanceLogout, absent, employee_attendence,all_employee_aatendance,testApi};
+
+const getChartAttendance = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { month } = req.query;
+
+    const startDate = new Date(`${month}-01`);
+    const endDate = new Date(startDate);
+    endDate.setMonth(endDate.getMonth() + 1);
+
+    const allDays = [];
+    for (let d = new Date(startDate); d < endDate; d.setDate(d.getDate() + 1)) {
+      allDays.push(new Date(d)); // clone date object
+    }
+
+    const AttendanceData = await AttandanceModel.find({
+      employeeId: id,
+    });
+
+
+    console.log(AttendanceData);
+    return;
+    
+    const chart = allDays.map(day => {
+      const found = AttendanceData.find(entry =>
+        new Date(entry.date).toDateString() === day.toDateString()
+      );
+      return {
+        date: day.toISOString().split("T")[0],
+        status: found ? found.status : "Not Available",
+      };
+    });
+
+    res.status(200).json({ success: true, chart });
+
+  } catch (err) {
+    return next(new AppError(err.message, 500));
+  }
+};
+
+
+export { attandanceLogin, attandanceLogout, absent, employee_attendence,all_employee_aatendance,testApi,getChartAttendance};
