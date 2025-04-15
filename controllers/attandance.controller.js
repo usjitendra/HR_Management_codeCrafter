@@ -4,8 +4,8 @@ import AttandanceModel from "../models/attandance.model.js";
 import employee from "../routes/employee.routes.js";
 import { start } from "repl";
 import { allData } from "./employee.work.controller.js";
-import { log } from "console";
-
+import mongoose from "mongoose";
+let ObjectId = mongoose.Types.ObjectId;
 const attandanceLogin = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -14,6 +14,19 @@ const attandanceLogin = async (req, res, next) => {
       return next(new AppError("Employee is Not Valid", 400));
     }
     const now = new Date();
+    const today = new Date();
+    const nineAM = new Date(today.setHours(9, 0, 0, 0));
+    const tenAM = new Date(today.setHours(10, 0, 0, 0));
+    const twelveAM = new Date(today.setHours(12, 0, 0, 0));
+
+    if (now < nineAM) {
+      return next(
+        new AppError("Too early to Check In. Try after 9:00 AM", 400)
+      );
+    }
+    if (now > twelveAM) {
+      return next(new AppError("Maushi ka ghar bana liye ho ka", 500));
+    }
     const allEmployeeAttandance = await AttandanceModel.find({
       employeeId: validEmployee._id,
     });
@@ -38,13 +51,27 @@ const attandanceLogin = async (req, res, next) => {
     if (allEmployeeAttandance && allEmployeeAttandance.loginTime) {
       return next(new AppError("Already Login"));
     }
-    const addEmployee = await AttandanceModel.create({
-      employeeId: validEmployee._id,
-      loginTime: now,
-      date: now,
-      status: "present",
-      //date:date.toLocaleDateString()
-    });
+
+    let isFullDay = false;
+    let isHalfDay = false;
+    if (now >= nineAM && now <= tenAM) {
+      isFullDay = true;
+    } else if (now > tenAM) {
+      isHalfDay = true;
+    }
+
+    const addEmployee = await AttandanceModel.findOneAndUpdate(
+      { employeeId: id },
+      {
+        // employeeId: validEmployee._id,
+        loginTime: now,
+        date: now,
+        status: "present",
+        isFullDay,
+        isHalfDay,
+      },
+      { new: true, upsert: true }
+    );
 
     res.status(200).json({
       success: true,
@@ -52,7 +79,6 @@ const attandanceLogin = async (req, res, next) => {
       addEmployee,
     });
   } catch (error) {
-
     return next(new AppError(error.message, 500));
   }
 };
@@ -91,17 +117,17 @@ const attandanceLogout = async (req, res, next) => {
     // if (filterEmployee && filterEmployee.logoutTime) {
     //   return next(new AppError("Employee is Already logged out", 400));
     // }
-    filterEmployee.logoutTime = now;  
+    filterEmployee.logoutTime = now;
     const login = filterEmployee.loginTime;
     const logout = filterEmployee.logoutTime;
     const diffMs = logout - login;
-    
+
     const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
     const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-    const diffSecs = Math.floor((diffMs % (1000 * 60)) / 1000);              
-    const workingTime=`${diffHrs}h ${diffMins}m ${diffSecs}s`;
-    filterEmployee.workingHours=workingTime
-       await filterEmployee.save()
+    const diffSecs = Math.floor((diffMs % (1000 * 60)) / 1000);
+    const workingTime = `${diffHrs}h ${diffMins}m ${diffSecs}s`;
+    filterEmployee.workingHours = workingTime;
+    await filterEmployee.save();
     res.status(200).json({
       success: true,
       message: "Logout Succesfully",
@@ -148,48 +174,44 @@ const employee_attendence = async (req, res, next) => {
       path: "employeeId",
       select: "name email mobile department position",
     });
-      if(result){
-         const data={
-            result
-         }
-          return res.status(200).json({success:true,message:"Employee show Detail",data})
-      }else{
-        return next(new AppError("Employee not found",400));
-
-      }
+    if (result) {
+      const data = {
+        result,
+      };
+      return res
+        .status(200)
+        .json({ success: true, message: "Employee show Detail", data });
+    } else {
+      return next(new AppError("Employee not found", 400));
+    }
   } catch (err) {
     return next(new AppError(err.message, 500));
   }
 };
 
-const all_employee_aatendance=async(req,res,next)=>{
-    try{
-           const result=await AttandanceModel.find().populate({
-            path:"employeeId",
-            select:"name email mobile department position"
-           })
-           if(!result){
-            return next(new AppError("Employee not found",400));
-           }else{
-             return res.status(200).json({success:true,result});
-           }
-           
-    }catch(err){
-        return next(new AppError(err.message,500));
+const all_employee_aatendance = async (req, res, next) => {
+  try {
+    const result = await AttandanceModel.find().populate({
+      path: "employeeId",
+      select: "name email mobile department position",
+    });
+    if (!result) {
+      return next(new AppError("Employee not found", 400));
+    } else {
+      return res.status(200).json({ success: true, result });
     }
-}
+  } catch (err) {
+    return next(new AppError(err.message, 500));
+  }
+};
 
+const testApi = async (req, res, next) => {
+  try {
+    console.log("jitendra");
 
-const testApi=async(req,res,next)=>{
-      try{  
-           console.log("jitendra");
-
-           return next(new AppError("data not fond",500));
-                
-      }catch(err){
-
-      }
-}
+    return next(new AppError("data not fond", 500));
+  } catch (err) {}
+};
 
 const getChartAttendance = async (req, res, next) => {
   try {
@@ -208,15 +230,15 @@ const getChartAttendance = async (req, res, next) => {
       date: { $gte: startDate, $lt: endDate }, // ✅ month-wise filter
     });
 
-      // console.log(AttendanceData);
-      // return;
-      
-    const chart = allDays.map(day => {
-      const found = AttendanceData.find(entry =>
-        new Date(entry.date).toDateString() === day.toDateString()
+    // console.log(AttendanceData);
+    // return;
+
+    const chart = allDays.map((day) => {
+      const found = AttendanceData.find(
+        (entry) => new Date(entry.date).toDateString() === day.toDateString()
       );
-         console.log("form",found);
-         
+      console.log("form", found);
+
       return {
         date: day.toISOString().split("T")[0],
         status: found ? found : "Not Available",
@@ -229,6 +251,12 @@ const getChartAttendance = async (req, res, next) => {
   }
 };
 
-
-
-export { attandanceLogin, attandanceLogout, absent, employee_attendence,all_employee_aatendance,testApi,getChartAttendance};
+export {
+  attandanceLogin,
+  attandanceLogout,
+  absent,
+  employee_attendence,
+  all_employee_aatendance,
+  testApi,
+  getChartAttendance,
+};

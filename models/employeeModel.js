@@ -94,6 +94,13 @@ const employeeSchema = new Schema(
         type:Schema.Types.ObjectId,
         ref:"Leave"
     },
+    registrationId:{
+      type:Schema.Types.ObjectId,
+      reg:"Registyration"
+    },
+    employeeUseName:{
+     type:String
+    }
   },
   {
     timestamps: true,

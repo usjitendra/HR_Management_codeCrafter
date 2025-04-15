@@ -120,7 +120,8 @@ const isLogin = async (req, res, next) => {
             const newData={
                 name:data.name,
                 email:data.email,
-                role:data.role
+                role:data.role,
+                id:data._id
             }
         return res.status(200).json({
             success:true,
