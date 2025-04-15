@@ -34,7 +34,36 @@ const registration=async(req,res,next)=>{
         return next(new AppError(err.message,500))
     }
 }
-
+ 
+// const registrationAdmin=async()=>{
+//     try{
+//            const degaultEmail="codecrafter@gmail.com"
+//            const existingUser=await registrationModel.findOne({email:degaultEmail})
+//            if(existingUser){
+//                console.log("Admin have all ready registra");
+//                return;
+//            }
+//         //    let image={public_Id:"",secure_url:""};
+//         //    if(req.file){
+//         //         const uploadPath=`image/registrationImage${Date.now()}-${req.file.originalname}`
+//         //         fs.writeFileSync(uploadPath,req.file.buffer)
+//         //         image={public_Id:"",secure_url:uploadPath}
+//         //     }
+//             const user=await registrationModel.create({
+//                 name:"codeCrafter",
+//                 email:"codecrafter@gmail.com",
+//                 password:"Cc@12345c",
+//                 mobile:"123456",
+//                 role:"Admin",
+//             })
+//            console.log("Admin create Successfully")
+            
+//     }catch(err){
+//          console.log(err.message)
+//     }
+// }
+// registrationAdmin();
+  
 
 const login = async (req, res, next) => {
     try {
@@ -52,19 +81,11 @@ const login = async (req, res, next) => {
          await registrationModel.findByIdAndUpdate(loginData._id, { token });
          res.cookie("authToken", token, {
             httpOnly: false,  
-            secure: false, 
+            secure: true, 
             sameSite: "none", 
             maxAge: 7 * 24 * 60 * 60 * 1000 
         });
-        // res.status(200).json({
-        //     message: "Login successful",
-        //         data: {
-        //         id: loginData._id,
-        //         email: loginData.email,
-        //         role: loginData.role, 
-        //     },
-           
-        // });
+      
 
         const data={
             id: loginData._id,
@@ -87,7 +108,6 @@ const login = async (req, res, next) => {
 const isLogin = async (req, res, next) => {
     try {
         const token = req.cookies?.authToken; // Token from coo
-        const loginData = await registrationModel.find();
         if (!token) {
             return next(new AppError("Unauthorized: No token provided", 401));
         }

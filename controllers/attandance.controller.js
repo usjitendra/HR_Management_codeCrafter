@@ -4,6 +4,7 @@ import AttandanceModel from "../models/attandance.model.js";
 import employee from "../routes/employee.routes.js";
 import { start } from "repl";
 import { allData } from "./employee.work.controller.js";
+import { log } from "console";
 
 const attandanceLogin = async (req, res, next) => {
   try {
@@ -192,42 +193,42 @@ const testApi=async(req,res,next)=>{
 
 const getChartAttendance = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const { month } = req.query;
-
+    const { id, month } = req.query;
     const startDate = new Date(`${month}-01`);
     const endDate = new Date(startDate);
     endDate.setMonth(endDate.getMonth() + 1);
 
     const allDays = [];
     for (let d = new Date(startDate); d < endDate; d.setDate(d.getDate() + 1)) {
-      allDays.push(new Date(d)); // clone date object
+      allDays.push(new Date(d)); // clone to prevent mutation
     }
 
     const AttendanceData = await AttandanceModel.find({
       employeeId: id,
+      date: { $gte: startDate, $lt: endDate }, // ✅ month-wise filter
     });
 
-
-    console.log(AttendanceData);
-    return;
-    
+      // console.log(AttendanceData);
+      // return;
+      
     const chart = allDays.map(day => {
       const found = AttendanceData.find(entry =>
         new Date(entry.date).toDateString() === day.toDateString()
       );
+         console.log("form",found);
+         
       return {
         date: day.toISOString().split("T")[0],
-        status: found ? found.status : "Not Available",
+        status: found ? found : "Not Available",
       };
     });
 
     res.status(200).json({ success: true, chart });
-
   } catch (err) {
     return next(new AppError(err.message, 500));
   }
 };
+
 
 
 export { attandanceLogin, attandanceLogout, absent, employee_attendence,all_employee_aatendance,testApi,getChartAttendance};
