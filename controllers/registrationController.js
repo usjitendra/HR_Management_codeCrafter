@@ -79,12 +79,12 @@ const login = async (req, res, next) => {
         }
          const token=await generate_Token(loginData);
          await registrationModel.findByIdAndUpdate(loginData._id, { token });
-         res.cookie("authToken", token, {
-            httpOnly: false,  
-            secure: true, 
-            sameSite: "none", 
-            maxAge: 7 * 24 * 60 * 60 * 1000 
-        });
+         res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production', // Only true in production
+            sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+            maxAge: 24 * 60 * 60 * 1000, // 1 day
+          });
       
 
         const data={
