@@ -66,7 +66,6 @@ const employeeSchema = new Schema(
 
     password: {
       type: String,
-      required: true,
       trim: true, 
     },
 
@@ -88,7 +87,7 @@ const employeeSchema = new Schema(
     },
     attandanceId:{
       type:Schema.Types.ObjectId,
-      ref:"AttandanceModel"
+      ref:"Attandance"
     },
     leaveID:{
         type:Schema.Types.ObjectId,
@@ -96,10 +95,14 @@ const employeeSchema = new Schema(
     },
     registrationId:{
       type:Schema.Types.ObjectId,
-      reg:"Registyration"
+      reg:"Registration"
     },
     employeeUseName:{
      type:String
+    },
+    checkIn: {
+      type: Boolean,
+      default: false // optional
     }
   },
   {

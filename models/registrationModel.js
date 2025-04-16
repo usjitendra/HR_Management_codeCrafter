@@ -9,7 +9,8 @@ const registrationSchema=new Schema(
        },
        email:{
         type:String,
-        required:true
+        required:true,
+        unique:true
        },
        mobile:{
         type:String,
@@ -56,7 +57,7 @@ const registrationSchema=new Schema(
   
 
 
-const registrationModel=model("Registyration",registrationSchema);
+const registrationModel=model("Registration",registrationSchema);
 
 
 export {registrationModel};

@@ -11,7 +11,10 @@ import bcrypt from "bcryptjs";
 import { json } from "node:stream/consumers";
 import { generate_Token } from "../middlewares/auth.js";
 import cloudinary from "cloudinary";
-
+// const key="abcdef";
+const key = process.env.JWT_SECRET;
+import jwt from 'jsonwebtoken';
+import AttandanceModel from "../models/attandance.model.js";
 // const add_emploddyee = async (req, res, next) => {
 //   try {
 
@@ -80,7 +83,6 @@ const add_employee = async (req, res, next) => {
       children,
       emergencyContact,
       role,
-      password,
       employeeImage: {},
       employeeIdCard: {},
       employeeDocument: {},
@@ -98,7 +100,6 @@ const add_employee = async (req, res, next) => {
         secure_url: result.secure_url,
       };
     }
-
     // Upload ID Card
     if (files?.idCard) {
       const result = await cloudinary.v2.uploader.upload(files.idCard[0].path, {
@@ -125,12 +126,14 @@ const add_employee = async (req, res, next) => {
     }
 
     const addEmp = await employeModel.create(newEmpData);
-    await registrationModel.create({
+   const result= await registrationModel.create({
       name,
       email,
       password,
       role,
     });
+      addEmp.registrationId=result._id;
+       addEmp.save();
     res.status(200).json({
       success: true,
       message: "Employee registered successfully",
@@ -372,6 +375,36 @@ const employeeAlldetail = async (req, res, next) => {
   }
 };
 
+
+const employee_profile=async(req,res,next)=>{
+  try {
+     
+    const token = req.cookies?.authToken; // Token from coo\
+    if (!token) {
+      return next(new AppError("Unauthorized: No token provided", 401));
+    }
+    const decoded = jwt.verify(token,key); 
+    
+    if (!decoded) {
+        return next(new AppError("Token expired", 401));
+    }
+    const data=await employeModel.find({registrationId:decoded.id}) 
+     
+    const emplodata=await AttandanceModel.find({employeeId:data[0]._id})
+     const alldata={
+      data,
+      emplodata
+     }
+    return res.status(200).json({
+        success:true,
+        message:"success",
+        data:alldata
+    })
+} catch (err) {
+    return next(new AppError(err.message, 401));
+}
+}
+
 export {
   add_employee,
   employee_update,
@@ -381,4 +414,5 @@ export {
   employee_login,
   oneEmployee,
   employeeAlldetail,
+  employee_profile
 };

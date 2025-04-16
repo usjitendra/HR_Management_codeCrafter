@@ -9,7 +9,6 @@ const storage = multer.memoryStorage();
 const upload = multer();
 
 
-
 adminroutes.post("/registration",upload.single("image"),registration);
 adminroutes.post("/login", login);
 adminroutes.get("/isLogin", isLogin);

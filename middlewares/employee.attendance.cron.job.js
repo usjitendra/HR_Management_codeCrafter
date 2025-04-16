@@ -28,6 +28,7 @@ const cronJobAttendence = async () => {
       employeeId: emp._id,
       isHalfDay: false,
       isFullDay: false,
+      checkIn:false
     }));
 
     if (absentEntries.length > 0) {

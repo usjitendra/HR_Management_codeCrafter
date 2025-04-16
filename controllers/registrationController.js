@@ -2,7 +2,7 @@ import {registrationModel} from "../models/registrationModel.js";
 import AppError from "../util/appError.js";
 import fs from "fs"
 import bcrypt from "bcryptjs";
-const key="abcdef";
+const key = process.env.JWT_SECRET;
 import jwt from 'jsonwebtoken';
 
 import {generate_Token,token_validate} from '../middlewares/auth.js'
@@ -35,34 +35,34 @@ const registration=async(req,res,next)=>{
     }
 }
  
-// const registrationAdmin=async()=>{
-//     try{
-//            const degaultEmail="codecrafter@gmail.com"
-//            const existingUser=await registrationModel.findOne({email:degaultEmail})
-//            if(existingUser){
-//                console.log("Admin have all ready registra");
-//                return;
-//            }
-//         //    let image={public_Id:"",secure_url:""};
-//         //    if(req.file){
-//         //         const uploadPath=`image/registrationImage${Date.now()}-${req.file.originalname}`
-//         //         fs.writeFileSync(uploadPath,req.file.buffer)
-//         //         image={public_Id:"",secure_url:uploadPath}
-//         //     }
-//             const user=await registrationModel.create({
-//                 name:"codeCrafter",
-//                 email:"codecrafter@gmail.com",
-//                 password:"Cc@12345c",
-//                 mobile:"123456",
-//                 role:"Admin",
-//             })
-//            console.log("Admin create Successfully")
+const registrationAdmin=async()=>{
+    try{
+           const degaultEmail="codecrafter@gmail.com"
+           const existingUser=await registrationModel.findOne({email:degaultEmail})
+           if(existingUser){
+               console.log("Admin have all ready registra");
+               return;
+           }
+        //    let image={public_Id:"",secure_url:""};
+        //    if(req.file){
+        //         const uploadPath=`image/registrationImage${Date.now()}-${req.file.originalname}`
+        //         fs.writeFileSync(uploadPath,req.file.buffer)
+        //         image={public_Id:"",secure_url:uploadPath}
+        //     }
+            const user=await registrationModel.create({
+                name:"codeCrafter",
+                email:"codecrafter@gmail.com",
+                password:"Cc@12345c",
+                mobile:"123456",
+                role:"Admin",
+            })
+           console.log("Admin create Successfully")
             
-//     }catch(err){
-//          console.log(err.message)
-//     }
-// }
-// registrationAdmin();
+    }catch(err){
+         console.log(err.message)
+    }
+}
+registrationAdmin();
   
 
 const login = async (req, res, next) => {
@@ -86,7 +86,6 @@ const login = async (req, res, next) => {
             maxAge: 7 * 24 * 60 * 60 * 1000 
         });
       
-
         const data={
             id: loginData._id,
                 email: loginData.email,
