@@ -100,10 +100,7 @@ const employeeSchema = new Schema(
     employeeUseName:{
      type:String
     },
-    checkIn: {
-      type: Boolean,
-      default: false // optional
-    }
+  
   },
   {
     timestamps: true,

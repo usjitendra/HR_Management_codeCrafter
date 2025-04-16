@@ -5,13 +5,14 @@ import employee from "../routes/employee.routes.js";
 import { start } from "repl";
 import { allData } from "./employee.work.controller.js";
 import mongoose from "mongoose";
-
+import jwt from "jsonwebtoken";
+const key = process.env.JWT_SECRET;
 //***if employee id commimh then  */
 
 // const attandanceLogin = async (req, res, next) => {
 //   try {
 //     const { id } = req.params;
-    
+
 //     const validEmployee = await employeModel.findById(id);
 //     if (!validEmployee) {
 //       return next(new AppError("Employee is Not Valid", 400));
@@ -86,47 +87,41 @@ import mongoose from "mongoose";
 //   }
 // };
 
-
-
 //****if employee Registration  id comming then.... */
 
 const attandanceLogin = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    // Get employee by registrationId (return single object, not array)
     const validEmployee = await employeModel.findOne({ registrationId: id });
-
     if (!validEmployee) {
       return next(new AppError("Employee is Not Valid", 400));
     }
 
     const now = new Date();
-    const today = new Date();
-    const nineAM = new Date(today.setHours(9, 0, 0, 0));
-    const tenAM = new Date(today.setHours(10, 0, 0, 0));
-    const twelveAM = new Date(today.setHours(12, 0, 0, 0));
 
-    // Time Check
-    // if (now < nineAM) {
-    //   return next(new AppError("Too early to Check In. Try after 9:00 AM", 400));
-    // }
-    // if (now > twelveAM) {
-    //   return next(new AppError("Too late to Check In", 400));
-    // }
+    const startOfDay = new Date(now);
+    startOfDay.setHours(0, 0, 0, 0);
 
-    // Check attendance for today
+    const endOfDay = new Date(now);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const nineAM = new Date(now);
+    nineAM.setHours(9, 0, 0, 0);
+
+    const tenAM = new Date(now);
+    tenAM.setHours(10, 0, 0, 0);
+
+    const twelvePM = new Date(now);
+    twelvePM.setHours(12, 0, 0, 0);
+
     const todayAttendance = await AttandanceModel.findOne({
       employeeId: validEmployee._id,
-      date: {
-        $gte: new Date(now.setHours(0, 0, 0, 0)),
-        $lt: new Date(now.setHours(23, 59, 59, 999))
-      }
+      date: { $gte: startOfDay, $lt: endOfDay },
     });
 
-    if (todayAttendance) {
-      // return next(new AppError("Already Checked In Today", 400));
-      return res.status(400).json({message:"Already Checked In Today",todayAttendance})
+    if (todayAttendance && todayAttendance.loginTime) {
+      return next(new AppError("Already Checked In Today", 400));
     }
 
     let isFullDay = false;
@@ -134,19 +129,25 @@ const attandanceLogin = async (req, res, next) => {
 
     if (now >= nineAM && now <= tenAM) {
       isFullDay = true;
-    } else if (now > tenAM && now <= twelveAM) {
+    } else if (now > tenAM && now <= twelvePM) {
       isHalfDay = true;
     }
 
     const addEmployee = await AttandanceModel.findOneAndUpdate(
-      { employeeId: validEmployee._id, date: now },
       {
         employeeId: validEmployee._id,
-        loginTime: now,
-        date: now,
-        status: "present",
-        isFullDay,
-        isHalfDay,
+        date: { $gte: startOfDay, $lt: endOfDay }, // 🔥 this is key
+      },
+      {
+        $set: {
+          employeeId: validEmployee._id,
+          loginTime: now,
+          date: now,
+          status: "present",
+          isFullDay,
+          isHalfDay,
+          checkIn: true,
+        },
       },
       { new: true, upsert: true }
     );
@@ -160,7 +161,6 @@ const attandanceLogin = async (req, res, next) => {
     return next(new AppError(error.message, 500));
   }
 };
-
 
 
 // const attandanceLogout = async (req, res, next) => {
@@ -218,17 +218,12 @@ const attandanceLogin = async (req, res, next) => {
 //   }
 // };
 
-
-
-
 //***employee Registration id aa rahi h tb___ */
-
 
 const attandanceLogout = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    // Use findOne for single object
     const validEmployee = await employeModel.findOne({ registrationId: id });
 
     if (!validEmployee) {
@@ -257,7 +252,8 @@ const attandanceLogout = async (req, res, next) => {
     if (!todayAttendance.loginTime) {
       return next(new AppError("Employee is Not Logged In", 400));
     }
-
+      // console.log(todayAttendance);
+      // return
     if (todayAttendance.logoutTime) {
       return next(new AppError("Employee is Already Logged Out", 400));
     }
@@ -285,8 +281,6 @@ const attandanceLogout = async (req, res, next) => {
     return next(new AppError(error.message, 500));
   }
 };
-
-
 
 const absent = async (req, res, next) => {
   const { status } = req.body;
@@ -401,13 +395,48 @@ const getChartAttendance = async (req, res, next) => {
   }
 };
 
-const getMonthalyDetail=async(req,res,next)=>{
-     try{
+const getMonthalyDetail = async (req, res, next) => {
+  try {
+    const token = req.cookies?.authToken;
+    if (!token) {
+      return next(new AppError("Unauthorized: No token provided", 401));
+    }
 
-     }catch(err){
-      return next(new AppError())
-     }
-}
+    const decoded = jwt.verify(token, key);
+    if (!decoded) {
+      return next(new AppError("Token expired", 401));
+    }
+
+    const data = await employeModel.find({ registrationId: decoded.id });
+
+    if (!data || data.length === 0) {
+      return next(new AppError("Employee not found", 404));
+    }
+
+    const attandanceData = await AttandanceModel.find({
+      employeeId: data[0]._id,
+    });
+
+    const today = new Date().toLocaleDateString();
+    const todayData = attandanceData.find((record) => {
+      const loginDate = new Date(record.createdAt).toLocaleDateString();
+      return loginDate === today;
+    });
+
+    const allData = {
+      todayData: todayData,
+      attandanceData: attandanceData,
+    };
+
+    return res.status(200).json({
+      success: true,
+      // message: "Success",
+      data: allData,
+    });
+  } catch (err) {
+    return next(new AppError(err.message || "Invalid or expired token", 401));
+  }
+};
 
 export {
   attandanceLogin,
@@ -417,5 +446,5 @@ export {
   all_employee_aatendance,
   testApi,
   getChartAttendance,
-  getMonthalyDetail
+  getMonthalyDetail,
 };
