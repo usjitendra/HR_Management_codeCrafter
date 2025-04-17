@@ -114,7 +114,14 @@ const attandanceLogin = async (req, res, next) => {
 
     const twelvePM = new Date(now);
     twelvePM.setHours(12, 0, 0, 0);
-
+    if (now < nineAM) {
+            return next(
+              new AppError("Too early to Check In. Try after 9:00 AM", 400)
+            );
+          }
+          if (now > twelveAM) {
+            return next(new AppError("Bhai, ghar nahi office hai! Check-in ka time nikal gaya.", 500));
+          }
     const todayAttendance = await AttandanceModel.findOne({
       employeeId: validEmployee._id,
       date: { $gte: startOfDay, $lt: endOfDay },

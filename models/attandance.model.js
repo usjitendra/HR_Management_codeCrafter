@@ -65,6 +65,9 @@ const attandanceSchema = new Schema(
       type: Boolean,
       default: false, // optional
     },
+   leave:{
+        type:Boolean
+    },
   },
   {
     timestamps: true,
