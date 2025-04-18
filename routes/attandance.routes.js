@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { attandanceLogin,attandanceLogout,absent,employee_attendence, all_employee_aatendance,testApi,
-    getChartAttendance,getMonthalyDetail 
+    getChartAttendance,getMonthalyDetail,attendanceFilter
  } from "../controllers/attandance.controller.js";
 // import test from "node:test";
 
@@ -16,5 +16,6 @@ attandanceRoute.get("/all/detail",all_employee_aatendance)
 attandanceRoute.get("/test",testApi)
 attandanceRoute.get("/get/chart",getChartAttendance)
 attandanceRoute.get("/get/monthly/detail",getMonthalyDetail)
+attandanceRoute.get("/filter",attendanceFilter)
 
 export default attandanceRoute

@@ -115,13 +115,18 @@ const attandanceLogin = async (req, res, next) => {
     const twelvePM = new Date(now);
     twelvePM.setHours(12, 0, 0, 0);
     if (now < nineAM) {
-            return next(
-              new AppError("Too early to Check In. Try after 9:00 AM", 400)
-            );
-          }
-          if (now > twelveAM) {
-            return next(new AppError("Bhai, ghar nahi office hai! Check-in ka time nikal gaya.", 500));
-          }
+      return next(
+        new AppError("Too early to Check In. Try after 9:00 AM", 400)
+      );
+    }
+    if (now > twelvePM) {
+      return next(
+        new AppError(
+          "Bhai, ghar nahi office hai! Check-in ka time nikal gaya.",
+          500
+        )
+      );
+    }
     const todayAttendance = await AttandanceModel.findOne({
       employeeId: validEmployee._id,
       date: { $gte: startOfDay, $lt: endOfDay },
@@ -168,7 +173,6 @@ const attandanceLogin = async (req, res, next) => {
     return next(new AppError(error.message, 500));
   }
 };
-
 
 // const attandanceLogout = async (req, res, next) => {
 //   try {
@@ -259,8 +263,8 @@ const attandanceLogout = async (req, res, next) => {
     if (!todayAttendance.loginTime) {
       return next(new AppError("Employee is Not Logged In", 400));
     }
-      // console.log(todayAttendance);
-      // return
+    // console.log(todayAttendance);
+    // return
     if (todayAttendance.logoutTime) {
       return next(new AppError("Employee is Already Logged Out", 400));
     }
@@ -433,6 +437,7 @@ const getMonthalyDetail = async (req, res, next) => {
     const allData = {
       todayData: todayData,
       attandanceData: attandanceData,
+      employeedata: data,
     };
 
     return res.status(200).json({
@@ -445,6 +450,27 @@ const getMonthalyDetail = async (req, res, next) => {
   }
 };
 
+const attendanceFilter = async (req, res, next) => {
+  try {
+    const { startDate, endDate } = req.query;
+    console.log("Start Date:", startDate, "End Date:", endDate);
+
+    const data = await AttandanceModel.find({
+      createdAt: {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate),
+      },
+    }).populate("employeeId"); 
+    return res.status(200).json({
+      success: true,
+      count: data.length,
+      data,
+    });
+  } catch (err) {
+    return next(new AppError(err.message, 500));
+  }
+};
+
 export {
   attandanceLogin,
   attandanceLogout,
@@ -454,4 +480,5 @@ export {
   testApi,
   getChartAttendance,
   getMonthalyDetail,
+  attendanceFilter,
 };
