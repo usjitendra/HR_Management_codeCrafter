@@ -122,7 +122,7 @@ const attandanceLogin = async (req, res, next) => {
     if (now > twelvePM) {
       return next(
         new AppError(
-          "Bhai, ghar nahi office hai! Check-in ka time nikal gaya.",
+          "Hey! Check-in time is over. Let's be on time tomorrow!",
           500
         )
       );
@@ -452,15 +452,91 @@ const getMonthalyDetail = async (req, res, next) => {
 
 const attendanceFilter = async (req, res, next) => {
   try {
-    const { startDate, endDate } = req.query;
-    console.log("Start Date:", startDate, "End Date:", endDate);
+    const { range } = req.query;
+    // console.log("Range:", range);
 
-    const data = await AttandanceModel.find({
-      createdAt: {
-        $gte: new Date(startDate),
-        $lte: new Date(endDate),
+    let startDate, endDate;
+    const today = new Date();
+
+    today.setHours(0, 0, 0, 0);
+    const endOfToday = new Date(today);
+    endOfToday.setHours(23, 59, 59, 999);
+
+    switch (range) {
+      case "1": 
+        startDate = today;
+        endDate = endOfToday;
+        break;
+      case "7days":
+        startDate = new Date(today);
+        startDate.setDate(startDate.getDate() - 6);
+        endDate = endOfToday;
+        break;
+      case "3months":
+        startDate = new Date(today);
+        startDate.setMonth(startDate.getMonth() - 3);
+        endDate = endOfToday;
+        break;
+      case "6months":
+        startDate = new Date(today);
+        startDate.setMonth(startDate.getMonth() - 6);
+        endDate = endOfToday;
+        break;
+      case "all":
+      default:
+        startDate = new Date("2000-01-01");
+        endDate = endOfToday;
+    }
+
+    const data = await AttandanceModel.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gte: startDate,
+            $lte: endDate,
+          },
+        },
       },
-    }).populate("employeeId"); 
+      {
+        $lookup: {
+          from: "employees",
+          localField: "employeeId",
+          foreignField: "_id",
+          as: "employee",
+        },
+      },
+      {
+        $unwind: "$employee",
+      },
+      {
+        $project: {
+          employeeId: 1,
+          date: 1,
+          loginTime: 1,
+          logoutTime: 1,
+          locationIn: 1,
+          locationOut: 1,
+          totalWorkingHour: 1,
+          isHalfDay: 1,
+          isFullDay: 1,
+          status: 1,
+          reasonForLeave: 1,
+          ipAddress: 1,
+          deviceDetails: 1,
+          isLate: 1,
+          remark: 1,
+          workingHours: 1,
+          checkIn: 1,
+          leave: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          "employee.name": 1,
+          "employee.email": 1,
+          "employee.mobile": 1,
+        },
+      },
+    ]);
+
     return res.status(200).json({
       success: true,
       count: data.length,
@@ -470,6 +546,8 @@ const attendanceFilter = async (req, res, next) => {
     return next(new AppError(err.message, 500));
   }
 };
+
+
 
 export {
   attandanceLogin,

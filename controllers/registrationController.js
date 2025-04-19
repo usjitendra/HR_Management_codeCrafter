@@ -89,7 +89,7 @@ const login = async (req, res, next) => {
         const data={
             id: loginData._id,
                 email: loginData.email,
-                role: loginData.role,  
+                role:loginData.role,  
                 token:token
         }
 

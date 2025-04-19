@@ -130,7 +130,7 @@ const add_employee = async (req, res, next) => {
       name,
       email,
       password,
-      role,
+      role:"employee",
     });
       addEmp.registrationId=result._id;
        addEmp.save();
