@@ -1,7 +1,8 @@
 import AppError from "../util/appError.js";
 import leaveModel from "../models/leave.model.js";
 import employeModel from "../models/employeeModel.js";
-
+import jwt from 'jsonwebtoken';
+const key = process.env.JWT_SECRET;
 const applyLeave = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -112,4 +113,29 @@ const deleteLeave = async(req, res, next) => {
   }
 };
 
-export { applyLeave,getMyLeaves,approveLeave,deleteLeave,rejectLeave};
+const alldetail=async(req,res,next)=>{
+   try{
+    const token = req.cookies?.authToken; 
+    if (!token) {
+        return next(new AppError("Unauthorized: No token provided", 401));
+    }
+    const decoded = jwt.verify(token,key); 
+    if (!decoded) {
+        return next(new AppError("Token expired", 401));
+    }
+       const employeeData=await employeModel.findOne({registrationId:decoded.id})
+       const leaveData=await leaveModel.find({employeeId:employeeData._id}).sort({date:-1});
+       const data={
+          employeeData:{
+            name:employeeData.name,
+            id:employeeData._id,
+          },
+          leaveData:leaveData
+       }
+       res.status(200).json({success:true,data:data});
+   }catch(err){
+      return  next(new AppError(err.message,500));
+   }
+}
+
+export { applyLeave,getMyLeaves,approveLeave,deleteLeave,rejectLeave,alldetail};

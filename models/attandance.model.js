@@ -63,7 +63,7 @@ const attandanceSchema = new Schema(
     },
     checkIn: {
       type: Boolean,
-      default: false, // optional
+      default: false, 
     },
    leave:{
         type:Boolean

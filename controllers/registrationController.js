@@ -106,7 +106,7 @@ const login = async (req, res, next) => {
 
 const isLogin = async (req, res, next) => {
     try {
-        const token = req.cookies?.authToken; // Token from coo
+        const token = req.cookies?.authToken; 
         if (!token) {
             return next(new AppError("Unauthorized: No token provided", 401));
         }
