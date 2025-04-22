@@ -14,11 +14,11 @@ const leaveSchema=new Schema(
           enum:['Casual','Sick','Earned','Maternity','Paternity','unpaid'],
           require:true
        },
-       fromDate:{
+       startDate:{
         type:Date,
         require:true
        },
-       toDate:{
+       endDate:{
         type:Date,
         require:true
        },
@@ -32,7 +32,7 @@ const leaveSchema=new Schema(
           enum:['Pending','Approved','Rejected'],
           default:'Pending'
        },
-       adminDescription:{
+       description:{
         type:String
        },
        reviewedBy:{
@@ -42,6 +42,10 @@ const leaveSchema=new Schema(
        appliedAt:{
         type:Date,
          default:Date.now
+       },
+       breakDown:{
+         type:String,
+         enum:['full',"first_haf","second_haf"]
        },
        teast1:{
           type:String

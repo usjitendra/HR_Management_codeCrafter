@@ -6,26 +6,44 @@ const key = process.env.JWT_SECRET;
 const applyLeave = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { leaveType, fromDate, toDate, reason } = req.body;
+    //   console.log("id++",id);
+    //   console.log(req.body);
+    //  return
+    const {  breakDown,leaveType,  startDate,  endDate,  description } = req.body;
     const isValid = await employeModel.findById(id);
     if (!isValid) {
       return next(new AppError("Some error occured", 400));
     }
+    const existingLeave=await leaveModel.findOne({
+      employeeId:id,
+      $or:[
+        {
+          startDate:{$lte:new Date(endDate)},
+          endDate:{$gte:new Date(startDate)}
+        }
+      ]
+    }) 
+       console.log("aaaa",existingLeave);
+       
+     
+    if(existingLeave){
+       return next(new AppError("Leave all ready applay"));
+    }
     const newLeave = await leaveModel.create({
       employeeId: id,
       leaveType,
-      fromDate,
-      toDate,
-      reason,
+      startDate,
+      endDate,
+      description,
+      breakDown
     });
-
     //  return;
     await employeModel.findByIdAndUpdate(id, { leaveID: newLeave._id });
 
     return res
       .status(200)
       .json({
-        sucess: true,
+        success: true,
         message: "Leave Apply Successfully",
         leave: newLeave,
       });
@@ -124,7 +142,7 @@ const alldetail=async(req,res,next)=>{
         return next(new AppError("Token expired", 401));
     }
        const employeeData=await employeModel.findOne({registrationId:decoded.id})
-       const leaveData=await leaveModel.find({employeeId:employeeData._id}).sort({date:-1});
+       const leaveData=await leaveModel.find({employeeId:employeeData._id}).sort({ startDate: -1 })
        const data={
           employeeData:{
             name:employeeData.name,
@@ -138,4 +156,27 @@ const alldetail=async(req,res,next)=>{
    }
 }
 
-export { applyLeave,getMyLeaves,approveLeave,deleteLeave,rejectLeave,alldetail};
+const leaveEdit=async(req,res,next)=>{
+    try {
+           const {id}=req.params;
+          //  console.log("asas++++",id);
+          //  return;
+           
+           const {  breakDown,leaveType,  startDate,  endDate,  description } = req.body;
+           const response=await leaveModel.findByIdAndUpdate(id,{
+            breakDown,
+            leaveType,
+            startDate,
+            endDate,
+            description
+           })
+           if(response){
+            return res.status(200).json({success:true,message:"leave update Successfully"});
+           }
+
+    } catch (err) {
+        return next(new AppError(err.message,500));
+    }
+}
+
+export { applyLeave,getMyLeaves,approveLeave,deleteLeave,rejectLeave,alldetail,leaveEdit};
