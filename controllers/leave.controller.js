@@ -2,6 +2,7 @@ import AppError from "../util/appError.js";
 import leaveModel from "../models/leave.model.js";
 import employeModel from "../models/employeeModel.js";
 import jwt from 'jsonwebtoken';
+import { create } from "domain";
 const key = process.env.JWT_SECRET;
 const applyLeave = async (req, res, next) => {
   try {
@@ -146,6 +147,8 @@ const alldetail=async(req,res,next)=>{
        const data={
           employeeData:{
             name:employeeData.name,
+            mobile:employeeData.mobile,
+            email:employeeData.email,
             id:employeeData._id,
           },
           leaveData:leaveData
@@ -179,4 +182,23 @@ const leaveEdit=async(req,res,next)=>{
     }
 }
 
-export { applyLeave,getMyLeaves,approveLeave,deleteLeave,rejectLeave,alldetail,leaveEdit};
+
+
+const allEmployeeLeaveDetail = async (req, res, next) => {
+  try {
+    const leaveData = await leaveModel
+      .find()
+      .populate("employeeId", "name email mobile") // fixed: pass as string
+      .sort({ createdAt: -1 }); // latest leave on top
+
+    return res.status(200).json({
+      success: true,
+      data: leaveData,
+    });
+  } catch (err) {
+    return next(new AppError(err.message, 500));
+  }
+};
+
+
+export { applyLeave,getMyLeaves,approveLeave,deleteLeave,rejectLeave,alldetail,leaveEdit,allEmployeeLeaveDetail};
