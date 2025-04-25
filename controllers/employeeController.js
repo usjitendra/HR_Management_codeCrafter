@@ -44,8 +44,6 @@ import AttandanceModel from "../models/attandance.model.js";
 
 const add_employee = async (req, res, next) => {
   try {
-    // console.log(req.body);
-    // return;
     const {
       name,
       email,

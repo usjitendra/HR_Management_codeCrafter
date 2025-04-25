@@ -10,14 +10,14 @@ const employeeWorkInformationSchema = new Schema(
     department: {
       type: String,
     },
-    shiftInformation: {
+    shipInformation: {
       type: String,
       enum: ["InternShip", "Permanent"],
     },
-    reportingManger: {
+    employeeType: {
       type: String,
     },
-    workLocation: {
+    company: {
       type: String,
     },
     jobPosition: {
@@ -36,9 +36,12 @@ const employeeWorkInformationSchema = new Schema(
     joiningDate: {
       type: Date, 
     },
-    tags: {
+    reportingManager: {
       type: String,
     },
+    workLocation:{
+      type:String
+    }
   },
   {
     timestamps: true,
