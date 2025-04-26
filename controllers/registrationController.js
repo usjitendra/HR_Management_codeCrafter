@@ -80,7 +80,7 @@ const login = async (req, res, next) => {
          const token=await generate_Token(loginData);
          await registrationModel.findByIdAndUpdate(loginData._id, { token });
          res.cookie("authToken", token, {
-            httpOnly: false,  
+            httpOnly: true,  
             secure: true, 
             sameSite: "none", 
             maxAge: 7 * 24 * 60 * 60 * 1000 
@@ -137,9 +137,9 @@ const logout=async(req,res,next)=>{
     try{
           res.clearCookie("authToken",{
             path:"/",
-            httpOnly:"true",
-            secure:false,
-            sameSite:"lax"
+            httpOnly:true,
+            secure:true,
+            sameSite:"none"
           });
           req.session?.destroy();
           res.status(200).json({message:"Logout Successfully",});
