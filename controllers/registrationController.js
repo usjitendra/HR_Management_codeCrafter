@@ -151,8 +151,4 @@ const logout=async(req,res,next)=>{
 
 
 
-
-
-
-
 export  {registration,login,isLogin,logout}

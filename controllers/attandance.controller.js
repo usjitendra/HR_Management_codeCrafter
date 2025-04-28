@@ -6,6 +6,7 @@ import { start } from "repl";
 import { allData } from "./employee.work.controller.js";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
+import leaveModel from "../models/leave.model.js";
 const key = process.env.JWT_SECRET;
 //***if employee id commimh then  */
 
@@ -97,9 +98,32 @@ const attandanceLogin = async (req, res, next) => {
     if (!validEmployee) {
       return next(new AppError("Employee is Not Valid", 400));
     }
-
+    const leaveData = await leaveModel.find({ employeeId: validEmployee._id });
+    console.log("aaj ka leave", leaveData);
+    
     const now = new Date();
-
+    now.setHours(0, 0, 0, 0);  
+    
+   
+    const todayLeave = leaveData.some((leave) => {
+      const leaveStartDate = new Date(leave.startDate);
+      const leaveEndDate = new Date(leave.endDate);
+    
+    
+      leaveStartDate.setHours(0, 0, 0, 0);
+      leaveEndDate.setHours(0, 0, 0, 0);
+    
+      return (
+        leave.status === "Approved" &&
+        now >= leaveStartDate &&
+        now <= leaveEndDate
+      );
+    });
+    
+    if (todayLeave) {
+      return next(new AppError("You have an approved leave today", 400));
+    }
+        
     const startOfDay = new Date(now);
     startOfDay.setHours(0, 0, 0, 0);
 
@@ -127,6 +151,7 @@ const attandanceLogin = async (req, res, next) => {
         )
       );
     }
+     
     const todayAttendance = await AttandanceModel.findOne({
       employeeId: validEmployee._id,
       date: { $gte: startOfDay, $lt: endOfDay },

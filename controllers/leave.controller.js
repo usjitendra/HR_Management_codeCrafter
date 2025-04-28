@@ -73,8 +73,8 @@ const getMyLeaves = async(req, res, next) => {
 const approveLeave = async(req, res, next) => {
   try {
      const{id}=req.params;
-      console.log("aaaa")
-    //   return;
+      // console.log("aaaa",id)
+      // return;
      const {adminDescription}=req.body
        const response=await leaveModel.findById(id);
        if(!response){
@@ -96,6 +96,8 @@ const approveLeave = async(req, res, next) => {
 const rejectLeave = async(req, res, next) => {
   try {
       const {id}=req.params;
+      // console.log("reject leave",id);
+      // return;
       const{adminDescription}=req.body;
       const response=await leaveModel.findById(id)
        if(!response){
@@ -171,7 +173,8 @@ const leaveEdit=async(req,res,next)=>{
             leaveType,
             startDate,
             endDate,
-            description
+            description,
+            status:"Pending",
            })
            if(response){
             return res.status(200).json({success:true,message:"leave update Successfully"});
@@ -200,5 +203,18 @@ const allEmployeeLeaveDetail = async (req, res, next) => {
   }
 };
 
+const allLeave = async (req, res, next) => {
+  try {
+    const data = await leaveModel.find().sort({ createdAt: -1 });
+    if (!data) {
+      return next(new AppError("Leave data not found", 400));
+    }
+    return res.status(200).json({ success: true, data: data })
+  } catch (err) {
+    return next(new AppError(err.message, 500));
+  }
+};
 
-export { applyLeave,getMyLeaves,approveLeave,deleteLeave,rejectLeave,alldetail,leaveEdit,allEmployeeLeaveDetail};
+
+
+export { applyLeave,getMyLeaves,approveLeave,deleteLeave,rejectLeave,alldetail,leaveEdit,allEmployeeLeaveDetail,allLeave};
