@@ -28,7 +28,7 @@ const registration=async(req,res,next)=>{
                 mobile,
                 role,
             })
-            return res.status(200).json({message:"User Registration Successfully",data:user});
+            return res.status(200).json({success:true, message:"User Registration Successfully",data:user});
             
     }catch(err){
         return next(new AppError(err.message,500))
@@ -142,7 +142,7 @@ const logout=async(req,res,next)=>{
             sameSite:"none"
           });
           req.session?.destroy();
-          res.status(200).json({message:"Logout Successfully",});
+          res.status(200).json({success:true, message:"Logout Successfully",});
     }catch(err){
         return next(new AppError("Internal server error",500))
     }

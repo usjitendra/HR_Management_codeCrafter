@@ -239,27 +239,27 @@ const employee_update = async (req, res, next) => {
 const all_employee = async (req, res, next) => {
   try {
     const all_data = await employeModel.find();
-    if (all_data) {
-      return res.status(200).json({ message: "Success", data: all_data });
-    } else {
-      return res.status(500).json({ message: "Data not foun" });
-    }
+    return res.status(200).json({
+      success: true,
+      message: "Success",
+      data: all_data
+    });
+
   } catch (err) {
-    return next(new AppError(err.message, 500));
+    next(new AppError(err.message, 500));
   }
 };
 
 const employee_Delete = async (req, res, next) => {
   try {
     const id = req.params.id;
-    //  return console.log("ye h id",id);
     const result = await employeModel.findByIdAndDelete(id);
     if (result) {
       return res
         .status(200)
-        .json({ message: "Employee delete successfully", success: true });
+        .json({success: true , message: "Employee delete successfully" });
     } else {
-      return next(new AppError("Record not found", 500));
+      return next(new AppError("Record not found", 404));
     }
   } catch (err) {
     return next(new AppError(err.message, 500));

@@ -24,7 +24,7 @@ const applyLeave = async (req, res, next) => {
         }
       ]
     }) 
-       console.log("aaaa",existingLeave);
+      //  console.log("aaaa",existingLeave);
        
      
     if(existingLeave){

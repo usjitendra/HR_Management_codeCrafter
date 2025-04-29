@@ -340,7 +340,7 @@ const absent = async (req, res, next) => {
     if (result) {
       return res
         .status(200)
-        .json({ status: true, message: "Absent Successfull" });
+        .json({ success: true, message: "Absent Successfull" });
     }
   } catch (err) {
     return next(new AppError(err.message, 400));
