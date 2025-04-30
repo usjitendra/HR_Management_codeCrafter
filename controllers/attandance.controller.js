@@ -101,10 +101,9 @@ const attandanceLogin = async (req, res, next) => {
     const leaveData = await leaveModel.find({ employeeId: validEmployee._id });
     console.log("aaj ka leave", leaveData);
     
-    const now = new Date();
+    let now = new Date();
     now.setHours(0, 0, 0, 0);  
     
-   
     const todayLeave = leaveData.some((leave) => {
       const leaveStartDate = new Date(leave.startDate);
       const leaveEndDate = new Date(leave.endDate);
@@ -137,6 +136,7 @@ const attandanceLogin = async (req, res, next) => {
     tenAM.setHours(10, 0, 0, 0);
 
     const twelvePM = new Date(now);
+    now = new Date();
     twelvePM.setHours(12, 0, 0, 0);
     if (now < nineAM) {
       return next(

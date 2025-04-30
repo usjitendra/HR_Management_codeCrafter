@@ -138,10 +138,11 @@ const add_employee = async (req, res, next) => {
       data: addEmp,
     });
   } catch (err) {
-    console.error(err);
-    next(new AppError(err.message, 500));
+    console.error(err.message); 
+    return next(new AppError(err.message, 500));
   }
 };
+
 
 const employee_update = async (req, res, next) => {
   try {
@@ -253,18 +254,21 @@ const all_employee = async (req, res, next) => {
 const employee_Delete = async (req, res, next) => {
   try {
     const id = req.params.id;
-    const result = await employeModel.findByIdAndDelete(id);
-    if (result) {
-      return res
-        .status(200)
-        .json({success: true , message: "Employee delete successfully" });
-    } else {
-      return next(new AppError("Record not found", 404));
+    const employee = await employeModel.findByIdAndDelete(id);
+           
+    if (!employee) {
+      return next(new AppError("Employee not found", 404));
     }
+    const result = await registrationModel.findByIdAndDelete(employee.registrationId);
+    return res
+      .status(200)
+      .json({ success: true, message: "Employee deleted successfully" });
+
   } catch (err) {
     return next(new AppError(err.message, 500));
   }
 };
+
 
 const registration_employee = async (req, res, next) => {
   try {
