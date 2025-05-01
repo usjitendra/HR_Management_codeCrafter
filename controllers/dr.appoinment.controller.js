@@ -1,3 +1,4 @@
+import { log } from "console";
 import AppointmentModel from "../models/dr.appointment.model.js";
 import AppError from "../util/appError.js";
 
@@ -12,29 +13,17 @@ const createAppointment = async (req, res, next) => {
     const requestedTime = new Date(dateTime); 
     const now = new Date(); 
 
-    const isToday =
-      requestedTime.getDate() === now.getDate() &&
-      requestedTime.getMonth() === now.getMonth() &&
-      requestedTime.getFullYear() === now.getFullYear();
-
-    if (!isToday) {
-      return next(new AppError("Only today's appointments are allowed", 400));
-    }
-
-
     if (requestedTime <= now) {
       return next(new AppError("Past time slot not allowed", 400));
     }
 
-   
     const minutes = requestedTime.getMinutes();
-    if (minutes % 20 !== 0) {
-      return next(
-        new AppError("Time must be a 20-minute slot (e.g., 1:20, 1:40)", 400)
-      );
-    }
+    // if (minutes % 20 !== 0) {
+    //   return next(
+    //     new AppError("Time must be a 20-minute slot (e.g., 1:20, 1:40)", 400)
+    //   );
+    // }
 
-  
     const existing = await AppointmentModel.findOne({
       dateTime: requestedTime,
     });
@@ -43,13 +32,11 @@ const createAppointment = async (req, res, next) => {
       return next(new AppError("This time slot is already booked", 409));
     }
 
-  
     const newAppointment = await AppointmentModel.create({
       patientName,
       dateTime: requestedTime,
     });
 
-    
     res.status(201).json({
       success: true,
       message: "Appointment booked successfully",
