@@ -7,6 +7,7 @@ import jwt from 'jsonwebtoken';
 
 import {generate_Token,token_validate} from '../middlewares/auth.js'
 import path from "path";
+import employeModel from "../models/employeeModel.js";
 
 const registration=async(req,res,next)=>{
     try{
@@ -79,6 +80,8 @@ const login = async (req, res, next) => {
         }
          const token=await generate_Token(loginData);
          await registrationModel.findByIdAndUpdate(loginData._id, { token });
+         const employeeeData=await employeModel.findOne({registrationId:loginData.id})
+         console.log(employeeeData);
          res.cookie("authToken", token, {
             httpOnly: true,  
             secure: true, 
@@ -96,7 +99,8 @@ const login = async (req, res, next) => {
         res.status(200).json({
             success:true,
             message:"login",
-            data
+            data,
+             employeeeData:employeeeData
             })
 
     } catch (err) {
