@@ -14,6 +14,8 @@ import bank from "./routes/bank.routes.js";
 import work from "./routes/employee.work.routes.js"
 import policy from "./routes/policy.js"
 import leave from "./routes/leave.routes.js";
+import drappointment from "./routes/dr.appointment.routes.js";
+
 import './middlewares/employee.attendance.cron.job.js'
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -53,7 +55,7 @@ app.use('/api/v1/employee/bank',bank)
 app.use('/api/v1/employee/work',work)
 app.use('/api/v1/plocy',policy)
 app.use('/api/v1/leave',leave)
-// app.use('/api/v1/leave',DrAppoimeny)
+app.use('/api/v1/appointment',drappointment)
 
 
 

@@ -1,0 +1,77 @@
+import AppointmentModel from "../models/dr.appointment.model.js";
+import AppError from "../util/appError.js";
+
+const createAppointment = async (req, res, next) => {
+  try {
+    const { patientName, dateTime } = req.body;
+
+    if (!patientName || !dateTime) {
+      return next(new AppError("Patient name and date/time required", 400));
+    }
+
+    const requestedTime = new Date(dateTime); 
+    const now = new Date(); 
+
+    const isToday =
+      requestedTime.getDate() === now.getDate() &&
+      requestedTime.getMonth() === now.getMonth() &&
+      requestedTime.getFullYear() === now.getFullYear();
+
+    if (!isToday) {
+      return next(new AppError("Only today's appointments are allowed", 400));
+    }
+
+
+    if (requestedTime <= now) {
+      return next(new AppError("Past time slot not allowed", 400));
+    }
+
+   
+    const minutes = requestedTime.getMinutes();
+    if (minutes % 20 !== 0) {
+      return next(
+        new AppError("Time must be a 20-minute slot (e.g., 1:20, 1:40)", 400)
+      );
+    }
+
+  
+    const existing = await AppointmentModel.findOne({
+      dateTime: requestedTime,
+    });
+
+    if (existing) {
+      return next(new AppError("This time slot is already booked", 409));
+    }
+
+  
+    const newAppointment = await AppointmentModel.create({
+      patientName,
+      dateTime: requestedTime,
+    });
+
+    
+    res.status(201).json({
+      success: true,
+      message: "Appointment booked successfully",
+      data: newAppointment,
+    });
+  } catch (err) {
+    return next(new AppError(err.message, 500));
+  }
+};
+
+const getAllAppointments = async (req, res, next) => {
+  try {
+    const appointments = await AppointmentModel.find();
+
+    res.status(200).json({
+      success: true,
+      message: "Appointments fetched successfully",
+      data: appointments,
+    });
+  } catch (err) {
+    return next(new AppError(err.message, 500));
+  }
+};
+
+export { createAppointment, getAllAppointments };

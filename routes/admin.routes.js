@@ -10,7 +10,7 @@ const upload = multer();
 
 
 adminroutes.post("/registration",upload.single("image"),registration);
-adminroutes.post("/login", login);
+adminroutes.post("/login",login);
 adminroutes.get("/isLogin", isLogin);
 adminroutes.post("/logout", logout);
 

@@ -81,7 +81,7 @@ const login = async (req, res, next) => {
          const token=await generate_Token(loginData);
          await registrationModel.findByIdAndUpdate(loginData._id, { token });
          const employeeeData=await employeModel.findOne({registrationId:loginData.id})
-         console.log(employeeeData);
+        //  console.log(employeeeData);
          res.cookie("authToken", token, {
             httpOnly: true,  
             secure: true, 
