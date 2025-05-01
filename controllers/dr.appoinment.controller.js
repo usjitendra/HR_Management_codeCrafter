@@ -18,11 +18,11 @@ const createAppointment = async (req, res, next) => {
     }
 
     const minutes = requestedTime.getMinutes();
-    // if (minutes % 20 !== 0) {
-    //   return next(
-    //     new AppError("Time must be a 20-minute slot (e.g., 1:20, 1:40)", 400)
-    //   );
-    // }
+    if (minutes % 20 !== 0) {
+      return next(
+        new AppError("Please select correct slot", 400)
+      );
+    }
 
     const existing = await AppointmentModel.findOne({
       dateTime: requestedTime,
