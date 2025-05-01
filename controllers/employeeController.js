@@ -147,6 +147,14 @@ const add_employee = async (req, res, next) => {
 const employee_update = async (req, res, next) => {
   try {
     const { id } = req.params;
+     console.log("jite+++");
+    //  return;
+     
+    const existingEmployee = await employeModel.findById(id);
+    if (!existingEmployee) {
+      return next(new AppError("Employee not found", 404));
+    }
+
     const {
       name,
       email,
@@ -164,10 +172,10 @@ const employee_update = async (req, res, next) => {
       children,
       emergencyContact,
       role,
-      password,
+      password, 
     } = req.body;
 
-    const newEmpData = {
+    const updatedData = {
       name,
       email,
       workEmail,
@@ -184,7 +192,7 @@ const employee_update = async (req, res, next) => {
       children,
       emergencyContact,
       role,
-      password,
+      password:""
     };
 
     const files = req.files;
@@ -193,49 +201,61 @@ const employee_update = async (req, res, next) => {
       const result = await cloudinary.v2.uploader.upload(files.photo[0].path, {
         folder: "EmployeePhoto",
       });
-      newEmpData.employeeImage = {
+      updatedData.employeeImage = {
         public_id: result.public_id,
         secure_url: result.secure_url,
       };
     }
 
-    // Upload ID Card
     if (files?.idCard) {
       const result = await cloudinary.v2.uploader.upload(files.idCard[0].path, {
         folder: "EmployeeIDCard",
       });
-      newEmpData.employeeIdCard = {
+      updatedData.employeeIdCard = {
         public_id: result.public_id,
         secure_url: result.secure_url,
       };
     }
 
-    // Upload Document
     if (files?.document) {
-      const result = await cloudinary.v2.uploader.upload(
-        files.document[0].path,
-        {
-          folder: "EmployeeDocument",
-        }
-      );
-      newEmpData.employeeDocument = {
+      const result = await cloudinary.v2.uploader.upload(files.document[0].path, {
+        folder: "EmployeeDocument",
+      });
+      updatedData.employeeDocument = {
         public_id: result.public_id,
         secure_url: result.secure_url,
       };
     }
-    const addEmp = await employeModel.findByIdAndUpdate(id, newEmpData, {
+
+    if (existingEmployee.registrationId) {
+      const regUpdate = {
+        name,
+        email,
+        password,
+      };
+     
+      await registrationModel.findByIdAndUpdate(existingEmployee.registrationId, regUpdate, {
+        new: true,
+        runValidators: true,
+      });
+    }
+
+    const updatedEmployee = await employeModel.findByIdAndUpdate(id, updatedData, {
       new: true,
+      runValidators: true,
     });
 
     res.status(200).json({
       success: true,
-      message: "Employee update successfully",
-      data: addEmp,
+      message: "Employee and registration updated successfully",
+      data: updatedEmployee,
     });
   } catch (err) {
-    next(new AppError(err.message, 500));
+    console.error(err.message);
+    return next(new AppError(err.message, 500));
   }
 };
+
 
 const all_employee = async (req, res, next) => {
   try {
