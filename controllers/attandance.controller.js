@@ -158,15 +158,15 @@ const attandanceLogin = async (req, res, next) => {
      if (istNow < nineAMIST) {
        return next(new AppError("123 bad me aana", 400));
      }
-     
-    if (newnow > twelvePM) {
-      return next(
-        new AppError(
-          "Hey! Check-in time is over. Let's be on time tomorrow!",
-          500
-        )
-      );
-    }
+
+    // if (newnow > twelvePM) {
+    //   return next(
+    //     new AppError(
+    //       "Hey! Check-in time is over. Let's be on time tomorrow!",
+    //       500
+    //     )
+    //   );
+    // }
      
     const todayAttendance = await AttandanceModel.findOne({
       employeeId: validEmployee._id,
