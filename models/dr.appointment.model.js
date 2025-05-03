@@ -11,7 +11,7 @@ const appointmentSchema = new Schema({
     required: true,
     unique: true, 
   },
-  mobile: {
+  phoneNumber: {
     type: String,
   },
   gender: {
@@ -21,6 +21,9 @@ const appointmentSchema = new Schema({
   purpose: {
     type: String,
   },
+  address:{
+    type:String,
+  }
 
 });
 

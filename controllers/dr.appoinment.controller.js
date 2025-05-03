@@ -4,7 +4,7 @@ import AppError from "../util/appError.js";
 
 const createAppointment = async (req, res, next) => {
   try {
-    const { patientName, dateTime } = req.body;
+    const { patientName,phoneNumber,gender,purpose, dateTime,address } = req.body;
 
     if (!patientName || !dateTime) {
       return next(new AppError("Patient name and date/time required", 400));
@@ -13,6 +13,9 @@ const createAppointment = async (req, res, next) => {
     const requestedTime = new Date(dateTime); 
     const now = new Date(); 
 
+     console.log(requestedTime);
+     console.log("abhi vala h ",now);
+     
     if (requestedTime <= now) {
       return next(new AppError("Past time slot not allowed", 400));
     }
@@ -35,6 +38,10 @@ const createAppointment = async (req, res, next) => {
     const newAppointment = await AppointmentModel.create({
       patientName,
       dateTime: requestedTime,
+      phoneNumber,
+      gender,
+      purpose,
+      address
     });
 
     res.status(201).json({

@@ -113,7 +113,7 @@ const isLogin = async (req, res, next) => {
           
         const token = req.cookies?.authToken; 
         if (!token) {
-            return next(new AppError("Unauthorized: No token provided", 401));
+            return next(new AppError("", 401));
         }
         const decoded = jwt.verify(token,key); 
         if (!decoded) {

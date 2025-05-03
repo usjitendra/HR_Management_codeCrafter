@@ -279,7 +279,8 @@ const employee_Delete = async (req, res, next) => {
     if (!employee) {
       return next(new AppError("Employee not found", 404));
     }
-    const result = await registrationModel.findByIdAndDelete(employee.registrationId);
+    const result = await registrationModel.findByIdAndDelete(employee.registrationId); 
+                  // await 
     return res
       .status(200)
       .json({ success: true, message: "Employee deleted successfully" });
