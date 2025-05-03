@@ -138,19 +138,19 @@ const attandanceLogin = async (req, res, next) => {
     const twelvePM = new Date(now);
     let newnow = new Date();
     twelvePM.setHours(12, 0, 0, 0);
-    if (newnow < nineAM) {
-      return next(
-        new AppError("Too early to Check In. Try after 9:00 AM", 400)
-      );
-    }
-    if (newnow > twelvePM) {
-      return next(
-        new AppError(
-          "Hey! Check-in time is over. Let's be on time tomorrow!",
-          500
-        )
-      );
-    }
+    // if (newnow < nineAM) {
+    //   return next(
+    //     new AppError("Too early to Check In. Try after 9:00 AM", 400)
+    //   );
+    // }
+    // if (newnow > twelvePM) {
+    //   return next(
+    //     new AppError(
+    //       "Hey! Check-in time is over. Let's be on time tomorrow!",
+    //       500
+    //     )
+    //   );
+    // }
      
     const todayAttendance = await AttandanceModel.findOne({
       employeeId: validEmployee._id,
