@@ -140,12 +140,25 @@ const attandanceLogin = async (req, res, next) => {
      console.log("aaa+++",newnow);
      console.log("(9 AM++",nineAM);
      
-    twelvePM.setHours(12, 0, 0, 0);
-    if (newnow < nineAM) {
-      return next(
-        new AppError("123", 400)
-      );
-    }
+      now = new Date();
+     const istOffset = 5.5 * 60 * 60 * 1000; // IST = UTC + 5:30
+     const istNow = new Date(now.getTime() + istOffset);
+     
+     console.log("IST Now:", istNow);
+     
+     // 9 AM IST set karna
+     const nineAMIST = new Date(istNow);
+     nineAMIST.setHours(9, 0, 0, 0);
+     
+     // 12 PM IST set karna
+     const twelvePMIST = new Date(istNow);
+     twelvePMIST.setHours(12, 0, 0, 0);
+     
+     // Check condition
+     if (istNow < nineAMIST) {
+       return next(new AppError("123 bad me aana", 400));
+     }
+     
     if (newnow > twelvePM) {
       return next(
         new AppError(
