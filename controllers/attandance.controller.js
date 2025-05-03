@@ -136,14 +136,14 @@ const attandanceLogin = async (req, res, next) => {
     tenAM.setHours(10, 0, 0, 0);
 
     const twelvePM = new Date(now);
-    now = new Date();
+    let newnow = new Date();
     twelvePM.setHours(12, 0, 0, 0);
-    if (now < nineAM) {
+    if (newnow < nineAM) {
       return next(
         new AppError("Too early to Check In. Try after 9:00 AM", 400)
       );
     }
-    if (now > twelvePM) {
+    if (newnow > twelvePM) {
       return next(
         new AppError(
           "Hey! Check-in time is over. Let's be on time tomorrow!",
@@ -164,9 +164,9 @@ const attandanceLogin = async (req, res, next) => {
     let isFullDay = false;
     let isHalfDay = false;
 
-    if (now >= nineAM && now <= tenAM) {
+    if (newnow >= nineAM && newnow <= tenAM) {
       isFullDay = true;
-    } else if (now > tenAM && now <= twelvePM) {
+    } else if (newnow > tenAM && newnow <= twelvePM) {
       isHalfDay = true;
     }
 
@@ -178,8 +178,8 @@ const attandanceLogin = async (req, res, next) => {
       {
         $set: {
           employeeId: validEmployee._id,
-          loginTime: now,
-          date: now,
+          loginTime: newnow,
+          date: newnow,
           status: "present",
           isFullDay,
           isHalfDay,
