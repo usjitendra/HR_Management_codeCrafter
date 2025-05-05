@@ -27,7 +27,7 @@ const app=express();
 dotenv.config();
 
 app.use(cors({
-  origin: ["http://localhost:5173","http://localhost:3000","https://hrms112.netlify.app"], 
+  origin: ["http://localhost:5173","http://localhost:3000","https://hrms112.netlify.app","https://dr-monika.netlify.app"], 
   credentials: true,
 }));
 
