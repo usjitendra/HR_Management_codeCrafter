@@ -57,7 +57,7 @@ const work_Add = async (req, res, next) => {
     const { id } = req.params;
     const {
       department,
-      shipInformation,
+      shiftInformation ,
       employeeType,
       company,
       jobPosition,
@@ -75,7 +75,7 @@ const work_Add = async (req, res, next) => {
       { employeeId: id },
       {
         department,
-        shipInformation,
+        shiftInformation ,
         employeeType,
         company,
         jobPosition,
@@ -106,7 +106,7 @@ const worka_update = async (req, res, next) => {
     const { id } = req.params;
     const {
       department,
-      shipInformation,
+      shiftInformation,
       employeeType,
       company,
       jobPosition,
@@ -121,7 +121,7 @@ const worka_update = async (req, res, next) => {
       { employeeId: id },
       {
         department,
-        shipInformation,
+        shiftInformation,
         employeeType,
         company,
         jobPosition,
@@ -176,6 +176,7 @@ const getWork = async (req, res, next) => {
     return next(new AppError(err.message, 500));
   }
 };
+
 
 const allData = async (req, res, next) => {
   try {

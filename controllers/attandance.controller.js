@@ -99,7 +99,6 @@ const attandanceLogin = async (req, res, next) => {
       return next(new AppError("Employee is Not Valid", 400));
     }
     const leaveData = await leaveModel.find({ employeeId: validEmployee._id });
-    console.log("aaj ka leave", leaveData);
     
     let now = new Date();
     now.setHours(0, 0, 0, 0);  
@@ -137,22 +136,19 @@ const attandanceLogin = async (req, res, next) => {
 
     const twelvePM = new Date(now);
     let newnow = new Date();
-     console.log("aaa+++",newnow);
-     console.log("(9 AM++",nineAM);
      
       now = new Date();
      const istOffset = 5.5 * 60 * 60 * 1000; // IST = UTC + 5:30
      const istNow = new Date(now.getTime() + istOffset);
      
-     console.log("IST Now:", istNow);
      
      // 9 AM IST set karna
      const nineAMIST = new Date(istNow);
      nineAMIST.setHours(9, 0, 0, 0);
      
      // 12 PM IST set karna
-     const twelvePMIST = new Date(istNow);
-     twelvePMIST.setHours(12, 0, 0, 0);
+     const threePM = new Date(istNow);
+     threePM.setHours(15, 0, 0, 0);
      
      // Check condition
      if (istNow < nineAMIST) {
@@ -180,12 +176,15 @@ const attandanceLogin = async (req, res, next) => {
     let isFullDay = false;
     let isHalfDay = false;
 
-    if (istNow >= nineAM && istNow <= tenAM) {
+     console.log("mai aa gaya ");
+    //  if (istNow >= nineAM && istNow <= tenAM) {
       isFullDay = true;
-    } else if (istNow > tenAM && istNow <= twelvePM) {
+    // } else if (istNow > tenAM && istNow <= threePM) {
+      console.log("bhai aanadr hu+++ 12 ke ");
       isHalfDay = true;
-    }
-
+    // }
+    
+  //  return
     const addEmployee = await AttandanceModel.findOneAndUpdate(
       {
         employeeId: validEmployee._id,
@@ -304,7 +303,6 @@ const attandanceLogout = async (req, res, next) => {
     if (!todayAttendance.loginTime) {
       return next(new AppError("Employee is Not Logged In", 400));
     }
-    // console.log(todayAttendance);
     // return
     if (todayAttendance.logoutTime) {
       return next(new AppError("Employee is Already Logged Out", 400));
