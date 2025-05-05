@@ -172,6 +172,7 @@ const getWork = async (req, res, next) => {
     if (result) {
       return res.status(200).json({ success: true, data: result });
     }
+      return next(new AppError("Recod not found",404))
   } catch (err) {
     return next(new AppError(err.message, 500));
   }

@@ -131,7 +131,7 @@ const get_bank_detail=async(req,res,next)=>{
          if(result){
             return res.status(200).json({success:true,message:"succes",result})
          }
-         return next(new AppError("Detail Not Found",400));
+         // return next(new AppError("De",400));
          
    }catch(err){
     return next(new AppError(err.message,500))
@@ -146,7 +146,7 @@ const getOneData=async(req,res,next)=>{
          if(result){
             return res.status(200).json({success:true,data:result})
          }else{
-            return next(new AppError("Data not found",404 ));
+            // return next(new AppError("Data not found",404 ));
          }
    }catch(err){
     return next(new AppError(err.message,500))

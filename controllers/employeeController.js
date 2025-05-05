@@ -247,7 +247,7 @@ const employee_update = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      message: "Employee and registration updated successfully",
+      message: "Updated successfully",
       data: updatedEmployee,
     });
   } catch (err) {

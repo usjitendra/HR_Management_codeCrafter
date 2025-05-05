@@ -10,7 +10,7 @@ const employeeWorkInformationSchema = new Schema(
     department: {
       type: String,
     },
-    shiftInformation : {
+    shiftInformation: {
       type: String,
       enum: ["InternShip", "Permanent"],
     },
