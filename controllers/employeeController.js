@@ -152,7 +152,7 @@ const employee_update = async (req, res, next) => {
      
     const existingEmployee = await employeModel.findById(id);
     if (!existingEmployee) {
-      return next(new AppError("Employee not found", 404));
+      return next(new AppError("", 404));
     }
 
     const {
@@ -277,7 +277,7 @@ const employee_Delete = async (req, res, next) => {
     const employee = await employeModel.findByIdAndDelete(id);
            
     if (!employee) {
-      return next(new AppError("Employee not found", 404));
+      return next(new AppError("", 404));
     }
     const result = await registrationModel.findByIdAndDelete(employee.registrationId); 
                   // await 
@@ -366,7 +366,7 @@ const oneEmployee = async (req, res, next) => {
     if (data) {
       return res.status(200).json({ success: true, message: "success", data });
     } else {
-      return next(new AppError("employee not found", 400));
+      return next(new AppError("success", 400));
     }
   } catch (err) {
     return next(new AppError(err.message, 500));
@@ -404,7 +404,7 @@ const employee_profile=async(req,res,next)=>{
      
     const token = req.cookies?.authToken; // Token from coo\
     if (!token) {
-      return next(new AppError("Unauthorized: No token provided", 401));
+      return next(new AppError("", 401));
     }
     const decoded = jwt.verify(token,key); 
     
@@ -424,7 +424,7 @@ const employee_profile=async(req,res,next)=>{
         data:alldata
     })
 } catch (err) {
-    return next(new AppError(err.message, 401));
+    return next(new AppError("success", 401));
 }
 }
 

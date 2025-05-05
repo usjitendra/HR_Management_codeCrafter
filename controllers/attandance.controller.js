@@ -180,9 +180,9 @@ const attandanceLogin = async (req, res, next) => {
     let isFullDay = false;
     let isHalfDay = false;
 
-    if (newnow >= nineAM && newnow <= tenAM) {
+    if (istNow >= nineAM && istNow <= tenAM) {
       isFullDay = true;
-    } else if (newnow > tenAM && newnow <= twelvePM) {
+    } else if (istNow > tenAM && istNow <= twelvePM) {
       isHalfDay = true;
     }
 
@@ -378,7 +378,7 @@ const employee_attendence = async (req, res, next) => {
         .status(200)
         .json({ success: true, message: "Employee show Detail", data });
     } else {
-      return next(new AppError("Employee not found", 400));
+      return next(new AppError("", 400));
     }
   } catch (err) {
     return next(new AppError(err.message, 500));
@@ -462,7 +462,7 @@ const getMonthalyDetail = async (req, res, next) => {
     const data = await employeModel.find({ registrationId: decoded.id });
 
     if (!data || data.length === 0) {
-      return next(new AppError("Employee not found", 404));
+      return next(new AppError("success", 404));
     }
 
     const attandanceData = await AttandanceModel.find({
