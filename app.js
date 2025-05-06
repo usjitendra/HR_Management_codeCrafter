@@ -53,7 +53,7 @@ app.use('/api/v1/employee',employee)
 app.use("/api/v1/employee/attendance",attandance)
 app.use('/api/v1/employee/bank',bank)
 app.use('/api/v1/employee/work',work)
-app.use('/api/v1/plocy',policy)
+app.use('/api/v1/policy',policy)
 app.use('/api/v1/leave',leave)
 app.use('/api/v1/appointment',drappointment)
 
