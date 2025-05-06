@@ -12,9 +12,6 @@ const createAppointment = async (req, res, next) => {
 
     const requestedTime = new Date(dateTime); 
     const now = new Date(); 
-
-     console.log(requestedTime);
-     console.log("abhi vala h ",now);
      
     if (requestedTime <= now) {
       return next(new AppError("Past time slot not allowed", 400));

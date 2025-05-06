@@ -68,7 +68,7 @@ app.use(errorMiddleware)
 
 
 const PORT=process.env.PORT||6000;
-console.log(PORT);
+
 
 app.listen(PORT,async()=>{
     await dbConnection()

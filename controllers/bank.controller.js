@@ -19,7 +19,7 @@ import employeeBankModel from '../models/employee.bank.model.js';
 //              if(result){
 //                 return res.status(200).json({success:true,message:"Bank Detail Add",result});
 //              }
-//              return next(new AppError("Some Error Accured",400));
+//              return next(new AppError("Some Error Occurred",400));
 
 //     }catch(err){
 //        return next(new AppError(err.message,500));
@@ -68,7 +68,7 @@ const add_bank = async (req, res, next) => {
          country,
       });
    }
-   //   console.log(existingBankDetail)
+
    await employeModel.findByIdAndUpdate(id,{bankId:data._id});
     
      return res.status(200).json({
@@ -97,7 +97,7 @@ const update_bank_detail=async(req,res,next)=>{
             if(result){
                return res.status(200).json({success:true,message:"Bank Detail Update Successfully",result});
             }
-            return next(new AppError("Some Error Accured",400));
+            return next(new AppError("Some Error Occurred",400));
 
    }catch(err){
       return next(new AppError(err.message,500));
@@ -110,11 +110,11 @@ const delet_bank_detail=async(req,res,next)=>{
         const{id}=req.params;
         
         const result =await employeeBankModel.findByIdAndDelete(id)
-        console.log(result);
+
         if(result){
          return res.status(200).json({success:true,message:"Delete Success"});
         }
-        return next(new AppError("Some Error Accured",400));
+        return next(new AppError("Some Error Occurred",400));
    }catch(err){
       return next(new AppError(err.message,500))
    }
@@ -141,7 +141,7 @@ const get_bank_detail=async(req,res,next)=>{
 const getOneData=async(req,res,next)=>{
    try{
          const {id}=req.params
-         console.log(id);
+
          const result=await employeeBankModel.findOne({employeeId:id})
          if(result){
             return res.status(200).json({success:true,data:result})

@@ -7,9 +7,7 @@ const key = process.env.JWT_SECRET;
 const applyLeave = async (req, res, next) => {
   try {
     const { id } = req.params;
-    //   console.log("id++",id);
-    //   console.log(req.body);
-    //  return
+  
     const {  breakDown,leaveType,  startDate,  endDate,  description } = req.body;
     const isValid = await employeModel.findById(id);
     if (!isValid) {
@@ -24,8 +22,7 @@ const applyLeave = async (req, res, next) => {
         }
       ]
     }) 
-      //  console.log("aaaa",existingLeave);
-       
+   
      
     if(existingLeave){
        return next(new AppError("Leave all ready applay"));
@@ -73,8 +70,7 @@ const getMyLeaves = async(req, res, next) => {
 const approveLeave = async(req, res, next) => {
   try {
      const{id}=req.params;
-      // console.log("aaaa",id)
-      // return;
+    
      const {adminDescription}=req.body
        const response=await leaveModel.findById(id);
        if(!response){
@@ -96,8 +92,6 @@ const approveLeave = async(req, res, next) => {
 const rejectLeave = async(req, res, next) => {
   try {
       const {id}=req.params;
-      // console.log("reject leave",id);
-      // return;
       const{adminDescription}=req.body;
       const response=await leaveModel.findById(id)
        if(!response){

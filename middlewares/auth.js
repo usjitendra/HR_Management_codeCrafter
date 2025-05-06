@@ -42,6 +42,7 @@ const token_validate = async (req, res, next) => {
         next(); 
 
     } catch (err) {
+        // return
         return next(new AppError("Invalid or expired token", 401));
     }
 };

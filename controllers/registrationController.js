@@ -41,7 +41,7 @@ const registrationAdmin=async()=>{
            const degaultEmail="codecrafter@gmail.com"
            const existingUser=await registrationModel.findOne({email:degaultEmail})
            if(existingUser){
-               console.log("Admin have all ready registra");
+              
                return;
            }
         //    let image={public_Id:"",secure_url:""};
@@ -112,9 +112,9 @@ const isLogin = async (req, res, next) => {
     try {
           
         const token = req.cookies?.authToken; 
-        if (!token) {
-            return next(new AppError("", 401));
-        }
+        // if (!token) {
+        //     // return next(new AppError("", 401));
+        // }
         const decoded = jwt.verify(token,key); 
         if (!decoded) {
             return next(new AppError("Token expired", 401));
@@ -133,6 +133,7 @@ const isLogin = async (req, res, next) => {
             data:newData
         })
     } catch (err) {
+        // return  
         return next(new AppError("Invalid or expired token", 401));
     }
 };

@@ -4,7 +4,7 @@ import { type } from "os";
 
 const policeSchema=new Schema(
     {
-            titel:{
+        title:{
                 require:true,
                 type:String
             },

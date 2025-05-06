@@ -133,8 +133,6 @@ const worka_update = async (req, res, next) => {
       },
       { new: true }
     );
-        console.log("data",result);
-        // return;
         
     if (result) {
       return res
@@ -142,7 +140,7 @@ const worka_update = async (req, res, next) => {
         .json({ success: true, message: "Update success", result });
     }
 
-    return next(new AppError("Some Error Accured", 400));
+    return next(new AppError("Some Error Occurred", 400));
   } catch (err) {
     return next(new AppError(err.message, 500));
   }

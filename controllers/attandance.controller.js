@@ -176,11 +176,11 @@ const attandanceLogin = async (req, res, next) => {
     let isFullDay = false;
     let isHalfDay = false;
 
-     console.log("mai aa gaya ");
+
     //  if (istNow >= nineAM && istNow <= tenAM) {
       isFullDay = true;
     // } else if (istNow > tenAM && istNow <= threePM) {
-      console.log("bhai aanadr hu+++ 12 ke ");
+
       isHalfDay = true;
     // }
     
@@ -424,14 +424,11 @@ const getChartAttendance = async (req, res, next) => {
       date: { $gte: startDate, $lt: endDate }, // ✅ month-wise filter
     });
 
-    // console.log(AttendanceData);
-    // return;
-
     const chart = allDays.map((day) => {
       const found = AttendanceData.find(
         (entry) => new Date(entry.date).toDateString() === day.toDateString()
       );
-      console.log("form", found);
+      
 
       return {
         date: day.toISOString().split("T")[0],
@@ -449,6 +446,7 @@ const getMonthalyDetail = async (req, res, next) => {
   try {
     const token = req.cookies?.authToken;
     if (!token) {
+      // return;
       return next(new AppError("Unauthorized: No token provided", 401));
     }
 
@@ -460,7 +458,8 @@ const getMonthalyDetail = async (req, res, next) => {
     const data = await employeModel.find({ registrationId: decoded.id });
 
     if (!data || data.length === 0) {
-      return next(new AppError("success", 404));
+        return
+      // return next(new AppError("success", 404));
     }
 
     const attandanceData = await AttandanceModel.find({
@@ -485,7 +484,7 @@ const getMonthalyDetail = async (req, res, next) => {
       data: allData,
     });
   } catch (err) {
-    return next(new AppError(err.message || "Invalid or expired token", 401));
+    return next(new AppError(err.message || "", 401));
   }
 };
 

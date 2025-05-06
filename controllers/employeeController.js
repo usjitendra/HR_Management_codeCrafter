@@ -147,9 +147,7 @@ const add_employee = async (req, res, next) => {
 const employee_update = async (req, res, next) => {
   try {
     const { id } = req.params;
-     console.log("jite+++");
-    //  return;
-     
+
     const existingEmployee = await employeModel.findById(id);
     if (!existingEmployee) {
       return next(new AppError("", 404));
@@ -280,7 +278,7 @@ const employee_Delete = async (req, res, next) => {
       return next(new AppError("", 404));
     }
     const result = await registrationModel.findByIdAndDelete(employee.registrationId); 
-                  // await 
+    
     return res
       .status(200)
       .json({ success: true, message: "Employee deleted successfully" });
@@ -404,7 +402,7 @@ const employee_profile=async(req,res,next)=>{
      
     const token = req.cookies?.authToken; // Token from coo\
     if (!token) {
-      return next(new AppError("", 401));
+      return next(new AppError("success", 401));
     }
     const decoded = jwt.verify(token,key); 
     
