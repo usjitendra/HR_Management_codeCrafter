@@ -15,6 +15,7 @@ import cloudinary from "cloudinary";
 const key = process.env.JWT_SECRET;
 import jwt from 'jsonwebtoken';
 import AttandanceModel from "../models/attandance.model.js";
+import leaveModel from "../models/leave.model.js";
 // const add_emploddyee = async (req, res, next) => {
 //   try {
 
@@ -278,9 +279,9 @@ const employee_Delete = async (req, res, next) => {
       return next(new AppError("", 404));
     }
     const result = await registrationModel.findByIdAndDelete(employee.registrationId); 
-    
-    return res
-      .status(200)
+                  await  leaveModel.deleteMany({employeeId:id})    
+                    await AttandanceModel.deleteMany({employeeId:id})   
+      res.status(200)
       .json({ success: true, message: "Employee deleted successfully" });
 
   } catch (err) {
