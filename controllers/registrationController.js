@@ -133,8 +133,9 @@ const isLogin = async (req, res, next) => {
             data:newData
         })
     } catch (err) {
-        return  
-        // return next(new AppError("Invalid or expired token", 401));
+        return next(new AppError("Invalid or expired token", 401));
+        // return res.status(200).json({ success: false, data: null });
+
     }
 };
 

@@ -27,7 +27,7 @@ const delet_policy=async(req,res,next)=>{
       
            const result=await policeModel.findByIdAndDelete(id)
            if(result){
-              return res.send(200).json({success:true,message:'Policy Delete'})
+              return res.status(200).json({success:true,message:'Policy Delete'})
            }else{
             return next(new AppError("Some Error Occurred"));
            }
