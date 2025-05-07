@@ -74,10 +74,10 @@ const approveLeave = async(req, res, next) => {
      const {adminDescription}=req.body
        const response=await leaveModel.findById(id);
        if(!response){
-        return next(new AppError("No Leave Applay",400))
+        return next(new AppError("No Leave Applied",400))
        }
        if (response.status !== 'Pending') {
-        return next(new AppError("Leave already reviewed", 400));
+        return next(new AppError("Leave has already been reviewed", 400));
       }
        response.status="Approved",
        response.adminDescription=adminDescription
@@ -105,7 +105,7 @@ const rejectLeave = async(req, res, next) => {
     //    response.reviewedBy=id
        const result= await response.save();
 
-       return res.status(200).json({success:true,message:"Leave Reaject",result})
+       return res.status(200).json({success:true,message:"Leave Rejected",result})
 
   } catch (err) {
     return next(new AppError(err.message, 500));
@@ -125,7 +125,7 @@ const deleteLeave = async(req, res, next) => {
         return next(new AppError("No Leave find",400))
        }
        else{
-        return res.status(200).json({success:true,message:"Leve Delete Successfully"})
+        return res.status(200).json({success:true,message:"Leave Delete Successfully"})
        }
   } catch (err) {
     return next(new AppError(err.message, 500));
