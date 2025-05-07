@@ -116,6 +116,10 @@ const rejectLeave = async(req, res, next) => {
 const deleteLeave = async(req, res, next) => {
   try {
      const{id}=req.params;
+          const result=await leaveModel.findById(id)
+          if(result.status==="Approved"){
+            return next(new AppError("Leave has been approved, cannot be deleted",500))
+          }
      const response=await leaveModel.findByIdAndDelete(id);
        if(!response){
         return next(new AppError("No Leave find",400))

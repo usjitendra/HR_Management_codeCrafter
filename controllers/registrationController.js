@@ -72,11 +72,11 @@ const login = async (req, res, next) => {
         
         const loginData = await registrationModel.findOne({ email });
         if (!loginData) {
-            return next(new AppError("Invalid email or password.", 401));
+            return next(new AppError("Invalid email or password.", 402));
         }
         const isPasswordValid = await bcrypt.compare(password, loginData.password);
         if (!isPasswordValid) {
-            return next(new AppError("Invalid email or password.", 401));
+            return next(new AppError("Invalid email or password.", 402));
         }
          const token=await generate_Token(loginData);
          await registrationModel.findByIdAndUpdate(loginData._id, { token });
