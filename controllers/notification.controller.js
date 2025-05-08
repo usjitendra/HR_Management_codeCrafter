@@ -1,10 +1,17 @@
 import notificationModel from "../models/notification.model.js";
 import AppError from "../util/appError.js";
 
+
 // 🟢 Create a new notification
- const createNotification = async ({ fromId = null, toId, title, message }) => {
+const createNotification = async ({ fromId = null, toId = null, title, message }, io) => {
+           
   try {
     const notification = await notificationModel.create({ fromId, toId, title, message });
+
+    if (io && toId) {
+      io.to(toId.toString()).emit("new_notification", notification);
+    }
+
     return notification;
   } catch (error) {
     console.error("Error creating notification:", error.message);
@@ -12,11 +19,14 @@ import AppError from "../util/appError.js";
   }
 };
 
+
+//notification update....
+
 // 🔵 Get all notifications for a user (toId)
 const getUserNotifications = async (req, res,next) => {
   try {
     const userId = req.user._id; // assuming you're using auth middleware
-    const notifications = await natificationModel.find({ toId: userId }).sort({ createdAt: -1 });
+    const notifications = await notificationModel.find({ toId: userId }).sort({ createdAt: -1 });
     res.status(200).json(notifications);
   } catch (error) {
     return next(new AppError("notification not fund",401))
@@ -27,7 +37,7 @@ const getUserNotifications = async (req, res,next) => {
  const markNotificationAsRead = async (req, res,next) => {
   try {
     const notificationId = req.params.id;
-    const updated = await natificationModel.findByIdAndUpdate(notificationId, { isRead: true }, { new: true });
+    const updated = await notificationModel.findByIdAndUpdate(notificationId, { isRead: true }, { new: true });
 
     if (!updated) {
       return next(new AppError("Notification not found",401))

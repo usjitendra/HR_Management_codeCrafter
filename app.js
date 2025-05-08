@@ -16,6 +16,8 @@ import policy from "./routes/policy.js"
 import leave from "./routes/leave.routes.js";
 import drappointment from "./routes/dr.appointment.routes.js";
 import notification from "./routes/notification.routes.js"
+import http from 'http';
+import { Server } from 'socket.io';
 
 
 import './middlewares/employee.attendance.cron.job.js'
@@ -32,6 +34,29 @@ app.use(cors({
   origin: ["http://localhost:5173","http://localhost:3000","https://hrms112.netlify.app","https://dr-monika.netlify.app"], 
   credentials: true,
 }));
+
+const server=http.createServer(app);
+const io=new Server(server,{
+       cors:{
+        origin:["http://localhost:5173","http://localhost:3000","https://hrms112.netlify.app"],
+        credentials: true,
+       }
+})
+
+app.set('io', io); 
+
+io.on('connection', (socket) => {
+  console.log('User connected:12345', socket.id);
+
+  socket.on('join', (userId) => {
+    socket.join(userId); // Join room with userId
+    console.log(`User ${userId} joined their room`);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+  });
+});
 
 const upload=multer({dist:"uploads/"})
 

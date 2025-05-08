@@ -7,6 +7,9 @@ import { allData } from "./employee.work.controller.js";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import leaveModel from "../models/leave.model.js";
+import { log } from "console";
+import { createNotification } from "./notification.controller.js";
+
 const key = process.env.JWT_SECRET;
 //***if employee id commimh then  */
 
@@ -93,11 +96,11 @@ const key = process.env.JWT_SECRET;
 const attandanceLogin = async (req, res, next) => {
   try {
     const { id } = req.params;
-
     const validEmployee = await employeModel.findOne({ registrationId: id });
     if (!validEmployee) {
       return next(new AppError("Employee is Not Valid", 400));
     }
+     
     const leaveData = await leaveModel.find({ employeeId: validEmployee._id });
     
     let now = new Date();
@@ -181,7 +184,7 @@ const attandanceLogin = async (req, res, next) => {
       isFullDay = true;
     // } else if (istNow > tenAM && istNow <= threePM) {
 
-      isHalfDay = true;
+      isHalfDay = false;
     // }
     
   //  return
@@ -203,6 +206,15 @@ const attandanceLogin = async (req, res, next) => {
       },
       { new: true, upsert: true }
     );
+
+    //notification....
+    const title = "CheckIn";
+    const message = `${validEmployee.name} is checkIn`;
+    const fromId = validEmployee._id;
+    const io = req.app.get("io");
+    const result = await createNotification({ fromId, title, message },io);
+    // console.log("bhaiya ham t check in api me hu notification hu",result);
+    
 
     res.status(200).json({
       success: true,
@@ -321,6 +333,13 @@ const attandanceLogout = async (req, res, next) => {
 
     todayAttendance.workingHours = workingTime;
     await todayAttendance.save();
+
+    //notification
+    const title = "check Out";
+    const message = `${validEmployee.name} is check out`;
+    const fromId = validEmployee._id;
+    const io = req.app.get("io");
+    const result = await createNotification({ fromId, title, message },io);
 
     res.status(200).json({
       success: true,
