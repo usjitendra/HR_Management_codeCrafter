@@ -10,12 +10,12 @@ const createAppointment = async (req, res, next) => {
       return next(new AppError("Patient name and date/time required", 400));
     }
 
-    const requestedTime = new Date(dateTime); 
-    const now = new Date(); 
-     
-    if (requestedTime <= now) {
-      return next(new AppError("Past time slot not allowed", 400));
-    }
+
+    const requestedTime = new Date(dateTime); // ISO string is parsed as UTC
+
+// Convert to IST (add 5.5 hours)
+const requestedIST = new Date(requestedTime.getTime() + (5.5 * 60 * 60 * 1000));
+const nowIST = new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000));
 
     const minutes = requestedTime.getMinutes();
     if (minutes % 20 !== 0) {
