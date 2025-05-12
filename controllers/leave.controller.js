@@ -43,7 +43,7 @@ const applyLeave = async (req, res, next) => {
     //create notification leave...
     const io = req.app.get("io");
     const title = " Leave Request";
-    const message = description;
+    const message = `${isValid.name} leave Applay`;
     const fromId = id;
     const result = await createNotification({ fromId, title, message },io);
     return res.status(200).json({

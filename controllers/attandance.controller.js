@@ -9,6 +9,7 @@ import jwt from "jsonwebtoken";
 import leaveModel from "../models/leave.model.js";
 import { log } from "console";
 import { createNotification } from "./notification.controller.js";
+const ObjectId= mongoose.Types.ObjectId;
 
 const key = process.env.JWT_SECRET;
 //***if employee id commimh then  */
@@ -100,31 +101,30 @@ const attandanceLogin = async (req, res, next) => {
     if (!validEmployee) {
       return next(new AppError("Employee is Not Valid", 400));
     }
-     
+
     const leaveData = await leaveModel.find({ employeeId: validEmployee._id });
-    
+
     let now = new Date();
-    now.setHours(0, 0, 0, 0);  
-    
+    now.setHours(0, 0, 0, 0);
+
     const todayLeave = leaveData.some((leave) => {
       const leaveStartDate = new Date(leave.startDate);
       const leaveEndDate = new Date(leave.endDate);
-    
-    
+
       leaveStartDate.setHours(0, 0, 0, 0);
       leaveEndDate.setHours(0, 0, 0, 0);
-    
+
       return (
         leave.status === "Approved" &&
         now >= leaveStartDate &&
         now <= leaveEndDate
       );
     });
-    
+
     if (todayLeave) {
       return next(new AppError("You have an approved leave today", 400));
     }
-        
+
     const startOfDay = new Date(now);
     startOfDay.setHours(0, 0, 0, 0);
 
@@ -139,24 +139,23 @@ const attandanceLogin = async (req, res, next) => {
 
     const twelvePM = new Date(now);
     let newnow = new Date();
-     
-      now = new Date();
-     const istOffset = 5.5 * 60 * 60 * 1000; // IST = UTC + 5:30
-     const istNow = new Date(now.getTime() + istOffset);
-     
-     
-     // 9 AM IST set karna
-     const nineAMIST = new Date(istNow);
-     nineAMIST.setHours(9, 0, 0, 0);
-     
-     // 12 PM IST set karna
-     const threePM = new Date(istNow);
-     threePM.setHours(15, 0, 0, 0);
-     
-     // Check condition
-     if (istNow < nineAMIST) {
-       return next(new AppError("123 bad me aana", 400));
-     }
+
+    now = new Date();
+    const istOffset = 5.5 * 60 * 60 * 1000; // IST = UTC + 5:30
+    const istNow = new Date(now.getTime() + istOffset);
+
+    // 9 AM IST set karna
+    const nineAMIST = new Date(istNow);
+    nineAMIST.setHours(9, 0, 0, 0);
+
+    // 12 PM IST set karna
+    const threePM = new Date(istNow);
+    threePM.setHours(15, 0, 0, 0);
+
+    // Check condition
+    if (istNow < nineAMIST) {
+      return next(new AppError("123 bad me aana", 400));
+    }
 
     // if (newnow > twelvePM) {
     //   return next(
@@ -166,7 +165,7 @@ const attandanceLogin = async (req, res, next) => {
     //     )
     //   );
     // }
-     
+
     const todayAttendance = await AttandanceModel.findOne({
       employeeId: validEmployee._id,
       date: { $gte: startOfDay, $lt: endOfDay },
@@ -179,15 +178,14 @@ const attandanceLogin = async (req, res, next) => {
     let isFullDay = false;
     let isHalfDay = false;
 
-
     //  if (istNow >= nineAM && istNow <= tenAM) {
-      isFullDay = true;
+    isFullDay = true;
     // } else if (istNow > tenAM && istNow <= threePM) {
 
-      isHalfDay = false;
+    isHalfDay = false;
     // }
-    
-  //  return
+
+    //  return
     const addEmployee = await AttandanceModel.findOneAndUpdate(
       {
         employeeId: validEmployee._id,
@@ -212,9 +210,8 @@ const attandanceLogin = async (req, res, next) => {
     const message = `${validEmployee.name} is checkIn`;
     const fromId = validEmployee._id;
     const io = req.app.get("io");
-    const result = await createNotification({ fromId, title, message },io);
+    const result = await createNotification({ fromId, title, message }, io);
     // console.log("bhaiya ham t check in api me hu notification hu",result);
-    
 
     res.status(200).json({
       success: true,
@@ -339,7 +336,7 @@ const attandanceLogout = async (req, res, next) => {
     const message = `${validEmployee.name} is check out`;
     const fromId = validEmployee._id;
     const io = req.app.get("io");
-    const result = await createNotification({ fromId, title, message },io);
+    const result = await createNotification({ fromId, title, message }, io);
 
     res.status(200).json({
       success: true,
@@ -447,7 +444,6 @@ const getChartAttendance = async (req, res, next) => {
       const found = AttendanceData.find(
         (entry) => new Date(entry.date).toDateString() === day.toDateString()
       );
-      
 
       return {
         date: day.toISOString().split("T")[0],
@@ -477,7 +473,7 @@ const getMonthalyDetail = async (req, res, next) => {
     const data = await employeModel.find({ registrationId: decoded.id });
 
     if (!data || data.length === 0) {
-        return
+      return;
       // return next(new AppError("success", 404));
     }
 
@@ -520,7 +516,7 @@ const attendanceFilter = async (req, res, next) => {
     endOfToday.setHours(23, 59, 59, 999);
 
     switch (range) {
-      case "1": 
+      case "1":
         startDate = today;
         endDate = endOfToday;
         break;
@@ -604,7 +600,43 @@ const attendanceFilter = async (req, res, next) => {
   }
 };
 
+const monthelydetail = async (req, res, next) => {
+  try {
+    const { month, year, employeeId } = req.body;
+    console.log(month);
+    console.log("id+++", employeeId);
+    console.log(year);
 
+    const result = await AttandanceModel.aggregate([
+      {
+        $match: {
+          employeeId:new ObjectId(employeeId) // ✅ correct match
+        }
+      },
+      {
+        $addFields: { month: { $month: "$createdAt" } },
+      },
+      {
+        $addFields: { year: { $year: "$createdAt" } },
+      },
+      {$match:{month:month*1,year:year*1}},
+      {
+        $project: {
+          month: 0,
+          year: 0
+        }
+      }
+    ]);
+
+    if(result.length===0){
+      return next(new AppError("Data not found",404))
+    }else{
+      return res.status(200).json({success:true,data:result})
+    }
+  } catch (err) {
+    return next(new AppError(err.message, 500));
+  }
+};
 
 export {
   attandanceLogin,
@@ -616,4 +648,5 @@ export {
   getChartAttendance,
   getMonthalyDetail,
   attendanceFilter,
+  monthelydetail,
 };

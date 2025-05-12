@@ -98,7 +98,7 @@ app.use(errorMiddleware)
 const PORT=process.env.PORT||6000;
 
 
-app.listen(PORT,async()=>{
+server.listen(PORT,async()=>{
     await dbConnection()
     console.log(`server start on port ${PORT}`);
 })
