@@ -631,7 +631,7 @@ const monthelydetail = async (req, res, next) => {
     if(result.length===0){
       return next(new AppError("Data not found",404))
     }else{
-      return res.status(200).json({success:true,data:result})
+      return res.status(200).json({success:true,data:result,message:"Monthly attendance fetched successfully"})
     }
   } catch (err) {
     return next(new AppError(err.message, 500));
