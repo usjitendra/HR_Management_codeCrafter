@@ -67,7 +67,7 @@ const getMyLeaves = async (req, res, next) => {
     }
     //  return
 
-    return res.status(200).json({ success: true, data: response });
+    return res.status(200).json({ success: true, data: response,message:"Leave data found successfully" });
   } catch (err) {
     return next(new AppError(err.message, 500));
   }
