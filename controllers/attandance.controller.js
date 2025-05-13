@@ -138,35 +138,6 @@ const attandanceLogin = async (req, res, next) => {
     tenAM.setHours(10, 0, 0, 0);
 
     const twelvePM = new Date(now);
-<<<<<<< Updated upstream
-    let newnow = new Date();
-
-    now = new Date();
-    const istOffset = 5.5 * 60 * 60 * 1000; // IST = UTC + 5:30
-    const istNow = new Date(now.getTime() + istOffset);
-
-    // 9 AM IST set karna
-    const nineAMIST = new Date(istNow);
-    nineAMIST.setHours(9, 0, 0, 0);
-
-    // 12 PM IST set karna
-    const threePM = new Date(istNow);
-    threePM.setHours(15, 0, 0, 0);
-
-    // Check condition
-    if (istNow < nineAMIST) {
-      return next(new AppError("123 bad me aana", 400));
-    }
-
-    // if (newnow > twelvePM) {
-    //   return next(
-    //     new AppError(
-    //       "Hey! Check-in time is over. Let's be on time tomorrow!",
-    //       500
-    //     )
-    //   );
-    // }
-=======
     twelvePM.setHours(12, 0, 0, 0);
 
     /*
@@ -184,7 +155,6 @@ const attandanceLogin = async (req, res, next) => {
       );
     }  */
 
->>>>>>> Stashed changes
 
     const todayAttendance = await AttandanceModel.findOne({
       employeeId: validEmployee._id,

@@ -69,7 +69,7 @@ const getMyLeaves = async (req, res, next) => {
       .find({ employeeId: id })
       .sort({ appliedAt: -1 });
     if (response.length === 0) {
-      return next(new AppError("No Leave Apply", 400));
+      return next(new AppError("No leave applications found.", 400));
     }
     //  return
 
