@@ -46,6 +46,9 @@ const applyLeave = async (req, res, next) => {
     const message = `${isValid.name} leave Applay`;
     const fromId = id;
     const result = await createNotification({ fromId, title, message },io);
+
+    io.emit("new-message", "jitendra leave le lehlus re dada"); // 🔥 Total summary bhi emit karo
+
     return res.status(200).json({
       success: true,
       message: "Leave Apply Successfully",

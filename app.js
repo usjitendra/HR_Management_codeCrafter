@@ -43,10 +43,11 @@ const io=new Server(server,{
        }
 })
 
-app.set('io', io); 
 
 io.on('connection', (socket) => {
   console.log('User connected:12345', socket.id);
+
+  
   
   socket.on('join', (data) => {
       console.log("ayush duplicte don",data);
@@ -88,6 +89,10 @@ app.use('/api/v1/policy',policy)
 app.use('/api/v1/leave',leave)
 app.use('/api/v1/notification',notification)
 app.use('/api/v1/appointment',drappointment)
+
+
+
+app.set('io', io); 
 
 app.use("*", (req, res) => {
     return res.status(404).json({ Message: "Route not found", path: req.originalUrl, method: req.method });
