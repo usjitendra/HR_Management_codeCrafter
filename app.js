@@ -31,7 +31,11 @@ const app=express();
 dotenv.config();
 
 app.use(cors({
+<<<<<<< Updated upstream
   origin: ["http://localhost:5173","http://localhost:3000","https://hrms112.netlify.app","https://dr-monika.netlify.app"], 
+=======
+  origin: ["http://localhost:5173","http://localhost:3000","https://hrms112.netlify.app","http://localhost:5174"], 
+>>>>>>> Stashed changes
   credentials: true,
 }));
 

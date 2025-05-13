@@ -6,6 +6,9 @@ import { create } from "domain";
 import { createNotification } from "./notification.controller.js";
 
 const key = process.env.JWT_SECRET;
+
+
+
 const applyLeave = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -108,27 +111,46 @@ const approveLeave = async (req, res, next) => {
 
 const rejectLeave = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const { adminDescription } = req.body;
-    const response = await leaveModel.findById(id);
-    if (!response) {
-      return next(new AppError("some error occured", 400));
-    }
-    if (response.status !== "Pending") {
-      return next(new AppError("Leave already reviewed", 400));
-    }
-    (response.status = "Rejected"),
-      (response.adminDescription = adminDescription);
-    //    response.reviewedBy=id
-    const result = await response.save();
+        const{id}=req.params;
+        const response=await leaveModel.find({employeeId:id}).sort({appliedAt:-1})
+        if(response.length===0){
+            return next(new AppError("No Leave Apply",400))
+        }
+         console.log(response);
+        //  return
+         
 
-    return res
-      .status(200)
-      .json({ success: true, message: "Leave Rejected", result });
+        return res.status(200).json({success:true,data:response})
   } catch (err) {
     return next(new AppError(err.message, 500));
   }
 };
+
+// const approveLeave = async(req, res, next) => {
+//   try {
+//      const{id}=req.params;
+
+//     //   return;
+//      const {adminDescription}=req.body
+//        const response=await leaveModel.findById(id);
+//        if(!response){
+//         return next(new AppError("No Leave Applay",400))
+//        }
+//        if (response.status !== 'Pending') {
+//         return next(new AppError("Leave already reviewed", 400));
+//       }
+//        response.status="Approved",
+//        response.adminDescription=adminDescription
+//     //    response.reviewedBy=id
+//     const result = await response.save();
+
+//     return res
+//       .status(200)
+//       .json({ success: true, message: "Leave Rejected", result });
+//   } catch (err) {
+//     return next(new AppError(err.message, 500));
+//   }
+// };
 
 const deleteLeave = async (req, res, next) => {
   try {
