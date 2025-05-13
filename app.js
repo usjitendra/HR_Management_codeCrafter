@@ -51,8 +51,7 @@ io.on('connection', (socket) => {
   
   
   socket.on('join', (data) => {
-      console.log("ayush duplicte don",data);
-      
+      // console.log("ayush duplicte don",data);
     // socket.join(userId); // Join room with userId
     // console.log(`User ${userId} joined their room`);
   });

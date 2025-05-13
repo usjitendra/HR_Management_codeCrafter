@@ -168,7 +168,7 @@ const getWork = async (req, res, next) => {
     const result = await employeeWorkModel.findOne({ employeeId: id });
 
     if (result) {
-      return res.status(200).json({ success: true, data: result });
+      return res.status(200).json({ success: true, data: result ,message:"success"});
     }
       return next(new AppError("Recod not found",404))
   } catch (err) {
@@ -183,7 +183,7 @@ const allData = async (req, res, next) => {
       .find({}, "workType department")
       .populate("employeeId", "name");
     if (data) {
-      return res.status(200).json({ success: true, data });
+      return res.status(200).json({ success: true, data ,message:"success"});
     } else {
       return next(new AppError("Data Not found", 400));
     }

@@ -48,7 +48,7 @@ const applyLeave = async (req, res, next) => {
     const title = " Leave Request";
     const message = `${isValid.name} leave Applay`;
     const fromId = id;
-    const result = await createNotification({ fromId, title, message },io);
+    const result = await createNotification({ fromId, title, message }, io);
 
     io.emit("new-message", "jitendra leave le lehlus re dada"); // 🔥 Total summary bhi emit karo
 
@@ -73,7 +73,7 @@ const getMyLeaves = async (req, res, next) => {
     }
     //  return
 
-    return res.status(200).json({ success: true, data: response,message:"Leave data found successfully" });
+    return res.status(200).json({ success: true, data: response, message: "Leave data found successfully" });
   } catch (err) {
     return next(new AppError(err.message, 500));
   }
@@ -98,7 +98,7 @@ const approveLeave = async (req, res, next) => {
     const message = "Leave Approved";
     const fromId = response.employeeId;
     const io = req.app.get("io");
-    const result = await createNotification({ fromId, title, message },io);
+    const result = await createNotification({ fromId, title, message }, io);
 
     const data = await response.save();
     return res
@@ -111,16 +111,16 @@ const approveLeave = async (req, res, next) => {
 
 const rejectLeave = async (req, res, next) => {
   try {
-        const{id}=req.params;
-        const response=await leaveModel.find({employeeId:id}).sort({appliedAt:-1})
-        if(response.length===0){
-            return next(new AppError("No Leave Apply",400))
-        }
-         console.log(response);
-        //  return
-         
+    const { id } = req.params;
+    const response = await leaveModel.find({ employeeId: id }).sort({ appliedAt: -1 })
+    if (response.length === 0) {
+      return next(new AppError("No Leave Apply", 400))
+    }
+    console.log(response);
+    //  return
 
-        return res.status(200).json({success:true,data:response})
+
+    return res.status(200).json({ success: true, data: response, message: "Leave Reject" })
   } catch (err) {
     return next(new AppError(err.message, 500));
   }
@@ -239,7 +239,8 @@ const allEmployeeLeaveDetail = async (req, res, next) => {
 
     return res.status(200).json({
       success: true,
-      data: leaveData,
+      message: "All leave details fetched successfully",
+      data: leaveData
     });
   } catch (err) {
     return next(new AppError(err.message, 500));
@@ -252,7 +253,7 @@ const allLeave = async (req, res, next) => {
     if (!data) {
       return next(new AppError("Leave data not found", 400));
     }
-    return res.status(200).json({ success: true, data: data });
+    return res.status(200).json({ success: true, data: data, message: "success" });
   } catch (err) {
     return next(new AppError(err.message, 500));
   }

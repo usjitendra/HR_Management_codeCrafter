@@ -103,8 +103,8 @@ const attandanceLogin = async (req, res, next) => {
     }
 
     const leaveData = await leaveModel.find({ employeeId: validEmployee._id });
+    let now = new Date(Date.now() + (5.5 * 60 * 60 * 1000));
 
-    let now = new Date();
     now.setHours(0, 0, 0, 0);
 
     const todayLeave = leaveData.some((leave) => {
@@ -184,8 +184,8 @@ const attandanceLogin = async (req, res, next) => {
       {
         $set: {
           employeeId: validEmployee._id,
-          loginTime: newnow,
-          date: newnow,
+          loginTime: now,
+          date: now,
           status: "present",
           isFullDay,
           isHalfDay,
@@ -202,7 +202,8 @@ const attandanceLogin = async (req, res, next) => {
     const io = req.app.get("io");
     const result = await createNotification({ fromId, title, message }, io);
     // console.log("bhaiya ham t check in api me hu notification hu",result);
-
+    io.emit("new-message", "jitendra leave le lehlus re dada"); // 🔥 Total summary bhi emit karo
+    
     res.status(200).json({
       success: true,
       message: "Attendance Marked Successfully",
@@ -398,7 +399,7 @@ const all_employee_aatendance = async (req, res, next) => {
     if (!result) {
       return next(new AppError("Employee not found", 400));
     } else {
-      return res.status(200).json({ success: true, result });
+      return res.status(200).json({ success: true, result ,message:"success"});
     }
   } catch (err) {
     return next(new AppError(err.message, 500));
@@ -485,7 +486,7 @@ const getMonthalyDetail = async (req, res, next) => {
 
     return res.status(200).json({
       success: true,
-      // message: "Success",
+      message: "Success",
       data: allData,
     });
   } catch (err) {
@@ -581,6 +582,7 @@ const attendanceFilter = async (req, res, next) => {
     ]);
 
     return res.status(200).json({
+      message:"success",
       success: true,
       count: data.length,
       data,

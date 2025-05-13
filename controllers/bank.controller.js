@@ -146,7 +146,7 @@ const getOneData=async(req,res,next)=>{
          if(result){
             return res.status(200).json({success:true,data:result})
          }else{
-            // return next(new AppError("Data not found",404 ));
+            return next(new AppError("Data not found",404 ));
          }
    }catch(err){
     return next(new AppError(err.message,500))
