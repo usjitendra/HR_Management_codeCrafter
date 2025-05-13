@@ -29,7 +29,7 @@ const createNotification = async ({ fromId = null, toId = null, title, message }
 // 🔵 Get all notifications for a user (toId)
 const getUserNotifications = async (req, res,next) => {
   try {
-    const userId = req.params; 
+    const userId = req.params.id; 
       console.log(userId,"hai bhai++");
       return;
       

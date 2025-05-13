@@ -7,7 +7,7 @@ import{getUserNotifications,allnotification,markNotificationAsRead} from '../con
 
 // notificationRoutes.put("/read/:id", markNotificationAsRead);
 notificationRoutes.get("/all",allnotification)
-notificationRoutes.get("/:id", getUserNotifications);
+notificationRoutes.get("/user/:id", getUserNotifications);
 notificationRoutes.get("/isReade/:id", markNotificationAsRead);
 
 

@@ -47,11 +47,15 @@ app.set('io', io);
 
 io.on('connection', (socket) => {
   console.log('User connected:12345', socket.id);
-
-  socket.on('join', (userId) => {
-    socket.join(userId); // Join room with userId
-    console.log(`User ${userId} joined their room`);
+  
+  socket.on('join', (data) => {
+      console.log("ayush duplicte don",data);
+      
+    // socket.join(userId); // Join room with userId
+    // console.log(`User ${userId} joined their room`);
   });
+
+  socket.emit("welcome","welcome to user")
 
   socket.on('disconnect', () => {
     console.log('User disconnected');
@@ -84,9 +88,6 @@ app.use('/api/v1/policy',policy)
 app.use('/api/v1/leave',leave)
 app.use('/api/v1/notification',notification)
 app.use('/api/v1/appointment',drappointment)
-
-
-
 
 app.use("*", (req, res) => {
     return res.status(404).json({ Message: "Route not found", path: req.originalUrl, method: req.method });
