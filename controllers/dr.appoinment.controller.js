@@ -4,30 +4,26 @@ import AppError from "../util/appError.js";
 
 const createAppointment = async (req, res, next) => {
   try {
-    const { patientName,phoneNumber,gender,purpose, dateTime,address } = req.body;
-
+    const { patientName, phoneNumber, gender, purpose, dateTime, address, email } = req.body;
+        // console.log(req.body);
+        
     if (!patientName || !dateTime) {
       return next(new AppError("Patient name and date/time required", 400));
     }
 
+    const requestedTime = new Date(dateTime);
 
-    const requestedTime = new Date(dateTime); // ISO string is parsed as UTC
+    // Convert to IST
+    const requestedIST = new Date(requestedTime.getTime() + 5.5 * 60 * 60 * 1000);
+    const nowIST = new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000);
 
-// Convert to IST (add 5.5 hours)
-const requestedIST = new Date(requestedTime.getTime() + (5.5 * 60 * 60 * 1000));
-const nowIST = new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000));
-
+    // Only allow 20-minute intervals
     const minutes = requestedTime.getMinutes();
     if (minutes % 20 !== 0) {
-      return next(
-        new AppError("Please select correct slot", 400)
-      );
+      return next(new AppError("Please select correct slot", 400));
     }
 
-    const existing = await AppointmentModel.findOne({
-      dateTime: requestedTime,
-    });
-
+    const existing = await AppointmentModel.findOne({ dateTime: requestedTime });
     if (existing) {
       return next(new AppError("This time slot is already booked", 409));
     }
@@ -38,8 +34,43 @@ const nowIST = new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000));
       phoneNumber,
       gender,
       purpose,
-      address
+      address,
+      email,
     });
+
+    // Nodemailer configuration
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+    // Email content using template literal
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: 'info@xpresstourtravels.com',
+      subject: 'New Inquiry Received',
+      text: `Dear Team,
+
+We have received a new inquiry with the following details:
+
+Name: ${patientName}
+Phone Number: ${phoneNumber}
+Email Address: ${email}
+Purpose: ${purpose}
+Gender: ${gender}
+Address: ${address}
+Preferred Date/Time: ${requestedIST.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
+
+Please address this inquiry at the earliest convenience.
+
+Best regards,  
+Code Crafter Team`,
+    };
+
+    await transporter.sendMail(mailOptions);
 
     res.status(201).json({
       success: true,
