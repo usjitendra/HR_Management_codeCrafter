@@ -112,14 +112,15 @@ const approveLeave = async (req, res, next) => {
 const rejectLeave = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const response = await leaveModel.find({ employeeId: id }).sort({ appliedAt: -1 })
-    if (response.length === 0) {
-      return next(new AppError("No Leave Apply", 400))
+     console.log("id hab bha++",id);
+    //  return;
+    const response = await leaveModel.findById(id)
+    if (!response) {
+      return next(new AppError("No Leave Apply h bhai", 400))
     }
-    console.log(response);
+      response.status="Rejected"
+     await response.save()
     //  return
-
-
     return res.status(200).json({ success: true, data: response, message: "Leave Reject" })
   } catch (err) {
     return next(new AppError(err.message, 500));
