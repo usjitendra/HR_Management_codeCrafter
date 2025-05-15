@@ -275,6 +275,9 @@ const attandanceLogout = async (req, res, next) => {
   try {
     const { id } = req.params;
 
+
+    
+
     const validEmployee = await employeModel.findOne({ registrationId: id });
 
     if (!validEmployee) {

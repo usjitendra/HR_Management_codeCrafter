@@ -32,7 +32,7 @@ dotenv.config();
 
 app.use(cors({
   origin: ["http://localhost:5173","http://localhost:3000","https://hrms112.netlify.app","https://dr-monika.netlify.app"], 
-  origin: ["http://localhost:5173","http://localhost:3000","https://hrms112.netlify.app","http://localhost:5174"], 
+  origin: ["http://localhost:5173","http://localhost:3000","https://hrms112.netlify.app","http://localhost:5174","sadbhawanaclinic.com"], 
   credentials: true,
 }));
 
