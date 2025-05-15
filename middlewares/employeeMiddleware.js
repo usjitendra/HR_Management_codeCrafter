@@ -13,38 +13,20 @@ const employeMiddleware = [
     .withMessage("Email is required")
     .isEmail()
     .withMessage("Invalid email format"),
-  body("phone")
+  body("mobile")
     .trim()
     .notEmpty()
-    .withMessage("Phone is required")
+    .withMessage("mobile is required")
     .isNumeric()
-    .withMessage("Phone number must be numeric")
+    .withMessage("mobile number must be numeric")
     .isLength({ min: 10, max: 10 })
-    .withMessage("Phone number must be exactly 10 digits"),
-  body("department")
-    .trim()
-    .notEmpty()
-    .withMessage("Department is required")
-    .isString()
-    .withMessage("Department must be a string"),
-  body("designation")
-    .trim()
-    .notEmpty()
-    .withMessage("Designation is required")
-    .isString()
-    .withMessage("Designation must be a string"),
-  body("salary")
-    .trim()
-    .notEmpty()
-    .withMessage("Salary is required")
-    .isNumeric()
-    .withMessage("Salary must be a number"),
-  body("joiningDate")
-    .trim()
-    .notEmpty()
-    .withMessage("Joining date is required")
-    .isISO8601()
-    .withMessage("Invalid date format. Use YYYY-MM-DD"),
+    .withMessage("mobile number must be exactly 10 digits"),
+  // body("dob")
+  //   .trim()
+  //   .notEmpty()
+  //   .withMessage("dob date is required")
+  //   .isISO8601()
+  //   .withMessage("Invalid date format. Use YYYY-MM-DD"),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -54,4 +36,4 @@ const employeMiddleware = [
   },
 ];
 
-export default {employeMiddleware};
+export default employeMiddleware;

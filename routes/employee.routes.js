@@ -9,6 +9,7 @@ import cookieParser from "cookie-parser";
 import { registrationMiddleware } from "../middlewares/registrationMiddleware.js";
 import { token_validate } from "../middlewares/auth.js";
 import upload from '../middlewares/multer.middleware.js'
+import employeMiddleware from "../middlewares/employeeMiddleware.js";
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json())
@@ -24,7 +25,7 @@ app.use(cookieParser());
 // *****************_____Employee start____*********//
 // employee.post("/registration",upload.none(),registrationMiddleware,registration_employee)
 
-employee.post("/add",multiUploda,add_employee);
+employee.post("/add",multiUploda,employeMiddleware,add_employee);
 employee.post("/login",employee_login)
 employee.put("/update/:id",multiUploda,employee_update,);
 employee.get("/all", all_employee);
