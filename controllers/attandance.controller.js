@@ -103,27 +103,9 @@ const attandanceLogin = async (req, res, next) => {
     }
 
     const leaveData = await leaveModel.find({ employeeId: validEmployee._id });
-    let now = new Date(Date.now() + (5.5 * 60 * 60 * 1000));
 
-    now.setHours(0, 0, 0, 0);
-
-    const todayLeave = leaveData.some((leave) => {
-      const leaveStartDate = new Date(leave.startDate);
-      const leaveEndDate = new Date(leave.endDate);
-
-      leaveStartDate.setHours(0, 0, 0, 0);
-      leaveEndDate.setHours(0, 0, 0, 0);
-
-      return (
-        leave.status === "Approved" &&
-        now >= leaveStartDate &&
-        now <= leaveEndDate
-      );
-    });
-
-    if (todayLeave) {
-      return next(new AppError("You have an approved leave today", 400));
-    }
+    // Get current date and time in IST
+    const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
 
     const startOfDay = new Date(now);
     startOfDay.setHours(0, 0, 0, 0);
@@ -140,46 +122,46 @@ const attandanceLogin = async (req, res, next) => {
     const twelvePM = new Date(now);
     twelvePM.setHours(12, 0, 0, 0);
 
-    /*
-    if (now > nineAM) {
-      return next(
-        new AppError("Too early to Check In. Try after 9:00 AM", 400)
-      );
-    }
-    if (now > twelvePM) {
-      return next(
-        new AppError(
-          "Hey! Check-in time is over. Let's be on time tomorrow!",
-          500
-        )
-      );
-    }  */
+    const todayLeave = leaveData.some((leave) => {
+      const leaveStartDate = new Date(leave.startDate);
+      const leaveEndDate = new Date(leave.endDate);
 
+      leaveStartDate.setHours(0, 0, 0, 0);
+      leaveEndDate.setHours(23, 59, 59, 999);
+
+      return (
+        leave.status === "Approved" &&
+        now >= leaveStartDate &&
+        now <= leaveEndDate
+      );
+    });
+
+    if (todayLeave) {
+      return next(new AppError("You have an approved leave today", 400));
+    }
 
     const todayAttendance = await AttandanceModel.findOne({
       employeeId: validEmployee._id,
       date: { $gte: startOfDay, $lt: endOfDay },
     });
 
-    if (todayAttendance && todayAttendance.loginTime) {
-      return next(new AppError("Already Checked In Today", 400));
-    }
+    // if (todayAttendance && todayAttendance.loginTime) {
+    //   return next(new AppError("Already Checked In Today", 400));
+    // }
 
     let isFullDay = false;
     let isHalfDay = false;
 
-    //  if (istNow >= nineAM && istNow <= tenAM) {
-    isFullDay = true;
-    // } else if (istNow > tenAM && istNow <= threePM) {
-
-    isHalfDay = false;
+    // if (now >= nineAM && now <= tenAM) {
+      isFullDay = true;
+    // } else if (now > tenAM && now <= twelvePM) {
+      isHalfDay = true;
     // }
 
-    //  return
     const addEmployee = await AttandanceModel.findOneAndUpdate(
       {
         employeeId: validEmployee._id,
-        date: { $gte: startOfDay, $lt: endOfDay }, // 🔥 this is key
+        date: { $gte: startOfDay, $lt: endOfDay },
       },
       {
         $set: {
@@ -195,15 +177,14 @@ const attandanceLogin = async (req, res, next) => {
       { new: true, upsert: true }
     );
 
-    //notification....
+    // Notification
     const title = "CheckIn";
-    const message = `${validEmployee.name} is checkIn`;
+    const message = `${validEmployee.name} has checked in`;
     const fromId = validEmployee._id;
     const io = req.app.get("io");
-    const result = await createNotification({ fromId, title, message }, io);
-    // console.log("bhaiya ham t check in api me hu notification hu",result);
-    io.emit("new-message", "jitendra leave le lehlus re dada"); // 🔥 Total summary bhi emit karo
-    
+    await createNotification({ fromId, title, message }, io);
+    io.emit("new-message", `${validEmployee.name} has checked in`);
+
     res.status(200).json({
       success: true,
       message: "Attendance Marked Successfully",
@@ -213,6 +194,7 @@ const attandanceLogin = async (req, res, next) => {
     return next(new AppError(error.message, 500));
   }
 };
+
 
 // const attandanceLogout = async (req, res, next) => {
 //   try {
@@ -274,9 +256,6 @@ const attandanceLogin = async (req, res, next) => {
 const attandanceLogout = async (req, res, next) => {
   try {
     const { id } = req.params;
-
-
-    
 
     const validEmployee = await employeModel.findOne({ registrationId: id });
 
