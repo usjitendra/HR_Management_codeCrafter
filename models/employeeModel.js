@@ -98,6 +98,11 @@ const employeeSchema = new Schema(
       type:Schema.Types.ObjectId,
       reg:"Registration"
     },
+    performanceId:{
+        type:Schema.Types.ObjectId,
+        ref:"Performance"
+    },
+
     employeeUseName:{
      type:String
     },

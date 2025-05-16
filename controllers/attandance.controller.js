@@ -146,18 +146,18 @@ const attandanceLogin = async (req, res, next) => {
       date: { $gte: startOfDay, $lt: endOfDay },
     });
 
-    // if (todayAttendance && todayAttendance.loginTime) {
-    //   return next(new AppError("Already Checked In Today", 400));
-    // }
+    if (todayAttendance && todayAttendance.loginTime) {
+      return next(new AppError("Already Checked In Today", 400));
+    }
 
     let isFullDay = false;
     let isHalfDay = false;
 
-    // if (now >= nineAM && now <= tenAM) {
+    if (now >= nineAM && now <= tenAM) {
       isFullDay = true;
-    // } else if (now > tenAM && now <= twelvePM) {
+    } else if (now > tenAM && now <= twelvePM) {
       isHalfDay = true;
-    // }
+    }
 
     const addEmployee = await AttandanceModel.findOneAndUpdate(
       {

@@ -427,6 +427,38 @@ const employee_profile=async(req,res,next)=>{
 }
 }
 
+
+
+const single_employee_allDetail=async(req,res,next)=>{
+try {
+    const { id } = req.params;
+
+    const employee = await employeModel.findById(id)
+      .populate("workId")
+      .populate("bankId")
+      .populate("attandanceId")
+      .populate("leaveID")
+      .populate("registrationId")
+      .populate("performanceId");
+
+    if (!employee) {
+      return res.status(404).json({
+        success: false,
+        message: "Employee not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Employee detail fetched successfully",
+      data: employee,
+    });
+  } catch (err) {
+    return next(new AppError(err.message || "Something went wrong", 500));
+  }
+};
+
+
 export {
   add_employee,
   employee_update,
@@ -436,5 +468,6 @@ export {
   employee_login,
   oneEmployee,
   employeeAlldetail,
-  employee_profile
+  employee_profile,
+  single_employee_allDetail
 };

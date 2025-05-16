@@ -18,19 +18,6 @@ const performanceSchema = new mongoose.Schema({
       },
     },
   ],
-  feedback: [
-    {
-      reviewerId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Employee',
-      },
-      comments: String,
-      date: {
-        type: Date,
-        default: Date.now,
-      },
-    },
-  ],
   rating: {
     type: Number,
     min: 1,
@@ -44,6 +31,10 @@ const performanceSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-});
+},
+ {
+  timestamps:true
+ }
+);
 
 export default mongoose.model('Performance', performanceSchema);
