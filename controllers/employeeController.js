@@ -280,7 +280,7 @@ const employee_Delete = async (req, res, next) => {
     }
     const result = await registrationModel.findByIdAndDelete(employee.registrationId); 
                   await  leaveModel.deleteMany({employeeId:id})    
-                    await AttandanceModel.deleteMany({employeeId:id})   
+                  await AttandanceModel.deleteMany({employeeId:id})   
       res.status(200)
       .json({ success: true, message: "Employee deleted successfully" });
 

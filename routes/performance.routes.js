@@ -4,13 +4,13 @@ import {
   getPerformances,
   updatePerformance,
   deletePerformance,
-} from '../controllers/performanceController.js';
+} from '../controllers/performance.controller';
 
-const router = express.Router();
+const performanceRouter = express.Router();
 
-router.post('/performance', createPerformance);
-router.get('/performance', getPerformances);
-router.put('/performance/:id', updatePerformance);
-router.delete('/performance/:id', deletePerformance);
+performanceRouter.post('/performance', createPerformance);
+// performanceRouter.get('/performance', getPerformances);
+// performanceRouter.put('/performance/:id', updatePerformance);
+// performanceRouter.delete('/performance/:id', deletePerformance);
 
-export default router;
+export default performanceRouter;

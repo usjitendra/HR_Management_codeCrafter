@@ -105,6 +105,7 @@ const attandanceLogin = async (req, res, next) => {
     const leaveData = await leaveModel.find({ employeeId: validEmployee._id });
 
     // Get current date and time in IST
+    // const now = new Date(requestedTime.getTime() + 5.5 * 60 * 60 * 1000);
     const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
 
     const startOfDay = new Date(now);
@@ -263,11 +264,15 @@ const attandanceLogout = async (req, res, next) => {
       return next(new AppError("Employee is Not Valid", 400));
     }
 
-    const now = new Date();
+    // Get current IST time
+    const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
 
-    // Find today's attendance entry
-    const todayStart = new Date(now.setHours(0, 0, 0, 0));
-    const todayEnd = new Date(now.setHours(23, 59, 59, 999));
+    // Get start and end of today in IST
+    const todayStart = new Date(now);
+    todayStart.setHours(0, 0, 0, 0);
+
+    const todayEnd = new Date(now);
+    todayEnd.setHours(23, 59, 59, 999);
 
     const todayAttendance = await AttandanceModel.findOne({
       employeeId: validEmployee._id,
@@ -285,17 +290,18 @@ const attandanceLogout = async (req, res, next) => {
     if (!todayAttendance.loginTime) {
       return next(new AppError("Employee is Not Logged In", 400));
     }
-    // return
+
     if (todayAttendance.logoutTime) {
       return next(new AppError("Employee is Already Logged Out", 400));
     }
 
     // Set logout time and calculate working hours
-    todayAttendance.logoutTime = new Date();
+    todayAttendance.logoutTime = now;
+
     const login = new Date(todayAttendance.loginTime);
     const logout = todayAttendance.logoutTime;
 
-    const diffMs = logout - login;
+    const diffMs = Math.abs(logout - login); // always positive
     const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
     const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
     const diffSecs = Math.floor((diffMs % (1000 * 60)) / 1000);
@@ -304,12 +310,14 @@ const attandanceLogout = async (req, res, next) => {
     todayAttendance.workingHours = workingTime;
     await todayAttendance.save();
 
-    //notification
-    const title = "check Out";
-    const message = `${validEmployee.name} is check out`;
+    // Notification
+    const title = "Check Out";
+    const message = `${validEmployee.name} has checked out`;
     const fromId = validEmployee._id;
     const io = req.app.get("io");
-    const result = await createNotification({ fromId, title, message }, io);
+
+    await createNotification({ fromId, title, message }, io);
+    io.emit("new-message", message);
 
     res.status(200).json({
       success: true,

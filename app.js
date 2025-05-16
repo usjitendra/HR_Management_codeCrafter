@@ -18,7 +18,7 @@ import drappointment from "./routes/dr.appointment.routes.js";
 import notification from "./routes/notification.routes.js"
 import http from 'http';
 import { Server } from 'socket.io';
-
+// import performance from './routes/performance.routes.js'
 
 import './middlewares/employee.attendance.cron.job.js'
 cloudinary.v2.config({
@@ -89,7 +89,7 @@ app.use('/api/v1/policy',policy)
 app.use('/api/v1/leave',leave)
 app.use('/api/v1/notification',notification)
 app.use('/api/v1/appointment',drappointment)
-
+// app.use('/api/v1/performance',performance)
 
 
 app.set('io', io); 
