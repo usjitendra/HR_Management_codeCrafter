@@ -10,7 +10,7 @@ const performanceRouter = express.Router();
 
 performanceRouter.post('/create', createPerformance);
 performanceRouter.get('/all/:id', getPerformances);
-// performanceRouter.put('/performance/:id', updatePerformance);
-// performanceRouter.delete('/performance/:id', deletePerformance);
+performanceRouter.put('/update/:id', updatePerformance);
+performanceRouter.delete('/delete/:id', deletePerformance);
 
 export default performanceRouter;

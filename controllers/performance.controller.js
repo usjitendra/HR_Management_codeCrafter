@@ -40,11 +40,20 @@ export const getPerformances = async (req, res, next) => {
 // Update Performance
 export const updatePerformance = async (req, res, next) => {
   try {
-    const updatedPerformance = await Performance.findByIdAndUpdate(
-      req.params.id,
+        // console.log(req.params.id);
+        // console.log(req.body);
+        // return;
+        
+
+    const updatedPerformance = await performanceModel.findOneAndUpdate(
+        {employeeId:req.params.id},
       req.body,
       { new: true, runValidators: true }
     );
+
+    // console.log(updatePerformance);
+    // return
+    
     if (!updatedPerformance) {
       return next(new AppError("Performance record not found", 404));
     }
@@ -61,7 +70,7 @@ export const updatePerformance = async (req, res, next) => {
 // Delete Performance
 export const deletePerformance = async (req, res, next) => {
   try {
-    const deletedPerformance = await Performance.findByIdAndDelete(req.params.id);
+    const deletedPerformance = await performanceModel.findByIdAndDelete(req.params.id);
     if (!deletedPerformance) {
       return next(new AppError("Performance record not found", 404));
     }

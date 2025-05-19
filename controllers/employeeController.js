@@ -64,7 +64,9 @@ const add_employee = async (req, res, next) => {
       role,
       password,
     } = req.body;
-
+    console.log(req.body);
+    return
+    
     const newEmpData = {
       name,
       email,
