@@ -4,7 +4,7 @@ import employeModel from "../models/employeeModel.js";
 import jwt from "jsonwebtoken";
 import { create } from "domain";
 import { createNotification } from "./notification.controller.js";
-
+import sendFirebaseNotification from '../util/send.Firebase.Notification.js';
 const key = process.env.JWT_SECRET;
 
 
@@ -51,6 +51,14 @@ const applyLeave = async (req, res, next) => {
     const result = await createNotification({ fromId, title, message }, io);
 
     io.emit("new-message", "jitendra leave le lehlus re dada"); // 🔥 Total summary bhi emit karo
+       //fcm notification ********
+      if (isValid.fcmToken) {
+      const payload = {
+        title: "Leave Request Submitted",
+        body: `${employee.name}, your leave request has been submitted.`,
+      };
+      await sendFirebaseNotification(employee.fcmToken, payload);
+    }
 
     return res.status(200).json({
       success: true,

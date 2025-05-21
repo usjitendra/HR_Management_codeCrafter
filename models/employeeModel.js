@@ -8,7 +8,7 @@ const employeeSchema = new Schema(
       type: String,
       required: true,
       trim: true,
-      required:true
+      required: true
     },
     email: {
       type: String,
@@ -27,19 +27,19 @@ const employeeSchema = new Schema(
       type: String,
     },
     mobile: {
-      type: String, 
+      type: String,
       required: true,
       trim: true,
       unique: true,
     },
-    dob: { type: String ,required:true},
-    gender: { type: String, required:true},
-    address: { type: String,required:true },
+    dob: { type: String, required: true },
+    gender: { type: String, required: true },
+    address: { type: String, required: true },
     country: { type: String },
-    state: { type: String,required:true },
-    city: { type: String,required:true },
+    state: { type: String, required: true },
+    city: { type: String, required: true },
     qualification: { type: String },
-    experience: { type: String,required:true },
+    experience: { type: String, required: true },
     maritalStatus: { type: String },
     children: { type: String },
     emergencyContact: { type: String },
@@ -67,7 +67,7 @@ const employeeSchema = new Schema(
 
     password: {
       type: String,
-      trim: true, 
+      trim: true,
     },
 
     token: {
@@ -78,35 +78,40 @@ const employeeSchema = new Schema(
     additional3: { type: String },
     additional4: { type: String },
     additional5: { type: String },
-    workId:{
-         type:Schema.Types.ObjectId,
-         ref:"EmployeeWork"  
+    workId: {
+      type: Schema.Types.ObjectId,
+      ref: "EmployeeWork"
     },
-    bankId:{
-      type:Schema.Types.ObjectId,
-      ref:"BankDetail"
+    bankId: {
+      type: Schema.Types.ObjectId,
+      ref: "BankDetail"
     },
-    attandanceId:{
-      type:Schema.Types.ObjectId,
-      ref:"Attandance"
+    attandanceId: {
+      type: Schema.Types.ObjectId,
+      ref: "Attandance"
     },
-    leaveID:{
-        type:Schema.Types.ObjectId,
-        ref:"Leave"
+    leaveID: {
+      type: Schema.Types.ObjectId,
+      ref: "Leave"
     },
-    registrationId:{
-      type:Schema.Types.ObjectId,
-      reg:"Registration"
+    registrationId: {
+      type: Schema.Types.ObjectId,
+      reg: "Registration"
     },
-    performanceId:{
-        type:Schema.Types.ObjectId,
-        ref:"Performance"
+    performanceId: {
+      type: Schema.Types.ObjectId,
+      ref: "Performance"
     },
 
-    employeeUseName:{
-     type:String
+    employeeUseName: {
+      type: String
     },
-  
+
+    fcmToken: {
+      type: String,
+      default: ""
+    },
+
   },
   {
     timestamps: true,
