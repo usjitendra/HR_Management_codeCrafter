@@ -52,6 +52,8 @@ const applyLeave = async (req, res, next) => {
 
     io.emit("new-message", "jitendra leave le lehlus re dada"); // 🔥 Total summary bhi emit karo
        //fcm notification ********
+      //  console.log(isValid.fcmToken);
+      //  return;
       if (isValid.fcmToken) {
       const payload = {
         title: "Leave Request Submitted",

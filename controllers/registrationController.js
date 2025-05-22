@@ -68,7 +68,7 @@ registrationAdmin();
 
 const login = async (req, res, next) => {
     try {
-        const { email, password } = req.body;
+        const { email, password,fcmToken } = req.body;
         
         const loginData = await registrationModel.findOne({ email });
         if (!loginData) {
@@ -80,6 +80,7 @@ const login = async (req, res, next) => {
         }
          const token=await generate_Token(loginData);
          await registrationModel.findByIdAndUpdate(loginData._id, { token });
+         await employeModel.findOneAndUpdate({registrationId:loginData.id,fcmToken:fcmToken});
          const employeeeData=await employeModel.findOne({registrationId:loginData.id})
         //  console.log(employeeeData);
          res.cookie("authToken", token, {
