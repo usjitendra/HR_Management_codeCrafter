@@ -37,22 +37,245 @@ const createAppointment = async (req, res, next) => {
     // Email content using template literal
     const mailOptions = {
       from: process.env.EMAIL_USER,
-      to: 'ayushm185@gmail.com',
-      subject: 'New Appoitment  Received',
-text: `Dear Team,
+      to: 'drpriyankapandey59@gmail.com',
+      subject: '🏥 New Appointment Request - Sadbhawana Clinic',
+      html: `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>New Appointment Request</title>
+        <style>
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                max-width: 600px;
+                margin: 0 auto;
+                background-color: #f4f4f4;
+                padding: 20px;
+            }
+            .container {
+                background-color: white;
+                padding: 30px;
+                border-radius: 12px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+            .header {
+                text-align: center;
+                border-bottom: 3px solid #2c5aa0;
+                padding-bottom: 20px;
+                margin-bottom: 30px;
+            }
+            .clinic-name {
+                color: #2c5aa0;
+                font-size: 28px;
+                font-weight: bold;
+                margin: 0;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+            .subtitle {
+                color: #666;
+                font-size: 16px;
+                margin: 5px 0 0 0;
+            }
+            .greeting {
+                font-size: 18px;
+                color: #2c5aa0;
+                margin-bottom: 20px;
+                font-weight: 600;
+            }
+            .message {
+                font-size: 16px;
+                margin-bottom: 25px;
+                color: #555;
+            }
+            .details-container {
+                background-color: #f9f9f9;
+                border-left: 4px solid #2c5aa0;
+                padding: 20px;
+                margin: 25px 0;
+                border-radius: 0 8px 8px 0;
+            }
+            .details-title {
+                font-size: 18px;
+                font-weight: bold;
+                color: #2c5aa0;
+                margin-bottom: 15px;
+                display: flex;
+                align-items: center;
+            }
+            .detail-item {
+                margin-bottom: 12px;
+                display: flex;
+                flex-wrap: wrap;
+            }
+            .detail-label {
+                font-weight: bold;
+                color: #333;
+                min-width: 140px;
+                margin-right: 10px;
+            }
+            .detail-value {
+                color: #555;
+                flex: 1;
+            }
+            .priority-notice {
+                background-color: #fff3cd;
+                border: 1px solid #ffeaa7;
+                border-radius: 8px;
+                padding: 15px;
+                margin: 25px 0;
+                text-align: center;
+            }
+            .priority-text {
+                color: #856404;
+                font-weight: 600;
+                margin: 0;
+            }
+            .footer {
+                margin-top: 30px;
+                padding-top: 20px;
+                border-top: 2px solid #e9ecef;
+                text-align: center;
+            }
+            .signature {
+                color: #2c5aa0;
+                font-weight: 600;
+                font-size: 16px;
+            }
+            .team-name {
+                color: #666;
+                font-size: 14px;
+                margin-top: 5px;
+            }
+            .icon {
+                margin-right: 8px;
+            }
+            @media (max-width: 600px) {
+                .container {
+                    padding: 20px;
+                }
+                .clinic-name {
+                    font-size: 24px;
+                }
+                .detail-item {
+                    flex-direction: column;
+                }
+                .detail-label {
+                    min-width: auto;
+                    margin-bottom: 5px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1 class="clinic-name">🏥 Sadbhawana Clinic</h1>
+                <p class="subtitle">Caring for Your Health with Compassion</p>
+            </div>
+            
+            <div class="greeting">
+                🙏 Namaste Team,
+            </div>
+            
+            <div class="message">
+                We have received a new appointment booking through our online system. Please find the patient details below and take necessary action at the earliest.
+            </div>
+            
+            <div class="details-container">
+                <div class="details-title">
+                    <span class="icon">👤</span>
+                    Patient Appointment Details
+                </div>
+                
+                <div class="detail-item">
+                    <span class="detail-label">📝 Patient Name:</span>
+                    <span class="detail-value">${patientName}</span>
+                </div>
+                
+                <div class="detail-item">
+                    <span class="detail-label">📞 Phone Number:</span>
+                    <span class="detail-value">${phoneNumber}</span>
+                </div>
+                
+                <div class="detail-item">
+                    <span class="detail-label">✉️ Email Address:</span>
+                    <span class="detail-value">${email}</span>
+                </div>
+                
+                <div class="detail-item">
+                    <span class="detail-label">🏠 Address:</span>
+                    <span class="detail-value">${address}</span>
+                </div>
+                
+                <div class="detail-item">
+                    <span class="detail-label">🗓️ Requested Date/Time:</span>
+                    <span class="detail-value">${requestedIST.toLocaleString('en-IN', {
+        timeZone: 'Asia/Kolkata',
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      })}</span>
+                </div>
+            </div>
+            
+            <div class="priority-notice">
+                <p class="priority-text">
+                    ⚡ Please contact the patient within 2-4 hours to confirm the appointment
+                </p>
+            </div>
+            
+            <div class="footer">
+                <div class="signature">
+                    With Best Regards,<br>
+                    <strong>Sadbhawana Clinic Team</strong>
+                </div>
+                <div class="team-name">
+                    Healthcare Management System
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+  `,
+      // Fallback text version for email clients that don't support HTML
+      text: `
+🏥 SADBHAWANA CLINIC
+Caring for Your Health with Compassion
 
-We have received a new Appoitment Booking with the following details:
+Namaste Team,
 
-Name: ${patientName}
-Phone Number: ${phoneNumber}
-Email Address: ${email}
-Address: ${address}
-Preferred Date/Time: ${requestedIST.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
+We have received a new appointment booking with the following details:
 
-Please address this inquiry at the earliest convenience.
+PATIENT DETAILS:
+==================
+📝 Patient Name: ${patientName}
+📞 Phone Number: ${phoneNumber}
+✉️ Email Address: ${email}
+🏠 Address: ${address}
+🗓️ Requested Date/Time: ${requestedIST.toLocaleString('en-IN', {
+        timeZone: 'Asia/Kolkata',
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      })}
 
-Best regards,  
-Code Crafter Team`,
+⚡ IMPORTANT: Please contact the patient within 2-4 hours to confirm the appointment.
+
+With Best Regards,
+Sadbhawana Clinic Team
+Healthcare Management System
+  `
     };
 
     await transporter.sendMail(mailOptions);
@@ -64,7 +287,7 @@ Code Crafter Team`,
 
   } catch (err) {
     console.log(err);
-    
+
     return next(new AppError(err.message, 500));
   }
 };
