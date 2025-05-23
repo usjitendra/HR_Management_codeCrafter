@@ -4,42 +4,42 @@ import AppError from "../util/appError.js";
 import nodemailer from "nodemailer"
 
 const createAppointment = async (req, res, next) => {
-  try {
-    console.log("i am coming for create appointment");
+    try {
+        console.log("i am coming for create appointment");
 
-    const { patientName, phoneNumber, gender, purpose, dateTime, address, email } = req.body;
-    console.log(req.body);
+        const { patientName, phoneNumber, gender, purpose, dateTime, address, email } = req.body;
+        console.log(req.body);
 
-    if (!patientName || !dateTime) {
-      return next(new AppError("Patient name and date/time required", 400));
-    }
+        if (!patientName || !dateTime) {
+            return next(new AppError("Patient name and date/time required", 400));
+        }
 
-    const requestedTime = new Date(dateTime);
+        const requestedTime = new Date(dateTime);
 
-    // Convert to IST
-    const requestedIST = new Date(requestedTime.getTime() + 5.5 * 60 * 60 * 1000);
+        // Convert to IST
+        const requestedIST = new Date(requestedTime.getTime() + 5.5 * 60 * 60 * 1000);
 
-    // Only allow 20-minute intervals
-    const minutes = requestedTime.getMinutes();
-    // if (minutes % 20 !== 0) {
-    //   return next(new AppError("Please select correct slot", 400));
-    // }
+        // Only allow 20-minute intervals
+        const minutes = requestedTime.getMinutes();
+        // if (minutes % 20 !== 0) {
+        //   return next(new AppError("Please select correct slot", 400));
+        // }
 
-    // Nodemailer configuration
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD,
-      },
-    });
+        // Nodemailer configuration
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASSWORD,
+            },
+        });
 
-    // Email content using template literal
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: 'drpriyankapandey59@gmail.com',
-      subject: '🏥 New Appointment Request - Sadbhawana Clinic',
-      html: `
+        // Email content using template literal
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: 'ayushm185@gmail.com',
+            subject: '🏥 New Appointment Request - Sadbhawana Clinic',
+            html: `
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -174,7 +174,8 @@ const createAppointment = async (req, res, next) => {
     <body>
         <div class="container">
             <div class="header">
-                <h1 class="clinic-name">🏥 Sadbhawana Clinic</h1>
+                <img src="https://sadbhawanaclinic.com/assets/logo-BOQLvDo3.png" alt="Sadbhawana Clinic Logo" style="max-width: 200px; height: auto; margin-bottom: 15px;">
+                <h1 class="clinic-name">Sadbhawana Clinic</h1>
                 <p class="subtitle">Caring for Your Health with Compassion</p>
             </div>
             
@@ -213,16 +214,24 @@ const createAppointment = async (req, res, next) => {
                 </div>
                 
                 <div class="detail-item">
-                    <span class="detail-label">🗓️ Requested Date/Time:</span>
-                    <span class="detail-value">${requestedIST.toLocaleString('en-IN', {
-        timeZone: 'Asia/Kolkata',
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      })}</span>
+                    <span class="detail-label">📅 Appointment Date:</span>
+                    <span class="detail-value">${requestedIST.toLocaleDateString('en-IN', {
+                timeZone: 'Asia/Kolkata',
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            })}</span>
+                </div>
+                
+                <div class="detail-item">
+                    <span class="detail-label">🕐 Appointment Time:</span>
+                    <span class="detail-value">${requestedIST.toLocaleTimeString('en-IN', {
+                timeZone: 'Asia/Kolkata',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            })}</span>
                 </div>
             </div>
             
@@ -240,13 +249,18 @@ const createAppointment = async (req, res, next) => {
                 <div class="team-name">
                     Healthcare Management System
                 </div>
+                
+                <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #e9ecef;">
+                    <div style="color: #888; font-size: 14px; margin-bottom: 10px;">Powered By</div>
+                    <img src="https://www.codecrafter.co.in/assets/logo-B56gx62B.png" alt="Code Crafter Logo" style="max-width: 150px; height: auto;">
+                </div>
             </div>
         </div>
     </body>
     </html>
   `,
-      // Fallback text version for email clients that don't support HTML
-      text: `
+            // Fallback text version for email clients that don't support HTML
+            text: `
 🏥 SADBHAWANA CLINIC
 Caring for Your Health with Compassion
 
@@ -260,15 +274,19 @@ PATIENT DETAILS:
 📞 Phone Number: ${phoneNumber}
 ✉️ Email Address: ${email}
 🏠 Address: ${address}
-🗓️ Requested Date/Time: ${requestedIST.toLocaleString('en-IN', {
-        timeZone: 'Asia/Kolkata',
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      })}
+📅 Appointment Date: ${requestedIST.toLocaleDateString('en-IN', {
+                timeZone: 'Asia/Kolkata',
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            })}
+🕐 Appointment Time: ${requestedIST.toLocaleTimeString('en-IN', {
+                timeZone: 'Asia/Kolkata',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            })}
 
 ⚡ IMPORTANT: Please contact the patient within 2-4 hours to confirm the appointment.
 
@@ -276,35 +294,35 @@ With Best Regards,
 Sadbhawana Clinic Team
 Healthcare Management System
   `
-    };
+        };
 
-    await transporter.sendMail(mailOptions);
+        await transporter.sendMail(mailOptions);
 
-    res.status(200).json({
-      success: true,
-      message: "Inquiry email sent successfully",
-    });
+        res.status(200).json({
+            success: true,
+            message: "Inquiry email sent successfully",
+        });
 
-  } catch (err) {
-    console.log(err);
+    } catch (err) {
+        console.log(err);
 
-    return next(new AppError(err.message, 500));
-  }
+        return next(new AppError(err.message, 500));
+    }
 };
 
 
 const getAllAppointments = async (req, res, next) => {
-  try {
-    const appointments = await AppointmentModel.find();
+    try {
+        const appointments = await AppointmentModel.find();
 
-    res.status(200).json({
-      success: true,
-      message: "Appointments fetched successfully",
-      data: appointments,
-    });
-  } catch (err) {
-    return next(new AppError(err.message, 500));
-  }
+        res.status(200).json({
+            success: true,
+            message: "Appointments fetched successfully",
+            data: appointments,
+        });
+    } catch (err) {
+        return next(new AppError(err.message, 500));
+    }
 };
 
 export { createAppointment, getAllAppointments };
