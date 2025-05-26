@@ -127,10 +127,10 @@ const attandanceLogin = async (req, res, next) => {
     const twelvePM = new Date(now);
     threePM.setHours(12, 0, 0, 0);
 
-    if (now < nineAM) {
-      return next(new AppError("You are checking in too early", 400));
-    }
-
+    // if (now < nineAM) {
+      // return next(new AppError("You are checking in too early", 400));
+    // }
+         
     if (now > threePM) {
       return next(new AppError("Check-in time is over for today", 400));
     }
