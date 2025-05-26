@@ -107,8 +107,8 @@ const attandanceLogin = async (req, res, next) => {
     const leaveData = await leaveModel.find({ employeeId: validEmployee._id });
 
     // Get current date and time in IST
-    const now = new Date(requestedTime.getTime() + 5.5 * 60 * 60 * 1000);
-    // const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+    // const now = new Date(requestedTime.getTime() + 5.5 * 60 * 60 * 1000);
+    const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
 
     const startOfDay = new Date(now);
     startOfDay.setHours(0, 0, 0, 0);
@@ -283,9 +283,9 @@ const attandanceLogout = async (req, res, next) => {
     }
 
     // Get current IST time
-    const now = new Date(requestedTime.getTime() + 5.5 * 60 * 60 * 1000);
+    // const now = new Date(requestedTime.getTime() + 5.5 * 60 * 60 * 1000);
 
-    // const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+    const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
 
     // Get start and end of today in IST
     const todayStart = new Date(now);
