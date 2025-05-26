@@ -111,7 +111,6 @@ const add_employee = async (req, res, next) => {
         secure_url: result.secure_url,
       };
     }
-
     // Upload Document
     if (files?.document) {
       const result = await cloudinary.v2.uploader.upload(
@@ -125,7 +124,6 @@ const add_employee = async (req, res, next) => {
         secure_url: result.secure_url,
       };
     }
-
     const addEmp = await employeModel.create(newEmpData);
    const result= await registrationModel.create({
       name,
@@ -133,6 +131,8 @@ const add_employee = async (req, res, next) => {
       password,
       role:"employee",
     });
+       console.log();
+       
       addEmp.registrationId=result._id;
        addEmp.save();
     res.status(200).json({

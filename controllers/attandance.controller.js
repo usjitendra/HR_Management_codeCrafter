@@ -126,7 +126,7 @@ const attandanceLogin = async (req, res, next) => {
     threePM.setHours(15, 0, 0, 0);
     const twelvePM = new Date(now);
     threePM.setHours(12, 0, 0, 0);
-    
+
     if (now < nineAM) {
       return next(new AppError("You are checking in too early", 400));
     }
@@ -476,6 +476,8 @@ const getMonthalyDetail = async (req, res, next) => {
       employeeId: data[0]._id,
     });
 
+     console.log(attandanceData);
+     
     const today = new Date().toLocaleDateString();
     const todayData = attandanceData.find((record) => {
       const loginDate = new Date(record.createdAt).toLocaleDateString();
