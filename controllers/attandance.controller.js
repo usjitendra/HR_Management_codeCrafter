@@ -107,9 +107,9 @@ const attandanceLogin = async (req, res, next) => {
     const leaveData = await leaveModel.find({ employeeId: validEmployee._id });
 
     // Get current date and time in IST
-    const requestedTime=new Date();
-    const now = new Date(requestedTime.getTime() + 5.5 * 60 * 60 * 1000);
-    // const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+    // const requestedTime=new Date();
+    // const now = new Date(requestedTime.getTime() + 5.5 * 60 * 60 * 1000);
+    const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
 
     const startOfDay = new Date(now);
     startOfDay.setHours(0, 0, 0, 0);
@@ -136,9 +136,9 @@ const attandanceLogin = async (req, res, next) => {
       return next(new AppError("You are checking in too early", 400));
     }
          
-    if (now > threePM) {
-      return next(new AppError("Check-in time is over for today", 400));
-    }
+    // if (now > threePM) {
+    //   return next(new AppError("Check-in time is over for today", 400));
+    // }
 
     const todayLeave = leaveData.some((leave) => {
       const leaveStartDate = new Date(leave.startDate);
@@ -284,10 +284,10 @@ const attandanceLogout = async (req, res, next) => {
     }
 
     // Get current IST time
-      const requestedTime= new Date();
-    const now = new Date(requestedTime.getTime() + 5.5 * 60 * 60 * 1000);
+    //   const requestedTime= new Date();
+    // const now = new Date(requestedTime.getTime() + 5.5 * 60 * 60 * 1000);
 
-    // const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+    const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
 
     // Get start and end of today in IST
     const todayStart = new Date(now);
