@@ -97,6 +97,8 @@ const key = process.env.JWT_SECRET;
 const attandanceLogin = async (req, res, next) => {
   try {
     const { id } = req.params;
+    console.log("jo id aa rahih",id);
+    
     const validEmployee = await employeModel.findOne({ registrationId: id });
     if (!validEmployee) {
       return next(new AppError("Employee is Not Valid", 400));
@@ -122,7 +124,9 @@ const attandanceLogin = async (req, res, next) => {
 
     const threePM = new Date(now);
     threePM.setHours(15, 0, 0, 0);
-
+    const twelvePM = new Date(now);
+    threePM.setHours(12, 0, 0, 0);
+    
     if (now < nineAM) {
       return next(new AppError("You are checking in too early", 400));
     }
@@ -265,8 +269,10 @@ const attandanceLogin = async (req, res, next) => {
 const attandanceLogout = async (req, res, next) => {
   try {
     const { id } = req.params;
-
-    const validEmployee = await employeModel.findOne({ registrationId: id });
+    console.log("jo id aa rahih",id);
+    
+      // return;
+    const validEmployee = await employeModel.findOne({ registrationId: id});
 
     if (!validEmployee) {
       return next(new AppError("Employee is Not Valid", 400));
