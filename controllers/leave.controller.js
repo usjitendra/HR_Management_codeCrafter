@@ -269,6 +269,31 @@ const allLeave = async (req, res, next) => {
   }
 };
 
+
+const singleLeave=async(req,res,next)=>{
+  try {
+       const{id}=req.params
+       console.log(id);
+         const leaves=await leaveModel.find({employeeId:id})
+         const totalLeaves = leaves.length;
+         const approvedLeaves = leaves.filter(leave => leave.status === 'Approved').length;
+         const rejectedLeaves = leaves.filter(leave => leave.status === 'Rejected').length;
+         
+         const data={
+          totalLeaves,
+          approvedLeaves,
+          rejectedLeaves
+         }
+         return res.status(200).json({
+            success:true,
+            data:data
+         })
+       
+  } catch (err) {
+    return next(new AppError(err.message,500))
+  }
+}
+
 export {
   applyLeave,
   getMyLeaves,
@@ -279,4 +304,5 @@ export {
   leaveEdit,
   allEmployeeLeaveDetail,
   allLeave,
+  singleLeave
 };
