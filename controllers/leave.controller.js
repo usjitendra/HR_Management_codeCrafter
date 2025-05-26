@@ -273,7 +273,7 @@ const allLeave = async (req, res, next) => {
 const singleLeave=async(req,res,next)=>{
   try {
        const{id}=req.params
-       console.log(id);
+      //  console.log(id);
          const leaves=await leaveModel.find({employeeId:id})
          const totalLeaves = leaves.length;
          const approvedLeaves = leaves.filter(leave => leave.status === 'Approved').length;
