@@ -7,8 +7,6 @@ import { createNotification } from "./notification.controller.js";
 import sendFirebaseNotification from '../util/send.Firebase.Notification.js';
 const key = process.env.JWT_SECRET;
 
-
-
 const applyLeave = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -101,7 +99,7 @@ const approveLeave = async (req, res, next) => {
     if (response.status !== "Pending") {
       return next(new AppError("Leave has already been reviewed", 400));
     }
-    (response.status = "Approved"), (response.description = adminDescription);
+    (response.status = "Approved");
 
     //create notification leave...
     const title = "Leave";
@@ -201,6 +199,7 @@ const alldetail = async (req, res, next) => {
     const leaveData = await leaveModel
       .find({ employeeId: employeeData._id })
       .sort({ startDate: -1 });
+      
     const data = {
       employeeData: {
         name: employeeData.name,

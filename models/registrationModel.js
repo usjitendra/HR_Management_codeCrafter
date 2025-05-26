@@ -10,14 +10,12 @@ const registrationSchema=new Schema(
        email:{
         type:String,
         required:true,
-        unique:true
        },
        mobile:{
         type:String,
        },
        password:{
         type:String,
-        // required:true
        },
        role:{
         type:String,

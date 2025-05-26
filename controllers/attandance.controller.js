@@ -9,7 +9,7 @@ import jwt from "jsonwebtoken";
 import leaveModel from "../models/leave.model.js";
 import { log } from "console";
 import { createNotification } from "./notification.controller.js";
-const ObjectId= mongoose.Types.ObjectId;
+const ObjectId = mongoose.Types.ObjectId;
 
 const key = process.env.JWT_SECRET;
 //***if employee id commimh then  */
@@ -120,8 +120,16 @@ const attandanceLogin = async (req, res, next) => {
     const tenAM = new Date(now);
     tenAM.setHours(10, 0, 0, 0);
 
-    const twelvePM = new Date(now);
-    twelvePM.setHours(12, 0, 0, 0);
+    const threePM = new Date(now);
+    threePM.setHours(15, 0, 0, 0);
+
+    if (now < nineAM) {
+      return next(new AppError("You are checking in too early", 400));
+    }
+
+    if (now > threePM) {
+      return next(new AppError("Check-in time is over for today", 400));
+    }
 
     const todayLeave = leaveData.some((leave) => {
       const leaveStartDate = new Date(leave.startDate);
@@ -389,7 +397,7 @@ const all_employee_aatendance = async (req, res, next) => {
     if (!result) {
       return next(new AppError("Employee not found", 400));
     } else {
-      return res.status(200).json({ success: true, result ,message:"success"});
+      return res.status(200).json({ success: true, result, message: "success" });
     }
   } catch (err) {
     return next(new AppError(err.message, 500));
@@ -401,7 +409,7 @@ const testApi = async (req, res, next) => {
     console.log("jitendra");
 
     return next(new AppError("data not fond", 500));
-  } catch (err) {}
+  } catch (err) { }
 };
 
 const getChartAttendance = async (req, res, next) => {
@@ -572,7 +580,7 @@ const attendanceFilter = async (req, res, next) => {
     ]);
 
     return res.status(200).json({
-      message:"success",
+      message: "success",
       success: true,
       count: data.length,
       data,
@@ -592,7 +600,7 @@ const monthelydetail = async (req, res, next) => {
     const result = await AttandanceModel.aggregate([
       {
         $match: {
-          employeeId:new ObjectId(employeeId) // ✅ correct match
+          employeeId: new ObjectId(employeeId) // ✅ correct match
         }
       },
       {
@@ -601,7 +609,7 @@ const monthelydetail = async (req, res, next) => {
       {
         $addFields: { year: { $year: "$createdAt" } },
       },
-      {$match:{month:month*1,year:year*1}},
+      { $match: { month: month * 1, year: year * 1 } },
       {
         $project: {
           month: 0,
@@ -610,10 +618,10 @@ const monthelydetail = async (req, res, next) => {
       }
     ]);
 
-    if(result.length===0){
-      return next(new AppError("Data not found",404))
-    }else{
-      return res.status(200).json({success:true,data:result,message:"Monthly attendance fetched successfully"})
+    if (result.length === 0) {
+      return next(new AppError("Data not found", 404))
+    } else {
+      return res.status(200).json({ success: true, data: result, message: "Monthly attendance fetched successfully" })
     }
   } catch (err) {
     return next(new AppError(err.message, 500));

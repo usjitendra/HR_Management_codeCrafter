@@ -229,12 +229,10 @@ const employee_update = async (req, res, next) => {
     }
 
     if (existingEmployee.registrationId) {
-      const regUpdate = {
-        name,
-        email,
-        password,
-      };
-     
+      const regUpdate = {name,email,};
+      if(password&&password.trim()!==""){
+          regUpdate.password=password
+      }
       await registrationModel.findByIdAndUpdate(existingEmployee.registrationId, regUpdate, {
         new: true,
         runValidators: true,

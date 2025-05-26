@@ -15,7 +15,6 @@ const employeeSchema = new Schema(
       required: true,
       trim: true,
       lowercase: true,
-      unique: true,
       match: [/.+\@.+\..+/, "Please provide a valid email address"],
     },
     workEmail: {
@@ -30,7 +29,6 @@ const employeeSchema = new Schema(
       type: String,
       required: true,
       trim: true,
-      unique: true,
     },
     dob: { type: String, required: true },
     gender: { type: String, required: true },
