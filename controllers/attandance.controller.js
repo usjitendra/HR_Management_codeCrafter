@@ -107,7 +107,7 @@ const attandanceLogin = async (req, res, next) => {
     const leaveData = await leaveModel.find({ employeeId: validEmployee._id });
 
     // Get current date and time in IST
-    // const requestedTime=new Date();
+    const requestedTime=new Date();
     const now1 = new Date(requestedTime.getTime() + 5.5 * 60 * 60 * 1000);
     // const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
       const now = new Date();
