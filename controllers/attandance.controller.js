@@ -108,38 +108,38 @@ const attandanceLogin = async (req, res, next) => {
 
     // Get current date and time in IST
     // const requestedTime=new Date();
-    // const now = new Date(requestedTime.getTime() + 5.5 * 60 * 60 * 1000);
+    const now1 = new Date(requestedTime.getTime() + 5.5 * 60 * 60 * 1000);
     // const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
       const now = new Date();
 
-    const startOfDay = new Date(now);
+    const startOfDay = new Date(now1);
     startOfDay.setHours(0, 0, 0, 0);
 
-    const endOfDay = new Date(now);
+    const endOfDay = new Date(now1);
     endOfDay.setHours(23, 59, 59, 999);
 
-    const nineAM = new Date(now);
+    const nineAM = new Date(now1);
     nineAM.setHours(9, 0, 0, 0);
 
-    const tenAM = new Date(now);
+    const tenAM = new Date(now1);
     tenAM.setHours(10, 0, 0, 0);
 
-    const threePM = new Date(now);
+    const threePM = new Date(now1);
     threePM.setHours(15, 0, 0, 0);
-    const twelvePM = new Date(now);
+    const twelvePM = new Date(now1);
     twelvePM.setHours(12, 0, 0, 0);
 
     console.log("threePM",threePM);
     console.log("now",now);
     console.log("nineAM",nineAM);
     
-    // if (now < nineAM) {
-    //   return next(new AppError("You are checking in too early", 400));
-    // }
+    if (now1 < nineAM) {
+      return next(new AppError("You are checking in too early", 400));
+    }
          
-    // if (now > threePM) {
-    //   return next(new AppError("Check-in time is over for today", 400));
-    // }
+    if (now1 > threePM) {
+      return next(new AppError("Check-in time is over for today", 400));
+    }
 
     const todayLeave = leaveData.some((leave) => {
       const leaveStartDate = new Date(leave.startDate);
@@ -171,9 +171,9 @@ const attandanceLogin = async (req, res, next) => {
     let isFullDay = false;
     let isHalfDay = false;
 
-    if (now >= nineAM && now <= tenAM) {
+    if (now1 >= nineAM && now1 <= tenAM) {
       isFullDay = true;
-    } else if (now > tenAM && now <= twelvePM) {
+    } else if (now1 > tenAM && now1 <= twelvePM) {
       isHalfDay = true;
     }
 
