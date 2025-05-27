@@ -288,7 +288,7 @@ const attandanceLogout = async (req, res, next) => {
     //   const requestedTime= new Date();
     // const now = new Date(requestedTime.getTime() + 5.5 * 60 * 60 * 1000);
 
-    const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+    const now = new Date(new Date().toLocaleString());
 
     // Get start and end of today in IST
     const todayStart = new Date(now);
