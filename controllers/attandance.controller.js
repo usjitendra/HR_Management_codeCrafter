@@ -132,9 +132,9 @@ const attandanceLogin = async (req, res, next) => {
     console.log("now",now);
     console.log("nineAM",nineAM);
     
-    if (now < nineAM) {
-      return next(new AppError("You are checking in too early", 400));
-    }
+    // if (now < nineAM) {
+    //   return next(new AppError("You are checking in too early", 400));
+    // }
          
     // if (now > threePM) {
     //   return next(new AppError("Check-in time is over for today", 400));
