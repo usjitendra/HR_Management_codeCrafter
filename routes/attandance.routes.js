@@ -7,6 +7,7 @@ import { attandanceLogin,attandanceLogout,absent,employee_attendence, all_employ
 
 const attandanceRoute=Router()
 
+console.log("aa");
 
 attandanceRoute.post("/checkIn/:id",attandanceLogin)
 attandanceRoute.put("/checkout/:id",attandanceLogout)
