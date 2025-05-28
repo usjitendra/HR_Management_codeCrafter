@@ -9,6 +9,7 @@ import jwt from "jsonwebtoken";
 import leaveModel from "../models/leave.model.js";
 import { log } from "console";
 import { createNotification } from "./notification.controller.js";
+import { create } from "domain";
 const ObjectId = mongoose.Types.ObjectId;
 
 const key = process.env.JWT_SECRET;
@@ -97,8 +98,8 @@ const key = process.env.JWT_SECRET;
 const attandanceLogin = async (req, res, next) => {
   try {
     const { id } = req.params;
-    console.log("jo id aa rahih",id);
-    
+    console.log("jo id aa rahih", id);
+
     const validEmployee = await employeModel.findOne({ registrationId: id });
     if (!validEmployee) {
       return next(new AppError("Employee is Not Valid", 400));
@@ -107,10 +108,10 @@ const attandanceLogin = async (req, res, next) => {
     const leaveData = await leaveModel.find({ employeeId: validEmployee._id });
 
     // Get current date and time in IST
-    const requestedTime=new Date();
+    const requestedTime = new Date();
     const now1 = new Date(requestedTime.getTime() + 5.5 * 60 * 60 * 1000);
     // const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
-      const now = new Date();
+    const now = new Date();
 
     const startOfDay = new Date(now1);
     startOfDay.setHours(0, 0, 0, 0);
@@ -129,14 +130,14 @@ const attandanceLogin = async (req, res, next) => {
     const twelvePM = new Date(now1);
     twelvePM.setHours(12, 0, 0, 0);
 
-    console.log("threePM",threePM);
-    console.log("now",now);
-    console.log("nineAM",nineAM);
-    
+    console.log("threePM", threePM);
+    console.log("now", now);
+    console.log("nineAM", nineAM);
+
     if (now1 < nineAM) {
       return next(new AppError("You are checking in too early", 400));
     }
-         
+
     if (now1 > threePM) {
       return next(new AppError("Check-in time is over for today", 400));
     }
@@ -275,10 +276,10 @@ const attandanceLogin = async (req, res, next) => {
 const attandanceLogout = async (req, res, next) => {
   try {
     const { id } = req.params;
-    console.log("jo id aa rahih",id);
-    
-      // return;
-    const validEmployee = await employeModel.findOne({ registrationId: id});
+    console.log("jo id aa rahih", id);
+
+    // return;
+    const validEmployee = await employeModel.findOne({ registrationId: id });
 
     if (!validEmployee) {
       return next(new AppError("Employee is Not Valid", 400));
@@ -485,8 +486,8 @@ const getMonthalyDetail = async (req, res, next) => {
       employeeId: data[0]._id,
     });
 
-     console.log(attandanceData);
-     
+    console.log(attandanceData);
+
     const today = new Date().toLocaleDateString();
     const todayData = attandanceData.find((record) => {
       const loginDate = new Date(record.createdAt).toLocaleDateString();
@@ -645,6 +646,24 @@ const monthelydetail = async (req, res, next) => {
   }
 };
 
+const individual_attandance_detai = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    console.log(id);
+
+    const name = await employeModel.findById(id).select('name');
+    const attendance = await AttandanceModel.find({ employeeId: id }).sort({ createdAt: -1 });
+    const data={
+      name,
+      attendance
+    }
+    return res.status(200).json({ success: true, data:data })
+
+  } catch (err) {
+    return next(new AppError(err.message, 500));
+  }
+}
+
 export {
   attandanceLogin,
   attandanceLogout,
@@ -656,4 +675,5 @@ export {
   getMonthalyDetail,
   attendanceFilter,
   monthelydetail,
+  individual_attandance_detai
 };
