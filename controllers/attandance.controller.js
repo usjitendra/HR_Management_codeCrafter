@@ -202,7 +202,7 @@ const attandanceLogin = async (req, res, next) => {
     const message = `${validEmployee.name} has checked in`;
     const fromId = validEmployee._id;
     const io = req.app.get("io");
-    await createNotification({ fromId, title, message }, io);
+    await createNotification( validEmployee.fcmToken, title, message);
     io.emit("new-message", `${validEmployee.name} has checked in`);
 
     res.status(200).json({
@@ -330,8 +330,20 @@ const attandanceLogout = async (req, res, next) => {
     const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
     const diffSecs = Math.floor((diffMs % (1000 * 60)) / 1000);
     const workingTime = `${diffHrs}h ${diffMins}m ${diffSecs}s`;
-
     todayAttendance.workingHours = workingTime;
+
+    //ot time calculate
+    const standardMs = 9 * 60 * 60 * 1000;
+
+    if (diffMs > standardMs) {
+      const otMs = diffMs - standardMs;
+      const otHrs = Math.floor(otMs / (1000 * 60 * 60));
+      const otMins = Math.floor((otMs % (1000 * 60 * 60)) / (1000 * 60));
+      const otSecs = Math.floor((otMs % (1000 * 60)) / 1000);
+      todayAttendance.otTime = `${otHrs}h ${otMins}m ${otSecs}s`; // 👈
+    } else {
+      todayAttendance.otTime = `0h 0m 0s`; // 👈 no overtime
+    }
     await todayAttendance.save();
 
     // Notification
@@ -340,7 +352,7 @@ const attandanceLogout = async (req, res, next) => {
     const fromId = validEmployee._id;
     const io = req.app.get("io");
 
-    await createNotification({ fromId, title, message }, io);
+    await createNotification(validEmployee.fcmToken, title, message );
     io.emit("new-message", message);
 
     res.status(200).json({
@@ -653,11 +665,11 @@ const individual_attandance_detai = async (req, res, next) => {
 
     const name = await employeModel.findById(id).select('name');
     const attendance = await AttandanceModel.find({ employeeId: id }).sort({ createdAt: -1 });
-    const data={
+    const data = {
       name,
       attendance
     }
-    return res.status(200).json({ success: true, data:data })
+    return res.status(200).json({ success: true, data: data })
 
   } catch (err) {
     return next(new AppError(err.message, 500));

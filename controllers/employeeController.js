@@ -16,6 +16,7 @@ const key = process.env.JWT_SECRET;
 import jwt from 'jsonwebtoken';
 import AttandanceModel from "../models/attandance.model.js";
 import leaveModel from "../models/leave.model.js";
+import { validate } from "node-cron";
 // const add_emploddyee = async (req, res, next) => {
 //   try {
 
@@ -459,6 +460,35 @@ try {
 };
 
 
+const saveFcmToken = async (req, res, next) => {
+  try {
+    const { id, token } = req.body;
+
+    // Fetch employee document
+    const validatEmployee = await employeModel.findById(id); // ✅ Add await
+
+    // If employee not found
+    if (!validatEmployee) {
+      return next(new AppError("Employee not found", 404));
+    }
+
+    // Save FCM token
+    validatEmployee.fcmToken = token;
+    await validatEmployee.save();
+
+    console.log("FCM token saved:", validatEmployee.fcmToken);
+
+    return res.status(200).json({
+      success: true,
+      message: "Token added successfully",
+    });
+  } catch (err) {
+    return next(new AppError(err.message, 500));
+  }
+};
+
+
+
 export {
   add_employee,
   employee_update,
@@ -469,5 +499,6 @@ export {
   oneEmployee,
   employeeAlldetail,
   employee_profile,
-  single_employee_allDetail
+  single_employee_allDetail,
+  saveFcmToken
 };

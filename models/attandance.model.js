@@ -29,6 +29,9 @@ const attandanceSchema = new Schema(
     totalWorkingHour: {
       type: String,
     },
+    otTime:{
+      type:String
+    },
     isHalfDay: {
       type: Boolean,
       default: false,

@@ -21,4 +21,4 @@ cron.schedule("0 1 * * *",async()=>{
      notification()
 })
 
-// notification();
+notification();

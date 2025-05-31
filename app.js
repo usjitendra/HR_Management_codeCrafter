@@ -19,7 +19,8 @@ import notification from "./routes/notification.routes.js"
 import http from 'http';
 import { Server } from 'socket.io';
 import performance from './routes/performance.routes.js'
-import fcmNotification from './routes/firbase.routes.js'
+// import fcmNotification from './routes/firbase.routes.js'
+import fcmNotification from './controllers/fcm.notification.js'
 
 import './middlewares/employee.attendance.cron.job.js'
 import "./middlewares/notification.cron.js"
@@ -92,7 +93,7 @@ app.use('/api/v1/leave',leave)
 app.use('/api/v1/notification',notification)
 app.use('/api/v1/appointment',drappointment)
 app.use('/api/v1/performance',performance)
-app.use('/api/v1/firebase',fcmNotification)
+app.use('/api/v1/fcmNotification',fcmNotification)
 
 
 app.set('io', io); 

@@ -6,7 +6,7 @@ import { create } from "domain";
 import { createNotification } from "./notification.controller.js";
 import sendFirebaseNotification from '../util/send.Firebase.Notification.js';
 const key = process.env.JWT_SECRET;
-
+import sendNotification from './fcm.notification.js'
 const applyLeave = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -39,14 +39,15 @@ const applyLeave = async (req, res, next) => {
       breakDown,
     });
     //  return;
-    await employeModel.findByIdAndUpdate(id, { leaveID: newLeave._id });
-
+    const employeeData =await employeModel.findByIdAndUpdate(id, { leaveID: newLeave._id });
+        //  console.log("employeModel111",employeeData.fcmToken);
+         
     //create notification leave...
     const io = req.app.get("io");
     const title = " Leave Request";
     const message = `${isValid.name} leave Applay`;
     const fromId = id;
-    const result = await createNotification({ fromId, title, message }, io);
+    const result = await createNotification(employeeData.fcmToken, title, message);
 
     io.emit("new-message", "jitendra leave le lehlus re dada"); // 🔥 Total summary bhi emit karo
        //fcm notification ********
