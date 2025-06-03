@@ -30,7 +30,8 @@ const attandanceSchema = new Schema(
       type: String,
     },
     otTime:{
-      type:String
+      type:String,
+      default:"0h 0m 0s"
     },
     isHalfDay: {
       type: Boolean,
