@@ -59,8 +59,8 @@ const viewSallery_slipe = async (req, res, next) => {
   try {
     const { startDate, endDate } = req.query;
 
-      console.log("startDate",startDate);
-      console.log("endDate",endDate);
+    console.log("startDate", startDate);
+    console.log("endDate", endDate);
     //   return
     // Use provided dates or fallback to current month
     const now = new Date();
@@ -110,4 +110,66 @@ const viewSallery_slipe = async (req, res, next) => {
   }
 };
 
-export { viewSallery_slipe };
+const viewSallery_employee = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { startDate, endDate } = req.query;
+
+    console.log("startDate", startDate);
+    console.log("endDate", endDate);
+
+    if (!startDate || !endDate) {
+      return res.status(400).json({
+        success: false,
+        message: "Please select start date and end date",
+      });
+    }
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    console.log("ID:", id);
+    console.log("Start:", start);
+    console.log("End:", end);
+
+    const employee = await employeModel.findOne({ registrationId: id });
+
+    if (!employee) {
+      return res.status(404).json({ success: false, message: "Employee not found" });
+    }
+
+    const attendanceRecords = await AttandanceModel.find({
+      employeeId: employee._id,
+      createdAt: { $gte: start, $lte: end },
+    });
+
+    const presentDays = attendanceRecords.filter((rec) => rec.status === "present").length;
+    const totalDays = attendanceRecords.length;
+
+    const bankData = await employeeWorkModel.findOne({ employeeId: employee._id });
+    const salary = bankData?.salary || 0;
+    const oneday_salary = salary / 30;
+    const estimate_salary = oneday_salary * presentDays;
+
+    const result = {
+      employeeData: employee,
+      work_data: bankData,
+      salary,
+      absentDays: totalDays - presentDays,
+      totalDays,
+      estimate_salary,
+    };
+
+    return res.status(200).json({
+      success: true,
+      message: "Employee Monthly Salary",
+      data: result,
+    });
+
+  } catch (err) {
+    return next(new AppError(err.message, 500));
+  }
+};
+
+export { viewSallery_slipe, viewSallery_employee };
