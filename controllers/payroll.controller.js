@@ -158,6 +158,7 @@ const viewSallery_employee = async (req, res, next) => {
       salary,
       absentDays: totalDays - presentDays,
       totalDays,
+      presentDays,
       estimate_salary,
     };
 
