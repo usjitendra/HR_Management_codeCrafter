@@ -3,6 +3,8 @@ import employeeBankModel from "../models/employee.bank.model.js";
 import employeModel from "../models/employeeModel.js";
 import AttandanceModel from "../models/attandance.model.js";
 import employeeWorkModel from "../models/employee.work.information.model.js";
+import salarySlipModel from "../models/salary.slip.model.js";
+
 
 // const viewSallery_slipe = async (req, res, next) => {
 //   try {
@@ -173,4 +175,23 @@ const viewSallery_employee = async (req, res, next) => {
   }
 };
 
-export { viewSallery_slipe, viewSallery_employee };
+
+const add_salary_slip=async (req,res,next)=>{
+       try {
+              console.log("hamh beta ?");  
+              const {id,name,email,mobile,actualSalary,totalDay,presentDay,absentDay,estimateSalary}=req.body;
+              const result=await salarySlipModel.create({
+                employeeId:id,
+                name,
+                email,
+                mobile,
+                actualSalary,
+                totalDay,
+                presentDay,absentDay,estimateSalary
+              })
+              return res.status(200).json({success:true,messag:"salary create successfully",data:result})
+       } catch (err) {
+          return next(new AppError(err.message,500));
+       } 
+}
+export { viewSallery_slipe, viewSallery_employee,add_salary_slip };
