@@ -40,7 +40,7 @@ const applyLeave = async (req, res, next) => {
     });
     //  return;
     const employeeData =await employeModel.findByIdAndUpdate(id, { leaveID: newLeave._id });
-        //  console.log("employeModel111",employeeData.fcmToken);
+      //  console.log("employeModel111",employeeData.fcmToken);
          
     //create notification leave...
     const io = req.app.get("io");

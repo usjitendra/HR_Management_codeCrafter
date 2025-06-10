@@ -8,6 +8,16 @@ import jwt from 'jsonwebtoken';
 import {generate_Token,token_validate} from '../middlewares/auth.js'
 import path from "path";
 import employeModel from "../models/employeeModel.js";
+import crypto from "crypto"
+
+// const pass=async(pass)=>{
+//      const has=crypto.pbkdf2Sync(pass,'5',1000,64,'sha512').toString('hex')
+//      console.log("has",has);
+     
+// }
+
+// pass("Nn@12345");
+
 
 const registration=async(req,res,next)=>{
     try{

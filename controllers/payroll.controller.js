@@ -4,7 +4,7 @@ import employeModel from "../models/employeeModel.js";
 import AttandanceModel from "../models/attandance.model.js";
 import employeeWorkModel from "../models/employee.work.information.model.js";
 import salarySlipModel from "../models/salary.slip.model.js";
-
+import PDFDocument from 'pdfkit';
 
 // const viewSallery_slipe = async (req, res, next) => {
 //   try {
@@ -60,10 +60,6 @@ import salarySlipModel from "../models/salary.slip.model.js";
 const viewSallery_slipe = async (req, res, next) => {
   try {
     const { startDate, endDate } = req.query;
-
-    console.log("startDate", startDate);
-    console.log("endDate", endDate);
-    //   return
     // Use provided dates or fallback to current month
     const now = new Date();
     const start = startDate ? new Date(startDate) : new Date(now.getFullYear(), now.getMonth(), 1);
@@ -117,9 +113,6 @@ const viewSallery_employee = async (req, res, next) => {
     const { id } = req.params;
     const { startDate, endDate } = req.query;
 
-    console.log("startDate", startDate);
-    console.log("endDate", endDate);
-
     if (!startDate || !endDate) {
       return res.status(400).json({
         success: false,
@@ -130,10 +123,6 @@ const viewSallery_employee = async (req, res, next) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
     end.setHours(23, 59, 59, 999);
-
-    console.log("ID:", id);
-    console.log("Start:", start);
-    console.log("End:", end);
 
     const employee = await employeModel.findOne({ registrationId: id });
 
@@ -178,7 +167,6 @@ const viewSallery_employee = async (req, res, next) => {
 
 const add_salary_slip=async (req,res,next)=>{
        try {
-              console.log("hamh beta ?");  
               const {id,name,email,mobile,actualSalary,totalDay,presentDay,absentDay,estimateSalary}=req.body;
               const result=await salarySlipModel.create({
                 employeeId:id,
@@ -194,4 +182,83 @@ const add_salary_slip=async (req,res,next)=>{
           return next(new AppError(err.message,500));
        } 
 }
-export { viewSallery_slipe, viewSallery_employee,add_salary_slip };
+
+
+
+const download_salary_slip = async (req, res, next) => {
+  try {
+    const doc = new PDFDocument({ size: 'A4', margin: 50 });
+    const filename = `salary-slip.pdf`;
+
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.setHeader('Content-Type', 'application/pdf');
+    doc.pipe(res);
+
+    // Company Info
+    doc.fontSize(16).text('Code crafter', { align: 'left' });
+    doc.fontSize(10).text('Addresh: IMC Tower 10 Lucknow, Uttar Pradesh', { align: 'left' });
+    doc.moveDown();
+
+    // Payslip period and Net Pay
+    doc.fontSize(12).text('June 01, 2025 to June 09, 2025 Payslip', { continued: true });
+    doc.font('Helvetica-Bold').text('   Employee Netpay :  USD 28715.58');
+    doc.moveDown();
+
+    // Employee Details
+    doc.font('Helvetica-Bold').text('Employee ID : ', { continued: true }).font('Helvetica').text('50', { continued: true })
+       .font('Helvetica-Bold').text('             Employee Name : ', { continued: true }).font('Helvetica').text('Pankaj Gulia (50)');
+    doc.moveDown();
+    doc.font('Helvetica-Bold').text('Department : ', { continued: true }).font('Helvetica').text('MERN Stack Devloper:');
+    doc.moveDown(1.5);
+
+    // Allowance Table Header
+    doc.font('Helvetica-Bold').text('Allowance', 70, doc.y, { continued: true });
+    doc.text('Amount', 370);
+    doc.moveTo(70, doc.y + 2).lineTo(530, doc.y + 2).stroke();
+    doc.moveDown(0.5);
+
+    // Allowance Data
+    const allowances = [
+      ['Basic Pay', '        10000'],
+      ['test allownmxce',  '  0.00'],
+      ['Other Allowances','0.00'],
+      ['Total Gross Pay', '10000']
+    ];
+
+    allowances.forEach(([label, value]) => {
+      doc.font('Helvetica').text(label, 70, doc.y, { continued: true });
+      doc.text(value, 370);
+    });
+
+    doc.moveDown(1.5);
+
+    // Deduction Table Header
+    doc.font('Helvetica-Bold').text('Deduction', 70, doc.y, { continued: true });
+    doc.text('Amount', 370);
+    doc.moveTo(70, doc.y + 2).lineTo(530, doc.y + 2).stroke();
+    doc.moveDown(0.5);
+
+    // Deduction Data
+    const deductions = [
+      ['Loss of Pay', 'USD 0.00'],
+      ['SSNIT', 'USD 1592.11'],
+      ['Yemanuel Welfare', 'USD 150.00'],
+      ['Total Deductions', 'USD 2465.79']
+    ];
+
+    deductions.forEach(([label, value]) => {
+      doc.font('Helvetica').text(label, 70, doc.y, { continued: true });
+      doc.text(value, 370);
+    });
+
+    doc.end();
+
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
+
+
+
+export { viewSallery_slipe, viewSallery_employee,add_salary_slip,download_salary_slip };
