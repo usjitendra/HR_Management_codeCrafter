@@ -9,11 +9,13 @@ const key = process.env.JWT_SECRET;
 import sendNotification from './fcm.notification.js'
 const applyLeave = async (req, res, next) => {
   try {
-    const { id } = req.params;
+    const {id} = req.params;
 
     const { breakDown, leaveType, startDate, endDate, description } = req.body;
 
     const isValid = await employeModel.findById(id);
+  
+
     if (!isValid) {
       return next(new AppError("Some error occured", 400));
     }
@@ -27,6 +29,9 @@ const applyLeave = async (req, res, next) => {
       ],
     });
 
+    //  console.log("existingLeave",existingLeave);
+     
+    // return
     if (existingLeave) {
       return next(new AppError("Leave all ready applay"));
     }
@@ -39,8 +44,7 @@ const applyLeave = async (req, res, next) => {
       breakDown,
     });
     //  return;
-    const employeeData =await employeModel.findByIdAndUpdate(id, { leaveID: newLeave._id });
-      //  console.log("employeModel111",employeeData.fcmToken);
+    const employeeData =await employeModel.findByIdAndUpdate(id, {leaveID: newLeave._id });
          
     //create notification leave...
     const io = req.app.get("io");
@@ -50,15 +54,12 @@ const applyLeave = async (req, res, next) => {
     const result = await createNotification(employeeData.fcmToken, title, message);
 
     io.emit("new-message", "jitendra leave le lehlus re dada"); // 🔥 Total summary bhi emit karo
-       //fcm notification ********
-      //  console.log(isValid.fcmToken);
-      //  return;
       if (isValid.fcmToken) {
       const payload = {
         title: "Leave Request Submitted",
-        body: `${employee.name}, your leave request has been submitted.`,
+        body: `${isValid.name}, your leave request has been submitted.`,
       };
-      await sendFirebaseNotification(employee.fcmToken, payload);
+      await sendFirebaseNotification(isValid.fcmToken, payload);
     }
 
     return res.status(200).json({
