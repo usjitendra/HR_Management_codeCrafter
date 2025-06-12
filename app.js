@@ -25,6 +25,8 @@ import payroll from './routes/payroll.routes.js'
 
 import './middlewares/employee.attendance.cron.job.js'
 import "./middlewares/notification.cron.js"
+import compamyProfile from "./routes/company.profile.routes.js";
+
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -85,6 +87,7 @@ app.use(bodyParser.urlencoded({extended:true}));
 app.use(cookieParser());
 
 app.use('/api/v1/admin',admin)
+app.use('/api/v1/compay/profile',compamyProfile)
 app.use('/api/v1/employee',employee)
 app.use("/api/v1/employee/attendance",attandance)
 app.use('/api/v1/employee/bank',bank)

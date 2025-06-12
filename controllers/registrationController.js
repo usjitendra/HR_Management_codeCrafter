@@ -78,7 +78,7 @@ registrationAdmin();
 
 const login = async (req, res, next) => {
     try {
-        const { email, password,fcmToken } = req.body;
+        const { email, password} = req.body;
         
         const loginData = await registrationModel.findOne({ email });
         if (!loginData) {

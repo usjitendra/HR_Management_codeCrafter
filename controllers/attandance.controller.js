@@ -275,7 +275,7 @@ const attandanceLogin = async (req, res, next) => {
 
 const attandanceLogout = async (req, res, next) => {
   try {
-    const { id } = req.params;
+    const {id } = req.params;
     console.log("jo id aa rahih", id);
     // return;
     const validEmployee = await employeModel.findOne({ registrationId: id });
