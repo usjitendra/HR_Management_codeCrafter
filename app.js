@@ -26,6 +26,7 @@ import payroll from './routes/payroll.routes.js'
 import './middlewares/employee.attendance.cron.job.js'
 import "./middlewares/notification.cron.js"
 import compamyProfile from "./routes/company.profile.routes.js";
+import morgan from "morgan";
 
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -70,6 +71,7 @@ io.on('connection', (socket) => {
 });
 
 const upload=multer({dist:"uploads/"})
+app.use(morgan("dev"));
 
 
 app.get('/',(req,res)=>{

@@ -45,6 +45,8 @@ import { validate } from "node-cron";
 // };
 
 const add_employee = async (req, res, next) => {
+  console.log("sssss");
+  // return
   try {
     const {
       name,

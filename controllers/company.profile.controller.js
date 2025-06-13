@@ -211,3 +211,40 @@ export const announcement = async (req, res, next) => {
     return next(new AppError(err.message, 500));
   }
 }
+
+export const getOverviewData = async (req, res, next) => {
+  try {
+    const result = await companyOverModel.find();
+
+    return res.status(200).json({
+      success: true,
+      message: "Overview Data",
+      data: result,
+    });
+  } catch (err) {
+    return next(new AppError(err.message, 500));
+  }
+};
+
+
+export const getAllData=async(req,res,next)=>{
+    try {
+            const result=await companyOverModel.find()
+            console.log("result",result[0].registeredOfficeId);
+            const registeredOfficeAddress=await companyAddressModel.findById(result[0].registeredOfficeId);
+            const corporateOfficeAddress=await companyAddressModel.findById(result[0].corporateOfficeId);
+            const customAddress=await companyOverModel.findById(result[0].customAddressId);
+            console.log("corporateOfficeAddress",corporateOfficeAddress);
+             
+            const allData={
+             overviewData:result[0],
+             registeredOfficeAddress:registeredOfficeAddress,
+              corporateOfficeAddress:corporateOfficeAddress,
+              customAddress:customAddress
+            }
+          
+            return res.status(200).json({success:true,messaging:"All company profile Data",data:allData});
+    } catch (err) {
+      return next(new AppError(err.message,500));
+    }
+}
