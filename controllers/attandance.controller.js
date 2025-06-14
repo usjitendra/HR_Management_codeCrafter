@@ -13,92 +13,20 @@ import { create } from "domain";
 const ObjectId = mongoose.Types.ObjectId;
 
 const key = process.env.JWT_SECRET;
-//***if employee id commimh then  */
-
-// const attandanceLogin = async (req, res, next) => {
-//   try {
-//     const { id } = req.params;
-
-//     const validEmployee = await employeModel.findById(id);
-//     if (!validEmployee) {
-//       return next(new AppError("Employee is Not Valid", 400));
-//     }
-//     const now = new Date();
-//     const today = new Date();
-//     const nineAM = new Date(today.setHours(9, 0, 0, 0));
-//     const tenAM = new Date(today.setHours(10, 0, 0, 0));
-//     const twelveAM = new Date(today.setHours(12, 0, 0, 0));
-
-//     if (now < nineAM) {
-//       return next(
-//         new AppError("Too early to Check In. Try after 9:00 AM", 400)
-//       );
-//     }
-//     if (now > twelveAM) {
-//       return next(new AppError("Maushi ka ghar bana liye ho ka", 500));
-//     }
-//     const allEmployeeAttandance = await AttandanceModel.find({
-//       employeeId: validEmployee._id,
-//     });
-//     allEmployeeAttandance.map((e) => {
-//       if (e.status == "absent") {
-//         return next(new AppError("Employee have absent", 400));
-//       }
-//     });
-//     const filterEmployee = allEmployeeAttandance.find((val) => {
-//       const loginDate = new Date(val.loginTime).toLocaleDateString(); // India Format: DD/MM/YYYY
-//       const today = now.toLocaleDateString();
-//       return loginDate === today;
-//     });
-
-//     if (filterEmployee && filterEmployee.status == "absent") {
-//       return next(new AppError("Employee have absent", 400));
-//     }
-
-//     if (filterEmployee && filterEmployee.loginTime) {
-//       return next(new AppError("Already Check in", 400));
-//     }
-//     if (allEmployeeAttandance && allEmployeeAttandance.loginTime) {
-//       return next(new AppError("Already Login"));
-//     }
-
-//     let isFullDay = false;
-//     let isHalfDay = false;
-//     if (now >= nineAM && now <= tenAM) {
-//       isFullDay = true;
-//     } else if (now > tenAM) {
-//       isHalfDay = true;
-//     }
-
-//     const addEmployee = await AttandanceModel.findOneAndUpdate(
-//       { employeeId: id },
-//       {
-//         employeeId: validEmployee._id,
-//         loginTime: now,
-//         date: now,
-//         status: "present",
-//         isFullDay,
-//         isHalfDay,
-//       },
-//       { new: true, upsert: true }
-//     );
-
-//     res.status(200).json({
-//       success: true,
-//       message: "Attandance Mark Succesfully",
-//       addEmployee,
-//     });
-//   } catch (error) {
-//     return next(new AppError(error.message, 500));
-//   }
-// };
 
 //****if employee Registration  id comming then.... */
 
 const attandanceLogin = async (req, res, next) => {
   try {
     const { id } = req.params;
-    console.log("jo id aa rahih", id);
+    const { latitude, longitude } = req.body;
+    
+    console.log( req.body);
+    
+
+    // if(!latitude || !longitude){
+    //     return next(new AppError("Location in required",400));
+    // }
 
     const validEmployee = await employeModel.findOne({ registrationId: id });
     if (!validEmployee) {
@@ -138,9 +66,9 @@ const attandanceLogin = async (req, res, next) => {
       return next(new AppError("You are checking in too early", 400));
     }
 
-    if (now1 > threePM) {
-      return next(new AppError("Check-in time is over for today", 400));
-    }
+    // if (now1 > threePM) {
+    //   return next(new AppError("Check-in time is over for today", 400));
+    // }
 
     const todayLeave = leaveData.some((leave) => {
       const leaveStartDate = new Date(leave.startDate);
@@ -192,6 +120,10 @@ const attandanceLogin = async (req, res, next) => {
           isFullDay,
           isHalfDay,
           checkIn: true,
+          location:{
+            type:"Point",
+            coordinates:[longitude,latitude],
+          },
         },
       },
       { new: true, upsert: true }

@@ -6,6 +6,8 @@ import companyAddressModel from "../models/companyProfile/company.address.model.
 import announcementModel from "../models/companyProfile/announcements.model.js";
 
 export const company_overview = async (req, res, next) => {
+    console.log("update");
+    
   try {
     const {
       companyName,
@@ -67,6 +69,7 @@ export const company_overview = async (req, res, next) => {
 
 
 export const registrationOfficeAddress = async (req, res, next) => {
+    console.log("update");
   try {
     const {
       address1,
@@ -107,6 +110,7 @@ export const registrationOfficeAddress = async (req, res, next) => {
 
 
 export const corporateOfficeAddress = async (req, res, next) => {
+    console.log("update");
   try {
     const {
       address1,
@@ -148,6 +152,7 @@ export const corporateOfficeAddress = async (req, res, next) => {
 
 
 export const customAddress = async (req, res, next) => {
+    console.log("update");
   try {
     const {
       address1,
@@ -189,6 +194,7 @@ export const customAddress = async (req, res, next) => {
 
 
 export const announcement = async (req, res, next) => {
+    console.log("update");
   try {
     const { message, overviewId} = req.body;
 
@@ -228,6 +234,7 @@ export const getOverviewData = async (req, res, next) => {
 
 
 export const getAllData=async(req,res,next)=>{
+    console.log("update");
     try {
             const result=await companyOverModel.find()
             console.log("result",result[0].registeredOfficeId);

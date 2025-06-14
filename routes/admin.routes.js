@@ -7,6 +7,7 @@ import {registration,login,isLogin,logout,} from "../controllers/registrationCon
 import { registrationMiddleware } from "../middlewares/registrationMiddleware.js";
 const storage = multer.memoryStorage();
 const upload = multer();
+console.log("update");
 
 
 adminroutes.post("/registration",upload.single("image"),registration);

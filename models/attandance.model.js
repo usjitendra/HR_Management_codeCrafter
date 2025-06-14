@@ -72,6 +72,10 @@ const attandanceSchema = new Schema(
    leave:{
         type:Boolean
     },
+    location:{
+      type:{type:String,enum:['point'],default:'point'},
+      coordinates:{type:[Number],default:[0,0]},
+    }
   },
   {
     timestamps: true,
