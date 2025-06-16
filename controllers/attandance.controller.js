@@ -51,7 +51,7 @@ const attandanceLogin = async (req, res, next) => {
     }
     const locationName = await getLocationFromCoordinates(latitude, longitude);
     console.log("locationName", locationName);
-    return;
+    // return;
 
     const validEmployee = await employeModel.findOne({ registrationId: id });
     if (!validEmployee) {
