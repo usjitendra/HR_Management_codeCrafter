@@ -10,23 +10,48 @@ import leaveModel from "../models/leave.model.js";
 import { log } from "console";
 import { createNotification } from "./notification.controller.js";
 import { create } from "domain";
+import axios from 'axios'
 const ObjectId = mongoose.Types.ObjectId;
 
 const key = process.env.JWT_SECRET;
 
 //****if employee Registration  id comming then.... */
 
+const getLocationFromCoordinates = async (latitude, longitude) => {
+  try {
+    const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json`, {
+      params: {
+        latlng: `${latitude},${longitude}`,  // ✅ reverse geocode using latlng
+        key: 'AIzaSyC9ZOZHwHmyTWXqACqpZY2TL7wX2_Zn05U',
+        region: 'IN',
+      },
+    });
+
+    if (response.data && response.data.results.length > 0) {
+      return response.data.results[0].formatted_address; // ✅ full address string
+    } else {
+      throw new Error('Location not found for given coordinates');
+    }
+  } catch (error) {
+    console.error('Error fetching address from coordinates:', error.message);
+    return null;
+  }
+};
+
 const attandanceLogin = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { latitude, longitude } = req.body;
-    
-    console.log( req.body);
-    
 
-    if(!latitude || !longitude){
-        return next(new AppError("Location in required",400));
+    console.log(req.body);
+
+
+    if (!latitude || !longitude) {
+      return next(new AppError("Location in required", 400));
     }
+    const locationName = await getLocationFromCoordinates(latitude, longitude);
+    console.log("locationName", locationName);
+    return;
 
     const validEmployee = await employeModel.findOne({ registrationId: id });
     if (!validEmployee) {
@@ -66,9 +91,9 @@ const attandanceLogin = async (req, res, next) => {
       return next(new AppError("You are checking in too early", 400));
     }
 
-    // if (now1 > threePM) {
-    //   return next(new AppError("Check-in time is over for today", 400));
-    // }
+    if (now1 > threePM) {
+      return next(new AppError("Check-in time is over for today", 400));
+    }
 
     const todayLeave = leaveData.some((leave) => {
       const leaveStartDate = new Date(leave.startDate);
@@ -120,9 +145,10 @@ const attandanceLogin = async (req, res, next) => {
           isFullDay,
           isHalfDay,
           checkIn: true,
-          location:{
-            type:"Point",
-            coordinates:[longitude,latitude],
+          location: {
+            type: "Point",
+            coordinates: [longitude, latitude],
+            name:locationName
           },
         },
       },
@@ -134,7 +160,7 @@ const attandanceLogin = async (req, res, next) => {
     const message = `${validEmployee.name} has checked in`;
     const fromId = validEmployee._id;
     const io = req.app.get("io");
-    await createNotification( validEmployee.fcmToken, title, message);
+    await createNotification(validEmployee.fcmToken, title, message);
     io.emit("new-message", `${validEmployee.name} has checked in`);
 
     res.status(200).json({
@@ -207,7 +233,7 @@ const attandanceLogin = async (req, res, next) => {
 
 const attandanceLogout = async (req, res, next) => {
   try {
-    const {id } = req.params;
+    const { id } = req.params;
     console.log("jo id aa rahih", id);
     // return;
     const validEmployee = await employeModel.findOne({ registrationId: id });
@@ -283,7 +309,7 @@ const attandanceLogout = async (req, res, next) => {
     const fromId = validEmployee._id;
     const io = req.app.get("io");
 
-    await createNotification(validEmployee.fcmToken, title, message );
+    await createNotification(validEmployee.fcmToken, title, message);
     io.emit("new-message", message);
 
     res.status(200).json({

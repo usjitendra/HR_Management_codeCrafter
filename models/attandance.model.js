@@ -75,6 +75,10 @@ const attandanceSchema = new Schema(
     location:{
       type:{type:String,enum:['point'],default:'point'},
       coordinates:{type:[Number],default:[0,0]},
+      name:{
+         type:String,
+         default:null
+      }
     }
   },
   {
