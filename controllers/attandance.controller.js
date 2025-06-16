@@ -24,9 +24,9 @@ const attandanceLogin = async (req, res, next) => {
     console.log( req.body);
     
 
-    // if(!latitude || !longitude){
-    //     return next(new AppError("Location in required",400));
-    // }
+    if(!latitude || !longitude){
+        return next(new AppError("Location in required",400));
+    }
 
     const validEmployee = await employeModel.findOne({ registrationId: id });
     if (!validEmployee) {

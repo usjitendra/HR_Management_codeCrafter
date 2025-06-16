@@ -17,6 +17,7 @@ import jwt from 'jsonwebtoken';
 import AttandanceModel from "../models/attandance.model.js";
 import leaveModel from "../models/leave.model.js";
 import { validate } from "node-cron";
+import { sendMail } from "../util/sendMail.js";
 // const add_emploddyee = async (req, res, next) => {
 //   try {
 
@@ -134,11 +135,26 @@ const add_employee = async (req, res, next) => {
       password,
       role:"employee",
     });
-       console.log();
+      //  console.log();
        
       addEmp.registrationId=result._id;
        addEmp.save();
-    res.status(200).json({
+
+       const emailBody=`Dear ${name},
+       Your account has been successfully created.
+       🔐 Login Credentials:
+
+        Email: ${email}
+        Password:${password}
+
+        You can now login to the System.
+
+        Regards,
+        HRMS Team`;
+        
+      await sendMail(email,"Your HRMS Login Credentials",emailBody)
+
+      res.status(200).json({
       success: true,
       message: "Employee registered successfully",
       data: addEmp,
