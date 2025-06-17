@@ -633,6 +633,15 @@ const individual_attandance_detai = async (req, res, next) => {
   }
 }
 
+
+const todayCheckData=async(req,res,next)=>{
+    try{
+
+    }catch(err){
+      // return next new(AppError)
+    }
+}
+
 export {
   attandanceLogin,
   attandanceLogout,

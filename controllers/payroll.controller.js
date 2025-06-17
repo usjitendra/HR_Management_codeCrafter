@@ -165,91 +165,239 @@ const viewSallery_employee = async (req, res, next) => {
 };
 
 
-const add_salary_slip=async (req,res,next)=>{
-       try {
-              const {id,name,email,mobile,actualSalary,totalDay,presentDay,absentDay,estimateSalary}=req.body;
-              const result=await salarySlipModel.create({
-                employeeId:id,
-                name,
-                email,
-                mobile,
-                actualSalary,
-                totalDay,
-                presentDay,absentDay,estimateSalary
-              })
-              return res.status(200).json({success:true,messag:"salary create successfully",data:result})
-       } catch (err) {
-          return next(new AppError(err.message,500));
-       } 
+const add_salary_slip = async (req, res, next) => {
+  try {
+    const { id, name, email, mobile, actualSalary, totalDay, presentDay, absentDay, estimateSalary } = req.body;
+    const result = await salarySlipModel.create({
+      employeeId: id,
+      name,
+      email,
+      mobile,
+      actualSalary,
+      totalDay,
+      presentDay, absentDay, estimateSalary
+    })
+    return res.status(200).json({ success: true, messag: "salary create successfully", data: result })
+  } catch (err) {
+    return next(new AppError(err.message, 500));
+  }
 }
 
 
 
 const download_salary_slip = async (req, res, next) => {
   try {
-    const doc = new PDFDocument({ size: 'A4', margin: 50 });
-    const filename = `salary-slip.pdf`;
+
+    const { id } = req.params;
+    const { startDate, endDate } = req.query;
+    console.log("startDate", startDate);
+    console.log("endDate", endDate);
+    //  return;
+
+    if (!startDate || !endDate) {
+      return res.status(400).json({
+        success: false,
+        message: "Please select start date and end date",
+      });
+    }
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    const employee = await employeModel.findById(id);
+
+    if (!employee) {
+      return res.status(404).json({ success: false, message: "Employee not found" });
+    }
+
+    const attendanceRecords = await AttandanceModel.find({
+      employeeId: employee._id,
+      createdAt: { $gte: start, $lte: end },
+    });
+
+    const presentDays = attendanceRecords.filter((rec) => rec.status === "present").length;
+    const totalDays = attendanceRecords.length;
+
+    const bankData = await employeeWorkModel.findOne({ employeeId: employee._id });
+    const salary = bankData?.salary || 0;
+    const oneday_salary = salary / 30;
+    const estimate_salary = oneday_salary * presentDays;
+
+    const result = {
+      employeeData: employee,
+      work_data: bankData,
+      salary,
+      absentDays: totalDays - presentDays,
+      totalDays,
+      presentDays,
+      estimate_salary,
+    };
+
+    console.log("result", result);
+
+    const doc = new PDFDocument({ size: 'A4', margin: 40 });
+    const filename = `salary-slip-${new Date().getMonth() + 1}-${new Date().getFullYear()}.pdf`;
 
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
     res.setHeader('Content-Type', 'application/pdf');
     doc.pipe(res);
 
-    // Company Info
-    doc.fontSize(16).text('Code crafter', { align: 'left' });
-    doc.fontSize(10).text('Addresh: IMC Tower 10 Lucknow, Uttar Pradesh', { align: 'left' });
-    doc.moveDown();
+    // Company Logo placeholder and header
+    doc.rect(50, 50, 80, 60).stroke(); // Logo placeholder box
+    doc.fontSize(10).text('logo', 55, 75);
 
-    // Payslip period and Net Pay
-    doc.fontSize(12).text('June 01, 2025 to June 09, 2025 Payslip', { continued: true });
-    doc.font('Helvetica-Bold').text('   Employee Netpay :  USD 28715.58');
-    doc.moveDown();
+    // Company name and address at top right
+    doc.fontSize(14).font('Helvetica-Bold').text(`${result.work_data.company}`, 400, 50);
+    doc.fontSize(10).font('Helvetica').text('Lucknow', 400, 70);
 
-    // Employee Details
-    doc.font('Helvetica-Bold').text('Employee ID : ', { continued: true }).font('Helvetica').text('50', { continued: true })
-       .font('Helvetica-Bold').text('             Employee Name : ', { continued: true }).font('Helvetica').text('Pankaj Gulia (50)');
-    doc.moveDown();
-    doc.font('Helvetica-Bold').text('Department : ', { continued: true }).font('Helvetica').text('MERN Stack Devloper:');
-    doc.moveDown(1.5);
+    // Payslip title
+    // doc.fontSize(12).font('Helvetica-Bold').text('Payslip for the month of April, 2024', 50, 130);
 
-    // Allowance Table Header
-    doc.font('Helvetica-Bold').text('Allowance', 70, doc.y, { continued: true });
-    doc.text('Amount', 370);
-    doc.moveTo(70, doc.y + 2).lineTo(530, doc.y + 2).stroke();
-    doc.moveDown(0.5);
+    doc.moveDown(1);
 
-    // Allowance Data
-    const allowances = [
-      ['Basic Pay', '        10000'],
-      ['test allownmxce',  '  0.00'],
-      ['Other Allowances','0.00'],
-      ['Total Gross Pay', '10000']
+    // Employee Pay Summary section
+    doc.fontSize(11).font('Helvetica-Bold').text('Employee Pay Summary', 50, 160);
+
+    // Employee details in two columns
+    const startY = 180;
+    const leftCol = 50;
+    const rightCol = 300;
+
+    // Left column - Employee details
+    doc.fontSize(10).font('Helvetica-Bold').text('Name', leftCol, startY);
+    doc.font('Helvetica').text(`${result.employeeData.name}`, rightCol, startY);
+
+    doc.font('Helvetica-Bold').text('Email', leftCol, startY + 15);
+    doc.font('Helvetica').text(`${result.employeeData.email}`, rightCol, startY + 15);
+
+    doc.font('Helvetica-Bold').text('Phone', leftCol, startY + 30);
+    doc.font('Helvetica').text(`${result.employeeData.mobile}`, rightCol, startY + 30);
+
+     doc.font('Helvetica-Bold').text('Department', leftCol, startY + 45);
+    doc.font('Helvetica').text(`${result.work_data.department}`, rightCol, startY + 45);
+
+    doc.font('Helvetica-Bold').text('Employee ID', leftCol, startY + 60);
+    doc.font('Helvetica').text(`${result.employeeData._id}`, rightCol, startY + 60);
+
+    doc.font('Helvetica-Bold').text('Date of Joining (dd-mm-yyyy)', leftCol, startY + 75);
+    doc.font('Helvetica').text(
+      `${new Date(result.employeeData.createdAt).toLocaleDateString()}`,
+      rightCol,
+      startY + 75
+    );
+
+    doc.font('Helvetica-Bold').text('JobPosition', leftCol, startY + 90);
+    doc.font('Helvetica').text(`${result.work_data.jobPosition}`, rightCol, startY + 90);
+
+    // doc.font('Helvetica-Bold').text('Location', leftCol, startY + 75);
+    // doc.font('Helvetica').text('Days Worked', rightCol, startY + 75);
+
+    // doc.font('Helvetica-Bold').text('Pay Date (dd-mm-yyyy)', leftCol, startY + 90);
+
+    // Main table layout - Three columns
+    const tableStartY = 290;
+    const col1X = 50;  // EARNINGS
+    const col2X = 200; // Master Earnings 
+    const col3X = 300; // Particulars
+    const col4X = 420; // Deductions
+    const col5X = 500; // Amount
+
+    // Table headers
+    doc.fontSize(11).font('Helvetica-Bold');
+    doc.text('EARNINGS', col1X, tableStartY);
+    doc.text('Master Earnings', col2X, tableStartY);
+    doc.text('Particulars', col3X, tableStartY);
+    doc.text('Deductions', col4X, tableStartY);
+
+    // Draw header line
+    doc.moveTo(50, tableStartY + 15).lineTo(550, tableStartY + 15).stroke();
+
+    // Earnings data
+    const earningsData = [
+      ['Basic', `₹${result.salary}`, '₹0.00', 'Income Tax Deduction'],
+      ['House Rent Allowance', '₹0.00', '₹0.00', 'Profession Tax'],
+      ['Special Allowance', '₹0.00', '₹0.00', 'P.F.'],
+      ['Statutory Bonus', '₹0.00', '₹0.00', 'Other Deduction 1'],
+      ['LTA Allowance', '₹0.00', '₹0.00', 'Other Deduction 2'],
+      ['Other Earning 1', '₹0.00', '₹0.00', 'Other Deduction 3'],
+      ['Other Earning 2', '₹0.00', '', ''],
+      ['Other Earning 3', '₹0.00', '', '']
     ];
 
-    allowances.forEach(([label, value]) => {
-      doc.font('Helvetica').text(label, 70, doc.y, { continued: true });
-      doc.text(value, 370);
+    let currentY = tableStartY + 25;
+    doc.fontSize(9).font('Helvetica');
+
+    earningsData.forEach(([earning, amount1, amount2, deduction]) => {
+      doc.text(earning, col1X, currentY);
+      doc.text(amount1, col2X, currentY);
+      if (amount2) doc.text(amount2, col3X, currentY);
+      if (deduction) doc.text(deduction, col4X, currentY);
+      doc.text('₹0.00', col5X, currentY);
+      currentY += 15;
     });
 
-    doc.moveDown(1.5);
+    // Gross Earnings line
+    currentY += 10;
+    doc.font('Helvetica-Bold').text('Gross Earnings', col1X, currentY);
+    doc.text(`₹${result.estimate_salary}`, col2X, currentY);
+    doc.text('Total Deductions', col4X, currentY);
+    doc.text('₹0.00', col5X, currentY);
 
-    // Deduction Table Header
-    doc.font('Helvetica-Bold').text('Deduction', 70, doc.y, { continued: true });
-    doc.text('Amount', 370);
-    doc.moveTo(70, doc.y + 2).lineTo(530, doc.y + 2).stroke();
-    doc.moveDown(0.5);
+    // REIMBURSEMENTS section
+    currentY += 30;
+    doc.fontSize(11).font('Helvetica-Bold').text('REIMBURSEMENTS', col1X, currentY);
 
-    // Deduction Data
-    const deductions = [
-      ['Loss of Pay', 'USD 0.00'],
-      ['SSNIT', 'USD 1592.11'],
-      ['Yemanuel Welfare', 'USD 150.00'],
-      ['Total Deductions', 'USD 2465.79']
-    ];
+    currentY += 20;
+    doc.fontSize(9).font('Helvetica');
+    doc.text('Reimbursement 1', col1X, currentY);
+    doc.text('₹0.00', col2X, currentY);
+    doc.text('₹0.00', col3X, currentY);
 
-    deductions.forEach(([label, value]) => {
-      doc.font('Helvetica').text(label, 70, doc.y, { continued: true });
-      doc.text(value, 370);
-    });
+    currentY += 15;
+    doc.text('Reimbursement 2', col1X, currentY);
+    doc.text('₹0.00', col2X, currentY);
+    doc.text('₹0.00', col3X, currentY);
+
+    currentY += 20;
+    doc.font('Helvetica-Bold').text('Total Reimbursements', col1X, currentY);
+    doc.text(`₹${result.salary-result.estimate_salary}`, col2X, currentY);
+
+    // NET PAY AMOUNT section
+    currentY += 30;
+    doc.fontSize(11).font('Helvetica-Bold').text('NETPAY AMOUNT', col1X, currentY);
+
+    currentY += 20;
+    doc.fontSize(9).font('Helvetica');
+    doc.text('Gross Earnings', col1X, currentY);
+    doc.text('₹0.00', col2X, currentY);
+
+    currentY += 15;
+    doc.text('Total Deductions', col1X, currentY);
+    doc.text('₹0.00', col2X, currentY);
+
+    currentY += 15;
+    doc.text('Total Reimbursements', col1X, currentY);
+    doc.text('₹0.00', col2X, currentY);
+
+    // L.O.P. Days
+    currentY += 20;
+    doc.text('L.O.P. Days :', col1X, currentY);
+
+    // Final amounts
+    currentY += 20;
+    doc.font('Helvetica-Bold').text('Total Net Payable', col1X, currentY);
+    doc.text(`${result.estimate_salary}`, col2X, currentY);
+
+    currentY += 20;
+    doc.fontSize(10).text(`Total Net Payable ${result.estimate_salary} Amount`, col1X, currentY);
+
+    // Footer note
+    currentY += 30;
+    // doc.fontSize(8).font('Helvetica').text('**Total Net Payable = Gross Earnings - Total Deductions + Total Reimbursements', col1X, currentY);
+
+    // Page number
+    doc.text('Page 1', 500, 750);
 
     doc.end();
 
@@ -261,4 +409,5 @@ const download_salary_slip = async (req, res, next) => {
 
 
 
-export { viewSallery_slipe, viewSallery_employee,add_salary_slip,download_salary_slip };
+
+export { viewSallery_slipe, viewSallery_employee, add_salary_slip, download_salary_slip };
