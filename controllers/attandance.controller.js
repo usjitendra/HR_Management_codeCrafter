@@ -634,13 +634,43 @@ const individual_attandance_detai = async (req, res, next) => {
 }
 
 
-const todayCheckData=async(req,res,next)=>{
-    try{
+const todayCheckData = async (req, res, next) => {
+  try {
+    const { id } = req.params;
 
-    }catch(err){
-      // return next new(AppError)
+    // Find employee by registrationId
+    const employee = await employeModel.findOne({ registrationId: id });
+    if (!employee) {
+      return res.status(404).json({ success: false, message: "Employee not found" });
     }
-}
+
+    // Get today's date range: from 00:00 to 23:59:59
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    // Find today's attendance for that employee
+    const todayAttendance = await AttandanceModel.findOne({
+      employeeId: employee._id,
+      createdAt: { $gte: startOfDay, $lte: endOfDay }
+    });
+
+    if (!todayAttendance) {
+      return res.status(200).json({ success: true, message: "No attendance record for today" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: todayAttendance
+    });
+
+  } catch (err) {
+    return next(new AppError(err.message, 500));
+  }
+};
+
 
 export {
   attandanceLogin,
@@ -653,5 +683,6 @@ export {
   getMonthalyDetail,
   attendanceFilter,
   monthelydetail,
-  individual_attandance_detai
+  individual_attandance_detai,
+  todayCheckData
 };
