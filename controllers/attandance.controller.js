@@ -482,11 +482,9 @@ const getMonthalyDetail = async (req, res, next) => {
 const attendanceFilter = async (req, res, next) => {
   try {
     const { range } = req.query;
-    // console.log("Range:", range);
 
     let startDate, endDate;
     const today = new Date();
-
     today.setHours(0, 0, 0, 0);
     const endOfToday = new Date(today);
     endOfToday.setHours(23, 59, 59, 999);
@@ -520,10 +518,7 @@ const attendanceFilter = async (req, res, next) => {
     const data = await AttandanceModel.aggregate([
       {
         $match: {
-          createdAt: {
-            $gte: startDate,
-            $lte: endDate,
-          },
+          createdAt: { $gte: startDate, $lte: endDate },
         },
       },
       {
@@ -534,34 +529,63 @@ const attendanceFilter = async (req, res, next) => {
           as: "employee",
         },
       },
+      { $unwind: "$employee" },
       {
-        $unwind: "$employee",
+        $addFields: {
+          employeeStatus: {
+            $cond: [
+              { $eq: ["$leave", true] }, "L",  // Leave
+              {
+                $cond: [
+                  { $eq: ["$isFullDay", true] }, "P",  // Present Full Day
+                  {
+                    $cond: [
+                      { $eq: ["$isHalfDay", true] }, "HL",  // Half Leave
+                      {
+                        $cond: [
+                          { $eq: ["$status", "WFH"] }, "WFH", // Work From Home
+                          {
+                            $cond: [
+                              { $eq: ["$status", "WO"] }, "WO", // Weekly Off
+                              {
+                                $cond: [
+                                  { $eq: ["$status", "H"] }, "H", // Holiday
+                                  "A" // Default: Absent
+                                ],
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          }
+        }
       },
       {
         $project: {
           employeeId: 1,
           date: 1,
-          loginTime: 1,
-          logoutTime: 1,
+          checkIn: 1,
+          checkOutTime: "$logoutTime",
+          workDuration: "$totalWorkingHour",
+          status: "$employeeStatus",
+          leave: 1, // <-- Added leave boolean field
+          leaveReason: "$reasonForLeave", // Optional rename
           locationIn: 1,
           locationOut: 1,
-          totalWorkingHour: 1,
-          isHalfDay: 1,
-          isFullDay: 1,
-          status: 1,
-          reasonForLeave: 1,
           ipAddress: 1,
           deviceDetails: 1,
-          isLate: 1,
           remark: 1,
-          workingHours: 1,
-          checkIn: 1,
-          leave: 1,
           createdAt: 1,
           updatedAt: 1,
           "employee.name": 1,
           "employee.email": 1,
           "employee.mobile": 1,
+          "projectName": "$projectName" // optional
         },
       },
     ]);
@@ -576,6 +600,8 @@ const attendanceFilter = async (req, res, next) => {
     return next(new AppError(err.message, 500));
   }
 };
+
+
 
 const monthelydetail = async (req, res, next) => {
   try {
@@ -672,6 +698,10 @@ const todayCheckData = async (req, res, next) => {
 };
 
 
+  const employee_alldetai=async()=>{
+
+  }
+
 export {
   attandanceLogin,
   attandanceLogout,
@@ -684,5 +714,6 @@ export {
   attendanceFilter,
   monthelydetail,
   individual_attandance_detai,
-  todayCheckData
+  todayCheckData,
+  employee_alldetai
 };

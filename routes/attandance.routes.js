@@ -21,5 +21,6 @@ attandanceRoute.get("/filter",attendanceFilter)
 attandanceRoute.post("/monthly/detail",monthelydetail)
 attandanceRoute.get("/individual/:id",individual_attandance_detai)
 attandanceRoute.get('/today/CheckinData/:id',todayCheckData)
+// attandanceRoute.get("all/detal",employee_alldetai)
 
 export default attandanceRoute

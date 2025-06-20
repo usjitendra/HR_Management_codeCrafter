@@ -15,10 +15,12 @@ const attandanceSchema = new Schema(
     },
     loginTime: {
       type: Date,
+      default: null,
       // required:true
     },
     logoutTime: {
       type: Date,
+      default: null,
     },
     locationIn: {
       type: String,
@@ -28,6 +30,7 @@ const attandanceSchema = new Schema(
     },
     totalWorkingHour: {
       type: String,
+      default:"0h 0m 0s"
     },
     otTime:{
       type:String,
@@ -64,13 +67,15 @@ const attandanceSchema = new Schema(
     },
     workingHours: {
       type: String,
+      default:"0h 0m 0s"
     },
     checkIn: {
       type: Boolean,
       default: false, 
     },
    leave:{
-        type:Boolean
+        type:Boolean,
+        default:false
     },
     location:{
       type:{type:String,enum:['Point'],default:'Point'},
