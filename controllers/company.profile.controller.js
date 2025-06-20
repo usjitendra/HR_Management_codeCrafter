@@ -232,7 +232,6 @@ export const getOverviewData = async (req, res, next) => {
   }
 };
 
-
 export const getAllData=async(req,res,next)=>{
     console.log("update");
     try {
@@ -246,12 +245,25 @@ export const getAllData=async(req,res,next)=>{
             const allData={
              overviewData:result[0],
              registeredOfficeAddress:registeredOfficeAddress,
-              corporateOfficeAddress:corporateOfficeAddress,
-              customAddress:customAddress
+             corporateOfficeAddress:corporateOfficeAddress,
+             customAddress:customAddress
             }
           
             return res.status(200).json({success:true,messaging:"All company profile Data",data:allData});
     } catch (err) {
       return next(new AppError(err.message,500));
     }
+}
+
+
+export const allAnnouncement=async(req,res,next)=>{
+  try {
+        const result=await announcementModel.find().sort({create:-1})
+        if(result.length<=0){
+          return next(new AppError("No have any announcement",400))
+        }
+        return res.status(200).json({success:true,message:"finde successfully",data:result});
+  } catch (err) {
+       return next(new AppError(err.message,500))
+  }
 }

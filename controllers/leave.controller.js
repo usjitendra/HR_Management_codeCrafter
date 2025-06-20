@@ -6,7 +6,7 @@ import { create } from "domain";
 import { createNotification } from "./notification.controller.js";
 import sendFirebaseNotification from '../util/send.Firebase.Notification.js';
 const key = process.env.JWT_SECRET;
-import sendNotification from './fcm.notification.js'
+// import sendNotification from './fcm.notification.js'
 const applyLeave = async (req, res, next) => {
   try {
     const {id} = req.params;

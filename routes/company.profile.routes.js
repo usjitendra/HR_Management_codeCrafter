@@ -3,7 +3,7 @@ import { Router } from "express";
 
 const compamyProfileRoute=Router();
 import{company_overview,registrationOfficeAddress,corporateOfficeAddress,customAddress,
-    announcement,getOverviewData,getAllData
+    announcement,getOverviewData,getAllData,allAnnouncement
 }from "../controllers/company.profile.controller.js"
 
 import multer from "multer";
@@ -17,5 +17,7 @@ compamyProfileRoute.post("/add/address/custom",customAddress)
 compamyProfileRoute.post("/add/announcement",announcement)
 compamyProfileRoute.get("/get/overview/data",getOverviewData)
 compamyProfileRoute.get("/get/all/data",getAllData)
+compamyProfileRoute.get("/get/all/announcements",allAnnouncement)
+
 
 export default compamyProfileRoute
