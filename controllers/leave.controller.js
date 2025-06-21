@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import { create } from "domain";
 import { createNotification } from "./notification.controller.js";
 import sendFirebaseNotification from '../util/send.Firebase.Notification.js';
+import employeeWorkModel from "../models/employee.work.information.model.js";
 const key = process.env.JWT_SECRET;
 // import sendNotification from './fcm.notification.js'
 const applyLeave = async (req, res, next) => {
@@ -244,20 +245,43 @@ const leaveEdit = async (req, res, next) => {
 
 const allEmployeeLeaveDetail = async (req, res, next) => {
   try {
+    // Step 1: Get all leave records with basic employee info
     const leaveData = await leaveModel
       .find()
-      .populate("employeeId", "name email mobile") // fixed: pass as string
-      .sort({ createdAt: -1 }); // latest leave on top
+      .populate("employeeId", "name email mobile")
+      .sort({ createdAt: -1 });
 
+    // Step 2: Extract employee IDs from leave records
+    const employeeIds = leaveData.map(leave => leave.employeeId._id);
+
+    // Step 3: Fetch only department field from employeeWorkModel
+    const workDetails = await employeeWorkModel.find(
+      { employeeId: { $in: employeeIds } },
+      { employeeId: 1, department: 1 } // ❗ Only select employeeId and department
+    );
+
+    // Step 4: Merge department into each leave record
+    const mergedData = leaveData.map(leave => {
+      const work = workDetails.find(
+        w => w.employeeId.toString() === leave.employeeId._id.toString()
+      );
+      return {
+        ...leave.toObject(),
+        department: work?.department || null
+      };
+    });
+
+    // Step 5: Send response
     return res.status(200).json({
       success: true,
-      message: "All leave details fetched successfully",
-      data: leaveData
+      message: "All leave details with departments fetched successfully",
+      data: mergedData
     });
   } catch (err) {
     return next(new AppError(err.message, 500));
   }
 };
+
 
 const allLeave = async (req, res, next) => {
   try {
