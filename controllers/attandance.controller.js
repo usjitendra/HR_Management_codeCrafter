@@ -11,6 +11,8 @@ import { log } from "console";
 import { createNotification } from "./notification.controller.js";
 import { create } from "domain";
 import axios from 'axios'
+ import moment from "moment";
+
 const ObjectId = mongoose.Types.ObjectId;
 
 const key = process.env.JWT_SECRET;
@@ -482,7 +484,6 @@ const getMonthalyDetail = async (req, res, next) => {
 const attendanceFilter = async (req, res, next) => {
   try {
     const { range } = req.query;
-
     let startDate, endDate;
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -698,9 +699,72 @@ const todayCheckData = async (req, res, next) => {
 };
 
 
-  const employee_alldetai=async()=>{
 
+ const calendar_view = async (req, res, next) => {
+  try {
+    const { month } = req.query; // format: '2025-06'
+    if (!month) {
+      return next(new AppError("Month is required in YYYY-MM format", 400));
+    }
+
+    const startDate = moment(month).startOf("month").toDate();
+    const endDate = moment(month).endOf("month").toDate();
+            console.log("startDate",startDate);
+            console.log("endDate",endDate);
+            // return;
+            
+    const employees = await employeModel.find();
+
+    const allAttendance = await AttandanceModel.find({
+      date: { $gte: startDate, $lte: endDate },
+    });
+
+    const result = employees.map((emp) => {
+      const attendanceMap = {};
+
+      // Loop all days of the month
+      for (let day = moment(startDate); day <= moment(endDate); day.add(1, 'days')) {
+        const currentDate = day.format("YYYY-MM-DD");
+
+        const att = allAttendance.find(
+          (a) =>
+            a.employeeId.toString() === emp._id.toString() &&
+            moment(a.date).format("YYYY-MM-DD") === currentDate
+        );
+
+        if (att) {
+          if (att.leave) attendanceMap[currentDate] = "L";
+          else if (att.status === "present" || att.isFullDay) attendanceMap[currentDate] = "P";
+          else if (att.isHalfDay) attendanceMap[currentDate] = "HD";
+          else if (att.status === "wfh") attendanceMap[currentDate] = "WFH";
+          // else if (att.status === "WO") attendanceMap[currentDate] = "WO";
+          // else if (att.status === "H") attendanceMap[currentDate] = "H";
+          else attendanceMap[currentDate] = "A";
+        } else {
+          attendanceMap[currentDate] = "NA"; // Not Available
+        }
+      }
+
+      return {
+        employeeId: emp._id,
+        name: emp.name,
+        email:emp.email,
+        mobile:emp.mobile,
+        attendance: attendanceMap,
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Calendar view generated successfully",
+      data: result,
+    });
+
+  } catch (err) {
+    return next(new AppError(err.message, 500));
   }
+};
+
 
 export {
   attandanceLogin,
@@ -715,5 +779,5 @@ export {
   monthelydetail,
   individual_attandance_detai,
   todayCheckData,
-  employee_alldetai
+  calendar_view
 };
