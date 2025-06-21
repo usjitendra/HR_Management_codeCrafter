@@ -18,6 +18,7 @@ import AttandanceModel from "../models/attandance.model.js";
 import leaveModel from "../models/leave.model.js";
 import { validate } from "node-cron";
 import { sendMail } from "../util/sendMail.js";
+import moment from "moment";
 // const add_emploddyee = async (req, res, next) => {
 //   try {
 
@@ -70,7 +71,7 @@ const add_employee = async (req, res, next) => {
     } = req.body;
     console.log(req.body);
     // return
-    
+
     const newEmpData = {
       name,
       email,
@@ -129,18 +130,18 @@ const add_employee = async (req, res, next) => {
       };
     }
     const addEmp = await employeModel.create(newEmpData);
-   const result= await registrationModel.create({
+    const result = await registrationModel.create({
       name,
       email,
       password,
-      role:"employee",
+      role: "employee",
     });
-      //  console.log();
-       
-      addEmp.registrationId=result._id;
-       addEmp.save();
+    //  console.log();
 
-       const emailBody=`Dear ${name},
+    addEmp.registrationId = result._id;
+    addEmp.save();
+
+    const emailBody = `Dear ${name},
        Your account has been successfully created.
        🔐 Login Credentials:
 
@@ -151,16 +152,16 @@ const add_employee = async (req, res, next) => {
 
         Regards,
         HRMS Team`;
-        
-      await sendMail(email,"Your HRMS Login Credentials",emailBody)
 
-      res.status(200).json({
+    await sendMail(email, "Your HRMS Login Credentials", emailBody)
+
+    res.status(200).json({
       success: true,
       message: "Employee registered successfully",
       data: addEmp,
     });
   } catch (err) {
-    console.error(err.message); 
+    console.error(err.message);
     return next(new AppError(err.message, 500));
   }
 };
@@ -192,7 +193,7 @@ const employee_update = async (req, res, next) => {
       children,
       emergencyContact,
       role,
-      password, 
+      password,
     } = req.body;
 
     const updatedData = {
@@ -212,7 +213,7 @@ const employee_update = async (req, res, next) => {
       children,
       emergencyContact,
       role,
-      password:""
+      password: ""
     };
 
     const files = req.files;
@@ -248,9 +249,9 @@ const employee_update = async (req, res, next) => {
     }
 
     if (existingEmployee.registrationId) {
-      const regUpdate = {name,email,};
-      if(password&&password.trim()!==""){
-          regUpdate.password=password
+      const regUpdate = { name, email, };
+      if (password && password.trim() !== "") {
+        regUpdate.password = password
       }
       await registrationModel.findByIdAndUpdate(existingEmployee.registrationId, regUpdate, {
         new: true,
@@ -278,10 +279,26 @@ const employee_update = async (req, res, next) => {
 const all_employee = async (req, res, next) => {
   try {
     const all_data = await employeModel.find();
+
+    const today = moment().startOf("day").toDate();
+    const todayPresent = await leaveModel.find({
+      startDate: { $lte: today },
+      endDate: { $gte: today },
+      status: "present"
+    });
+
+    const totalEmployees = all_data.length;
+    const present = todayPresent.length;
+    const onLeave = totalEmployees - present;
     return res.status(200).json({
       success: true,
       message: "Success",
-      data: all_data
+      summary: {
+        totalEmployees,
+        onLeave,
+        present
+      },
+      data: all_data,
     });
 
   } catch (err) {
@@ -293,14 +310,14 @@ const employee_Delete = async (req, res, next) => {
   try {
     const id = req.params.id;
     const employee = await employeModel.findByIdAndDelete(id);
-           
+
     if (!employee) {
       return next(new AppError("", 404));
     }
-    const result = await registrationModel.findByIdAndDelete(employee.registrationId); 
-                  await  leaveModel.deleteMany({employeeId:id})    
-                  await AttandanceModel.deleteMany({employeeId:id})   
-      res.status(200)
+    const result = await registrationModel.findByIdAndDelete(employee.registrationId);
+    await leaveModel.deleteMany({ employeeId: id })
+    await AttandanceModel.deleteMany({ employeeId: id })
+    res.status(200)
       .json({ success: true, message: "Employee deleted successfully" });
 
   } catch (err) {
@@ -397,19 +414,19 @@ const employeeAlldetail = async (req, res, next) => {
     const data = await employeModel
       .findById(id)
       .populate("leaveID")
-      .populate("workId") 
-      .populate("bankId") 
+      .populate("workId")
+      .populate("bankId")
       .populate("attandanceId");
     if (!data) {
       return next(new AppError("Employee not found", 404));
     }
 
-    const employeData=data.toObject()
-          delete employeData.password;
+    const employeData = data.toObject()
+    delete employeData.password;
     res.status(200).json({
       success: true,
       message: "Employee detail fetched successfully",
-      data:employeData,
+      data: employeData,
     });
   } catch (err) {
     return next(new AppError(err.message, 500));
@@ -417,39 +434,39 @@ const employeeAlldetail = async (req, res, next) => {
 };
 
 
-const employee_profile=async(req,res,next)=>{
+const employee_profile = async (req, res, next) => {
   try {
-     
+
     const token = req.cookies?.authToken; // Token from coo\
     if (!token) {
       return next(new AppError("success", 401));
     }
-    const decoded = jwt.verify(token,key); 
-    
+    const decoded = jwt.verify(token, key);
+
     if (!decoded) {
-        return next(new AppError("Token expired", 401));
+      return next(new AppError("Token expired", 401));
     }
-    const data=await employeModel.find({registrationId:decoded.id}) 
-     
-    const emplodata=await AttandanceModel.find({employeeId:data[0]._id})
-     const alldata={
+    const data = await employeModel.find({ registrationId: decoded.id })
+
+    const emplodata = await AttandanceModel.find({ employeeId: data[0]._id })
+    const alldata = {
       data,
       emplodata
-     }
+    }
     return res.status(200).json({
-        success:true,
-        message:"success",
-        data:alldata
+      success: true,
+      message: "success",
+      data: alldata
     })
-} catch (err) {
+  } catch (err) {
     return next(new AppError("success", 401));
+  }
 }
-}
 
 
 
-const single_employee_allDetail=async(req,res,next)=>{
-try {
+const single_employee_allDetail = async (req, res, next) => {
+  try {
     const { id } = req.params;
 
     const employee = await employeModel.findById(id)

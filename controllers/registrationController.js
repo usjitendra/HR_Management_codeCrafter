@@ -186,7 +186,7 @@ const otp_send = async (req, res, next) => {
         // Send OTP to email
         await sendOtp(email, otp);
 
-        return res.status(200).json({ message: "OTP sent successfully to your email" });
+        return res.status(200).json({success:true, message: "OTP sent successfully to your email" });
     } catch (err) {
         console.error(err);
         return res.status(500).json({ message: err.message });
@@ -201,10 +201,10 @@ const otp_verify = async (req, res, next) => {
             
         // Find OTP from DB
         const otpRecord = await otpModel.findOne({ email }).sort({createdAt: -1});
-        //   console.log("otpRecord",otp);
+          console.log("otpRecord",otp);
           console.log("otpRecord",otpRecord);
           
-        if (!otpRecord|| otpRecord.otp !==otp) {
+        if (!otpRecord|| otpRecord.otp.toString() !== otp.toString()) {
             console.log("aaaa");
             
           return next (new AppError("In validate otp",400));
@@ -219,7 +219,7 @@ const otp_verify = async (req, res, next) => {
         await user.save();
 
         // Delete OTP record after successful use
-        await otpModel.deleteOne({ email });
+        await otpModel.deleteMany({ email });
 
         return res.status(200).json({ success: true, message: "Password updated successfully" });
 
