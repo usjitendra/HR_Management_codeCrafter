@@ -483,46 +483,27 @@ const getMonthalyDetail = async (req, res, next) => {
 
 const attendanceFilter = async (req, res, next) => {
   try {
-    const { range } = req.query;
-    let startDate, endDate;
+    const {startDate,endDate} = req.query;
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const endOfToday = new Date(today);
     endOfToday.setHours(23, 59, 59, 999);
 
-    switch (range) {
-      case "1":
-        startDate = today;
-        endDate = endOfToday;
-        break;
-      case "7days":
-        startDate = new Date(today);
-        startDate.setDate(startDate.getDate() - 6);
-        endDate = endOfToday;
-        break;
-      case "3months":
-        startDate = new Date(today);
-        startDate.setMonth(startDate.getMonth() - 3);
-        endDate = endOfToday;
-        break;
-      case "6months":
-        startDate = new Date(today);
-        startDate.setMonth(startDate.getMonth() - 6);
-        endDate = endOfToday;
-        break;
-      case "all":
-      default:
-        startDate = new Date("2000-01-01");
-        endDate = endOfToday;
+      if (!startDate || !endDate) {
+      return res.status(400).json({ success: false, message: "startDate and endDate are required" });
     }
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999); // Include full end date
         const attendanceData= await AttandanceModel.find({
-           createdAt: { $gte: startDate, $lte: endDate }
+           createdAt: { $gte: start, $lte: end }
         }).populate("employeeId", "name email mobile");
 
     const data = await AttandanceModel.aggregate([
       {
         $match: {
-          createdAt: { $gte: startDate, $lte: endDate },
+          createdAt: { $gte: start, $lte: end },
         },
       },
       {
