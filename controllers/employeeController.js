@@ -290,15 +290,18 @@ const all_employee = async (req, res, next) => {
     const totalEmployees = all_data.length;
     const present = todayPresent.length;
     const onLeave = totalEmployees - present;
-    return res.status(200).json({
-      success: true,
-      message: "Success",
+    const data = {
       summary: {
         totalEmployees,
         onLeave,
         present
       },
-      data: all_data,
+    all_data:all_data
+    }
+    return res.status(200).json({
+      success: true,
+      message: "Success",
+      data
     });
 
   } catch (err) {

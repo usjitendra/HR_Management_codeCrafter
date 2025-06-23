@@ -515,6 +515,9 @@ const attendanceFilter = async (req, res, next) => {
         startDate = new Date("2000-01-01");
         endDate = endOfToday;
     }
+        const attendanceData= await AttandanceModel.find({
+           createdAt: { $gte: startDate, $lte: endDate }
+        })
 
     const data = await AttandanceModel.aggregate([
       {
@@ -595,6 +598,7 @@ const attendanceFilter = async (req, res, next) => {
       message: "success",
       success: true,
       count: data.length,
+      attendanceData:attendanceData,
       data,
     });
   } catch (err) {
@@ -766,6 +770,45 @@ const todayCheckData = async (req, res, next) => {
 };
 
 
+
+const getWeeklyAttendanceChart = async (req, res, next) => {
+  try {
+    const totalEmployees = await employeModel.countDocuments();
+
+    // Last 7 days (Mon to Sun)
+    const weeklyData = [];
+
+    for (let i = 0; i < 7; i++) {
+      const date = moment().startOf("week").add(i, "days");
+      const start = date.startOf("day").toDate();
+      const end = date.endOf("day").toDate();
+
+      const presentCount = await AttandanceModel.countDocuments({
+        date: { $gte: start, $lte: end },
+        status: "present"
+      });
+
+      const absentCount = totalEmployees - presentCount;
+
+      weeklyData.push({
+        name: date.format("ddd"), // Mon, Tue, etc.
+        present: presentCount,
+        absent: absentCount
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Weekly Attendance Fetched",
+      data: weeklyData
+    });
+
+  } catch (err) {
+    next(new AppError(err.message, 500));
+  }
+};
+
+
 export {
   attandanceLogin,
   attandanceLogout,
@@ -779,5 +822,6 @@ export {
   monthelydetail,
   individual_attandance_detai,
   todayCheckData,
-  calendar_view
+  calendar_view,
+  getWeeklyAttendanceChart
 };
