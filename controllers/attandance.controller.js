@@ -517,7 +517,7 @@ const attendanceFilter = async (req, res, next) => {
     }
         const attendanceData= await AttandanceModel.find({
            createdAt: { $gte: startDate, $lte: endDate }
-        })
+        }).populate("employeeId", "name email mobile");
 
     const data = await AttandanceModel.aggregate([
       {
