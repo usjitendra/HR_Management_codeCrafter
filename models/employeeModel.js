@@ -100,7 +100,11 @@ const employeeSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Performance"
     },
-
+     employeeDocumentId:{
+      type:Schema.Types.ObjectId,
+      ref:"Document",
+      default:null
+     },
     employeeUseName: {
       type: String
     },

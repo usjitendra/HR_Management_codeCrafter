@@ -19,6 +19,7 @@ import notification from "./routes/notification.routes.js"
 import http from 'http';
 import { Server } from 'socket.io';
 import performance from './routes/performance.routes.js'
+import employee_document_route from "./routes/employee.document.routes.js";
 // import fcmNotification from './routes/firbase.routes.js'
 import fcmNotification from './controllers/fcm.notification.js'
 import payroll from './routes/payroll.routes.js'
@@ -38,15 +39,15 @@ const app=express();
 dotenv.config();
 
 app.use(cors({
-  origin: ["http://localhost:5173","http://localhost:3000","https://hrms112.netlify.app","https://updatehrma.netlify.app","https://dr-monika.netlify.app"], 
-  origin: ["http://localhost:5173","http://localhost:3000","https://hrms112.netlify.app","https://updatehrma.netlify.app","http://localhost:5174","sadbhawanaclinic.com","https://www.sadbhawanaclinic.com/", "https://sadbhawanaclinic.com/"], 
+  origin: ["http://localhost:5173","http://localhost:3000","https://hrms112.netlify.app","https://updatehrmsa.netlify.app/","https://dr-monika.netlify.app"], 
+  origin: ["http://localhost:5173","http://localhost:3000","https://hrms112.netlify.app","https://updatehrmsa.netlify.app/","http://localhost:5174","sadbhawanaclinic.com","https://www.sadbhawanaclinic.com/", "https://sadbhawanaclinic.com/"], 
   credentials: true,
 }));
 
 const server=http.createServer(app);
 const io=new Server(server,{
        cors:{
-        origin:["http://localhost:5173","http://localhost:3000","https://hrms112.netlify.app","https://updatehrma.netlify.app"],
+        origin:["http://localhost:5173","http://localhost:3000","https://hrms112.netlify.app","https://updatehrmsa.netlify.app/"],
         credentials: true,
        }
 })
@@ -101,6 +102,7 @@ app.use('/api/v1/appointment',drappointment)
 app.use('/api/v1/performance',performance)
 app.use('/api/v1/fcmNotification',fcmNotification)
 app.use('/api/v1/payroll',payroll)
+app.use('/api/v1/employee/document',employee_document_route)
 
 
 app.set('io', io); 
