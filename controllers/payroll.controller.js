@@ -59,50 +59,96 @@ import PDFDocument from 'pdfkit';
 
 const viewSallery_slipe = async (req, res, next) => {
   try {
-    const { startDate, endDate } = req.query;
-    // Use provided dates or fallback to current month
-    const now = new Date();
-    const start = startDate ? new Date(startDate) : new Date(now.getFullYear(), now.getMonth(), 1);
-    const end = endDate ? new Date(endDate) : new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+    //for app ke liye
+    const { startDate, endDate, year } = req.query;
+    if (startDate || endDate) {
+      const now = new Date();
+      const start = startDate ? new Date(startDate) : new Date(now.getFullYear(), now.getMonth(), 1);
+      const end = endDate ? new Date(endDate) : new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
 
-    // 1. Get all employees
-    const allEmployees = await employeModel.find();
+      // 1. Get all employees
+      const allEmployees = await employeModel.find();
 
-    // 2. Process salary and attendance
-    const result = await Promise.all(
-      allEmployees.map(async (employee) => {
-        const bankData = await employeeWorkModel.findOne({ employeeId: employee._id });
-        const salary = bankData?.salary || "N/A";
+      // 2. Process salary and attendance
+      const result = await Promise.all(
+        allEmployees.map(async (employee) => {
+          const bankData = await employeeWorkModel.findOne({ employeeId: employee._id });
+          const salary = bankData?.salary || "N/A";
 
-        const attendanceRecords = await AttandanceModel.find({
-          employeeId: employee._id,
-          date: { $gte: start, $lte: end },
-        });
+          const attendanceRecords = await AttandanceModel.find({
+            employeeId: employee._id,
+            date: { $gte: start, $lte: end },
+          });
 
-        const presentDays = attendanceRecords.filter((rec) => rec.status === "present").length;
-        const totalDays = attendanceRecords.length;
-        const oneday_salary = salary !== "N/A" ? salary / 30 : 0;
-        const estimate_salary = oneday_salary * presentDays;
+          const presentDays = attendanceRecords.filter((rec) => rec.status === "present").length;
+          const totalDays = attendanceRecords.length;
+          const oneday_salary = salary !== "N/A" ? salary / 30 : 0;
+          const estimate_salary = oneday_salary * presentDays;
 
-        return {
-          employeeName: employee.name,
-          email: employee.email,
-          salary,
-          presentDays,
-          absentDays: totalDays - presentDays,
-          totalWorkingDays: totalDays,
-          estimate_salary: salary === "N/A" ? "N/A" : Math.round(estimate_salary),
-          month: start.toLocaleString("default", { month: "long" }), // based on start date
-        };
-      })
-    );
+          return {
+            employeeName: employee.name,
+            email: employee.email,
+            salary,
+            presentDays,
+            absentDays: totalDays - presentDays,
+            totalWorkingDays: totalDays,
+            estimate_salary: salary === "N/A" ? "N/A" : Math.round(estimate_salary),
+            month: start.toLocaleString("default", { month: "long" }), // based on start date
+          };
+        })
+      );
 
-    return res.status(200).json({
-      success: true,
-      message: "All salary slips fetched successfully",
-      count: result.length,
-      data: result,
-    });
+      return res.status(200).json({
+        success: true,
+        message: "All salary slips fetched successfully",
+        count: result.length,
+        data: result,
+      });
+    }
+
+    //for web ke liye
+    if (year) {
+      const numericYear = Number(year);
+      const start = new Date(numericYear, 0, 1); // 1 Jan of that year
+      const end = new Date(numericYear, 11, 31, 23, 59, 59, 999); // 31 Dec of that year
+
+      const allEmployees = await employeModel.find();
+      const result = await Promise.all(
+        allEmployees.map(async (employee) => {
+          const bankData = await employeeWorkModel.findOne({ employeeId: employee._id });
+          const salary = bankData?.salary || "N/A";
+
+          const attendanceRecords = await AttandanceModel.find({
+            employeeId: employee._id,
+            date: { $gte: start, $lte: end },
+          });
+
+          const presentDays = attendanceRecords.filter((rec) => rec.status === "present").length;
+          const totalDays = attendanceRecords.length;
+          const oneday_salary = salary !== "N/A" ? salary / 30 : 0;
+          const estimate_salary = oneday_salary * presentDays;
+
+          return {
+            employeeName: employee.name,
+            email: employee.email,
+            salary,
+            presentDays,
+            absentDays: totalDays - presentDays,
+            totalWorkingDays: totalDays,
+            estimate_salary: salary === "N/A" ? "N/A" : Math.round(estimate_salary),
+            month: start.toLocaleString("default", { month: "long" }), // based on start date
+          };
+        })
+      );
+
+      return res.status(200).json({
+        success: true,
+        message: "All salary slips fetched successfully",
+        count: result.length,
+        data: result,
+      });
+    }
+
   } catch (err) {
     return next(new AppError(err.message, 500));
   }
@@ -274,7 +320,7 @@ const download_salary_slip = async (req, res, next) => {
     doc.font('Helvetica-Bold').text('Phone', leftCol, startY + 30);
     doc.font('Helvetica').text(`${result.employeeData.mobile}`, rightCol, startY + 30);
 
-     doc.font('Helvetica-Bold').text('Department', leftCol, startY + 45);
+    doc.font('Helvetica-Bold').text('Department', leftCol, startY + 45);
     doc.font('Helvetica').text(`${result.work_data.department}`, rightCol, startY + 45);
 
     doc.font('Helvetica-Bold').text('Employee ID', leftCol, startY + 60);
@@ -361,7 +407,7 @@ const download_salary_slip = async (req, res, next) => {
 
     currentY += 20;
     doc.font('Helvetica-Bold').text('Total Reimbursements', col1X, currentY);
-    doc.text(`₹${result.salary-result.estimate_salary}`, col2X, currentY);
+    doc.text(`₹${result.salary - result.estimate_salary}`, col2X, currentY);
 
     // NET PAY AMOUNT section
     currentY += 30;

@@ -73,14 +73,50 @@ export const document_get = async (req, res, next) => {
         }
 }
 
+export const delete_document = async (req, res, next) => {
+    try {
+        const { id } = req.params;
 
-export const documet_delete=async (req,res,next)=>{
-        try {  
-               const {id}=req.params;
-               if(!id){
-                return next (new AppError("Employee Id is required",400));
-               }  
-        } catch (err) {
-               return next(new AppError(err.message,500)); 
+        if (!id) {
+            return next(new AppError("Employee ID is required", 400));
         }
-}
+
+        
+        const record = await documentModel.findOne({ employeeid: id });
+        console.log(record);
+        // return
+
+        if (!record) {
+            return next(new AppError("Document not found", 404));
+        }
+
+        // Helper function to delete from Cloudinary
+        const deleteFromCloudinary = async (fileData) => {
+            if (fileData?.public_id) {
+                await cloudinary.v2.uploader.destroy(fileData.public_id, {
+                    resource_type: "raw",
+                });
+            }
+        };
+
+        // Delete all attached documents from Cloudinary
+        await Promise.all([
+            deleteFromCloudinary(record.pan),
+            deleteFromCloudinary(record.aadhaar),
+            deleteFromCloudinary(record.passbook),
+            deleteFromCloudinary(record.highSchool),
+            deleteFromCloudinary(record.graduation),
+        ]);
+
+        // Delete document record from MongoDB
+        await documentModel.deleteOne({ employeeid: id });
+
+        res.status(200).json({
+            success: true,
+            message: "Document deleted successfully",
+        });
+
+    } catch (err) {
+        return next(new AppError(err.message, 500));
+    }
+}; 
