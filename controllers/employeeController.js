@@ -141,19 +141,37 @@ const add_employee = async (req, res, next) => {
     addEmp.registrationId = result._id;
     addEmp.save();
 
-    const emailBody = `Dear ${name},
-       Your account has been successfully created.
-       🔐 Login Credentials:
+    const emailBody = `
+  <div style="font-family: Arial, sans-serif; color: #333;">
+  <div style="max-width:600px; margin:auto;">
+    <h2>Welcome to Code Crafter HRMS, ${name} 👋</h2>
+    <p>Your employee account has been successfully created. Below are your login credentials:</p>
 
-        Email: ${email}
-        Password:${password}
+    <table style="border-collapse: collapse; margin-top: 10px;">
+      <tr>
+        <td style="border: 1px solid #ccc; padding: 8px; font-weight: bold;">Email</td>
+        <td style="border: 1px solid #ccc; padding: 8px;">${email}</td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #ccc; padding: 8px; font-weight: bold;">Password</td>
+        <td style="border: 1px solid #ccc; padding: 8px;">${password}</td>
+      </tr>
+    </table>
 
-        You can now login to the System.
+    <p style="margin-top: 20px;">
+      You can now <strong>log in</strong> to the HRMS system and get started.
+    </p>
 
-        Regards,
-        HRMS Team`;
+    <p style="margin-top: 30px;">Best regards,<br />HRMS Team</p>
+    <a href="https://updatedhrms.netlify.app/login" style="display:inline-block;padding:10px 20px;background-color:#06425F;color:#fff;border-radius:4px;text-decoration:none;margin-top:15px;">
+  Login to HRMS
+</a>
 
-    await sendMail(email, "Your HRMS Login Credentials", emailBody)
+    </div>
+  </div>
+`;
+await sendMail(email, "Your HRMS Login Credentials", emailBody);
+
 
     res.status(200).json({
       success: true,

@@ -10,13 +10,16 @@ const sendMail = async (to, subject, text) => {
       user: process.env.SMTP_MAIL,
       pass: process.env.SMTP_PASSWORD,  // ✅ Corrected line
     },
+     tls: {
+    rejectUnauthorized: false, // ✅ disables SSL certificate check
+  },
   });
 
   const mailOptions = {
     from: process.env.SMTP_MAIL,
     to,
     subject,
-    text,
+    html: text,
   };
 
   await transporter.sendMail(mailOptions);
