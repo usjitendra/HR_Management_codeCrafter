@@ -11,7 +11,7 @@ import { log } from "console";
 import { createNotification } from "./notification.controller.js";
 import { create } from "domain";
 import axios from 'axios'
- import moment from "moment";
+import moment from "moment";
 
 const ObjectId = mongoose.Types.ObjectId;
 
@@ -150,7 +150,7 @@ const attandanceLogin = async (req, res, next) => {
           location: {
             type: "Point",
             coordinates: [longitude, latitude],
-            name:locationName
+            name: locationName
           },
         },
       },
@@ -483,22 +483,22 @@ const getMonthalyDetail = async (req, res, next) => {
 
 const attendanceFilter = async (req, res, next) => {
   try {
-    const {startDate,endDate} = req.query;
+    const { startDate, endDate } = req.query;
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const endOfToday = new Date(today);
     endOfToday.setHours(23, 59, 59, 999);
 
-      if (!startDate || !endDate) {
+    if (!startDate || !endDate) {
       return res.status(400).json({ success: false, message: "startDate and endDate are required" });
     }
 
     const start = new Date(startDate);
     const end = new Date(endDate);
     end.setHours(23, 59, 59, 999); // Include full end date
-        const attendanceData= await AttandanceModel.find({
-           createdAt: { $gte: start, $lte: end }
-        }).populate("employeeId", "name email mobile");
+    const attendanceData = await AttandanceModel.find({
+      createdAt: { $gte: start, $lte: end }
+    }).populate("employeeId", "name email mobile");
 
     const data = await AttandanceModel.aggregate([
       {
@@ -579,7 +579,7 @@ const attendanceFilter = async (req, res, next) => {
       message: "success",
       success: true,
       count: data.length,
-      attendanceData:attendanceData,
+      attendanceData: attendanceData,
       data,
     });
   } catch (err) {
@@ -630,7 +630,39 @@ const monthelydetail = async (req, res, next) => {
 const individual_attandance_detai = async (req, res, next) => {
   try {
     const { id } = req.params;
-    console.log(id);
+    const { startDate, endDate } = req.query;
+
+    console.log(startDate);
+    console.log(endDate);
+
+    if (startDate || endDate) {
+      const name = await employeModel.findById(id).select('name');
+      const attendanceRecords = await AttandanceModel.find({
+        employeeId: id,
+        createdAt: {
+          $gte: new Date(startDate),
+          $lte: new Date(endDate)
+        }
+      }).sort({ createdAt: -1 });
+
+      const attendance = attendanceRecords.map(record => {
+        const date = new Date(record.createdAt);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+
+        return {
+          ...record._doc, 
+          createdAt: `${day}-${month}-${year}`
+        };
+      });
+
+      const data = {
+        name,
+        attendance
+      }
+      return res.status(200).json({ success: true, data: data })
+    }
 
     const name = await employeModel.findById(id).select('name');
     const attendance = await AttandanceModel.find({ employeeId: id }).sort({ createdAt: -1 });
@@ -685,7 +717,7 @@ const todayCheckData = async (req, res, next) => {
 
 
 
- const calendar_view = async (req, res, next) => {
+const calendar_view = async (req, res, next) => {
   try {
     const { month } = req.query; // format: '2025-06'
     if (!month) {
@@ -694,10 +726,10 @@ const todayCheckData = async (req, res, next) => {
 
     const startDate = moment(month).startOf("month").toDate();
     const endDate = moment(month).endOf("month").toDate();
-            console.log("startDate",startDate);
-            console.log("endDate",endDate);
-            // return;
-            
+    console.log("startDate", startDate);
+    console.log("endDate", endDate);
+    // return;
+
     const employees = await employeModel.find();
 
     const allAttendance = await AttandanceModel.find({
@@ -733,8 +765,8 @@ const todayCheckData = async (req, res, next) => {
       return {
         employeeId: emp._id,
         name: emp.name,
-        email:emp.email,
-        mobile:emp.mobile,
+        email: emp.email,
+        mobile: emp.mobile,
         attendance: attendanceMap,
       };
     });

@@ -5,6 +5,7 @@ import AttandanceModel from "../models/attandance.model.js";
 import employeeWorkModel from "../models/employee.work.information.model.js";
 import salarySlipModel from "../models/salary.slip.model.js";
 import PDFDocument from 'pdfkit';
+import salaryPaymentModel from "../models/salaryPayment/salaryPaymentModel.js";
 
 // const viewSallery_slipe = async (req, res, next) => {
 //   try {
@@ -106,48 +107,75 @@ const viewSallery_slipe = async (req, res, next) => {
       });
     }
 
-    //for web ke liye
+
     if (year) {
       const numericYear = Number(year);
-      const start = new Date(numericYear, 0, 1); // 1 Jan of that year
-      const end = new Date(numericYear, 11, 31, 23, 59, 59, 999); // 31 Dec of that year
-
       const allEmployees = await employeModel.find();
-      const result = await Promise.all(
+      const result = [];
+
+      await Promise.all(
         allEmployees.map(async (employee) => {
           const bankData = await employeeWorkModel.findOne({ employeeId: employee._id });
           const salary = bankData?.salary || "N/A";
+          const joiningDate = new Date(employee.createdAt || employee.joiningDate); 
+          const monthlyResults = await Promise.all(
+            Array.from({ length: 12 }).map(async (_, month) => {
+              if (
+                numericYear < joiningDate.getFullYear() ||
+                (numericYear === joiningDate.getFullYear() && month < joiningDate.getMonth())
+              ) {
+                return null;
+              }
 
-          const attendanceRecords = await AttandanceModel.find({
-            employeeId: employee._id,
-            date: { $gte: start, $lte: end },
-          });
+              const start = new Date(numericYear, month, 1);
+              const end = new Date(numericYear, month + 1, 0, 23, 59, 59, 999);
 
-          const presentDays = attendanceRecords.filter((rec) => rec.status === "present").length;
-          const totalDays = attendanceRecords.length;
-          const oneday_salary = salary !== "N/A" ? salary / 30 : 0;
-          const estimate_salary = oneday_salary * presentDays;
+              const attendanceRecords = await AttandanceModel.find({
+                employeeId: employee._id,
+                date: { $gte: start, $lte: end },
+              });
 
-          return {
-            employeeName: employee.name,
-            email: employee.email,
-            salary,
-            presentDays,
-            absentDays: totalDays - presentDays,
-            totalWorkingDays: totalDays,
-            estimate_salary: salary === "N/A" ? "N/A" : Math.round(estimate_salary),
-            month: start.toLocaleString("default", { month: "long" }), // based on start date
-          };
+              const presentDays = attendanceRecords.filter((rec) => rec.status === "present").length;
+              const totalDays = attendanceRecords.length;
+              const absentDays = totalDays - presentDays;
+
+              const oneday_salary = salary !== "N/A" ? parseFloat(salary) / 30 : 0;
+              const estimate_salary = oneday_salary * presentDays;
+
+              const paymentStatus = await salaryPaymentModel.findOne({
+                employeeId: employee._id,
+                year: numericYear,
+                month,
+              });
+
+              return {
+                employeeName: employee.name,
+                email: employee.email,
+                salary,
+                presentDays,
+                absentDays,
+                totalWorkingDays: totalDays,
+                estimate_salary: salary === "N/A" ? "N/A" : Math.round(estimate_salary),
+                year: numericYear,
+                month: new Date(numericYear, month).toLocaleString("default", { month: "long" }),
+                status: paymentStatus?.isPaid ? "Paid" : "Unpaid",
+              };
+            })
+          );
+
+          // Filter out `null` results (months before joining)
+          result.push(...monthlyResults.filter((item) => item !== null));
         })
       );
 
       return res.status(200).json({
         success: true,
-        message: "All salary slips fetched successfully",
+        message: "Monthly salary slips (filtered by joining date)",
         count: result.length,
         data: result,
       });
     }
+
 
   } catch (err) {
     return next(new AppError(err.message, 500));
