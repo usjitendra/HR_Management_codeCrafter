@@ -103,6 +103,7 @@ const work_Add = async (req, res, next) => {
 
 const worka_update = async (req, res, next) => {
   try {
+    console.log(req.body)
     const { id } = req.params;
     const {
       department,

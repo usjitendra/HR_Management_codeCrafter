@@ -12,7 +12,7 @@ const applyLeave = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const { breakDown, leaveType, startDate, endDate, description } = req.body;
+    const { breakDown, reason, leaveType, startDate, endDate, description } = req.body;
 
     const isValid = await employeModel.findById(id);
 
@@ -41,6 +41,7 @@ const applyLeave = async (req, res, next) => {
       leaveType,
       startDate,
       endDate,
+      reason,
       description,
       breakDown,
     });
@@ -90,6 +91,7 @@ const getMyLeaves = async (req, res, next) => {
       if (response.length === 0) {
         return next(new AppError("No leave applications found.", 400));
       }
+      
       return res.status(200).json({ success: true, data: response, message: "Leave data found successfully" });
     }
     else {

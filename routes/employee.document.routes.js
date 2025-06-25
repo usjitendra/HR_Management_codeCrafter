@@ -12,7 +12,8 @@ employee_document_route.post("/add/:id",upload.fields([
   { name: "aadhaar", maxCount: 1 },  // ✅ corrected name
   { name: "passbook", maxCount: 1 },
   { name: "highSchool", maxCount: 1 },
-  { name: "graduation", maxCount: 1 }
+  { name: "graduation", maxCount: 1 },
+  { name: "salarySlip", maxCount: 1 },
 ]),add_document)
 
 
@@ -24,7 +25,8 @@ employee_document_route.put("/update/:id",upload.fields([
   { name: "aadhaar", maxCount: 1 },  
   { name: "passbook", maxCount: 1 },
   { name: "highSchool", maxCount: 1 },
-  { name: "graduation", maxCount: 1 }
+  { name: "graduation", maxCount: 1 },
+  { name: "salarySlip", maxCount: 1 }
 ]),update_document)
 
 export default employee_document_route;
