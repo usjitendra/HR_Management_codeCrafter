@@ -76,15 +76,32 @@ const applyLeave = async (req, res, next) => {
 const getMyLeaves = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const response = await leaveModel
-      .find({ employeeId: id })
-      .sort({ appliedAt: -1 });
-    if (response.length === 0) {
-      return next(new AppError("No leave applications found.", 400));
+    const { startDate, endDate } = req.params;
+    if (startDate && endDate) {
+      const response = await leaveModel
+        .find({
+          employeeId: id,
+          createdAt: {
+            $gte: new Date(startDate),
+            $lte: new Date(endDate)
+          }
+        })
+        .sort({ appliedAt: -1 });
+      if (response.length === 0) {
+        return next(new AppError("No leave applications found.", 400));
+      }
+      return res.status(200).json({ success: true, data: response, message: "Leave data found successfully" });
     }
-    //  return
-
-    return res.status(200).json({ success: true, data: response, message: "Leave data found successfully" });
+    else {
+      const response = await leaveModel
+        .find({ employeeId: id })
+        .sort({ appliedAt: -1 });
+      if (response.length === 0) {
+        return next(new AppError("No leave applications found.", 400));
+      }
+      //  return
+      return res.status(200).json({ success: true, data: response, message: "Leave data found successfully" });
+    }
   } catch (err) {
     return next(new AppError(err.message, 500));
   }
@@ -301,41 +318,43 @@ const singleLeave = async (req, res, next) => {
     const { id } = req.params
     const { startDate, endDate } = req.query;
     if (startDate && endDate) {
-      const leaves = await leaveModel.find({ employeeId: id ,createdAt:{
-        $gte:new Date(startDate),
-        $lte:new Date(endDate)
-      }})
+      const leaves = await leaveModel.find({
+        employeeId: id, createdAt: {
+          $gte: new Date(startDate),
+          $lte: new Date(endDate)
+        }
+      })
       const approvedLeaves = leaves.filter(leave => leave.status === 'Approved').length;
       const rejectedLeaves = leaves.filter(leave => leave.status === 'Rejected').length;
       const data = {
-        totalLeaves:leaves.length,
+        totalLeaves: leaves.length,
         approvedLeaves,
         rejectedLeaves
       }
       return res.status(200).json({
         success: true,
-        message:"success",
+        message: "success",
         data: data
       })
     }
-    
-    else{
-    //  console.log(id);
-    const leaves = await leaveModel.find({ employeeId: id,})
-    const approvedLeaves = leaves.filter(leave => leave.status === 'Approved').length;
-    const rejectedLeaves = leaves.filter(leave => leave.status === 'Rejected').length;
 
-    const data = {
-      totalLeaves:leaves.length,
-      approvedLeaves,
-      rejectedLeaves
+    else {
+      //  console.log(id);
+      const leaves = await leaveModel.find({ employeeId: id, })
+      const approvedLeaves = leaves.filter(leave => leave.status === 'Approved').length;
+      const rejectedLeaves = leaves.filter(leave => leave.status === 'Rejected').length;
+
+      const data = {
+        totalLeaves: leaves.length,
+        approvedLeaves,
+        rejectedLeaves
+      }
+      return res.status(200).json({
+        success: true,
+        message: "Employee leave",
+        data: data
+      })
     }
-    return res.status(200).json({
-      success: true,
-      message:"Employee leave",
-      data: data
-    })
-  }
 
   } catch (err) {
     return next(new AppError(err.message, 500))

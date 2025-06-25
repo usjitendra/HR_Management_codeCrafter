@@ -62,7 +62,9 @@ const viewSallery_slipe = async (req, res, next) => {
   try {
     //for app ke liye
     const { startDate, endDate, year } = req.query;
-    if (startDate || endDate) {
+      console.log("yearxxx",year);
+
+    if (startDate && endDate) {
       const now = new Date();
       const start = startDate ? new Date(startDate) : new Date(now.getFullYear(), now.getMonth(), 1);
       const end = endDate ? new Date(endDate) : new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
@@ -107,8 +109,10 @@ const viewSallery_slipe = async (req, res, next) => {
       });
     }
 
-
+   return
     if (year) {
+      console.log("aaaaa");
+      
       const numericYear = Number(year);
       const allEmployees = await employeModel.find();
       const result = [];
@@ -167,7 +171,8 @@ const viewSallery_slipe = async (req, res, next) => {
           result.push(...monthlyResults.filter((item) => item !== null));
         })
       );
-
+          console.log(result);
+          
       return res.status(200).json({
         success: true,
         message: "Monthly salary slips (filtered by joining date)",
