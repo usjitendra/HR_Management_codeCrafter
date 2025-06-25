@@ -10,12 +10,12 @@ const key = process.env.JWT_SECRET;
 // import sendNotification from './fcm.notification.js'
 const applyLeave = async (req, res, next) => {
   try {
-    const {id} = req.params;
+    const { id } = req.params;
 
     const { breakDown, leaveType, startDate, endDate, description } = req.body;
 
     const isValid = await employeModel.findById(id);
-  
+
 
     if (!isValid) {
       return next(new AppError("Some error occured", 400));
@@ -31,7 +31,7 @@ const applyLeave = async (req, res, next) => {
     });
 
     //  console.log("existingLeave",existingLeave);
-     
+
     // return
     if (existingLeave) {
       return next(new AppError("Leave all ready applay"));
@@ -45,8 +45,8 @@ const applyLeave = async (req, res, next) => {
       breakDown,
     });
     //  return;
-    const employeeData =await employeModel.findByIdAndUpdate(id, {leaveID: newLeave._id });
-         
+    const employeeData = await employeModel.findByIdAndUpdate(id, { leaveID: newLeave._id });
+
     //create notification leave...
     const io = req.app.get("io");
     const title = " Leave Request";
@@ -55,7 +55,7 @@ const applyLeave = async (req, res, next) => {
     const result = await createNotification(employeeData.fcmToken, title, message);
 
     io.emit("new-message", "jitendra leave le lehlus re dada"); // 🔥 Total summary bhi emit karo
-      if (isValid.fcmToken) {
+    if (isValid.fcmToken) {
       const payload = {
         title: "Leave Request Submitted",
         body: `${isValid.name}, your leave request has been submitted.`,
@@ -123,14 +123,14 @@ const approveLeave = async (req, res, next) => {
 const rejectLeave = async (req, res, next) => {
   try {
     const { id } = req.params;
-     console.log("id hab bha++",id);
+    console.log("id hab bha++", id);
     //  return;
     const response = await leaveModel.findById(id)
     if (!response) {
       return next(new AppError("No Leave Apply h bhai", 400))
     }
-      response.status="Rejected"
-     await response.save()
+    response.status = "Rejected"
+    await response.save()
     //  return
     return res.status(200).json({ success: true, data: response, message: "Leave Reject" })
   } catch (err) {
@@ -202,7 +202,7 @@ const alldetail = async (req, res, next) => {
     const leaveData = await leaveModel
       .find({ employeeId: employeeData._id })
       .sort({ startDate: -1 });
-      
+
     const data = {
       employeeData: {
         name: employeeData.name,
@@ -296,27 +296,49 @@ const allLeave = async (req, res, next) => {
 };
 
 
-const singleLeave=async(req,res,next)=>{
+const singleLeave = async (req, res, next) => {
   try {
-       const{id}=req.params
-      //  console.log(id);
-         const leaves=await leaveModel.find({employeeId:id})
-         const totalLeaves = leaves.length;
-         const approvedLeaves = leaves.filter(leave => leave.status === 'Approved').length;
-         const rejectedLeaves = leaves.filter(leave => leave.status === 'Rejected').length;
-         
-         const data={
-          totalLeaves,
-          approvedLeaves,
-          rejectedLeaves
-         }
-         return res.status(200).json({
-            success:true,
-            data:data
-         })
-       
+    const { id } = req.params
+    const { startDate, endDate } = req.query;
+    if (startDate && endDate) {
+      const leaves = await leaveModel.find({ employeeId: id ,createdAt:{
+        $gte:new Date(startDate),
+        $lte:new Date(endDate)
+      }})
+      const approvedLeaves = leaves.filter(leave => leave.status === 'Approved').length;
+      const rejectedLeaves = leaves.filter(leave => leave.status === 'Rejected').length;
+      const data = {
+        totalLeaves:leaves.length,
+        approvedLeaves,
+        rejectedLeaves
+      }
+      return res.status(200).json({
+        success: true,
+        message:"success",
+        data: data
+      })
+    }
+    
+    else{
+    //  console.log(id);
+    const leaves = await leaveModel.find({ employeeId: id,})
+    const approvedLeaves = leaves.filter(leave => leave.status === 'Approved').length;
+    const rejectedLeaves = leaves.filter(leave => leave.status === 'Rejected').length;
+
+    const data = {
+      totalLeaves:leaves.length,
+      approvedLeaves,
+      rejectedLeaves
+    }
+    return res.status(200).json({
+      success: true,
+      message:"Employee leave",
+      data: data
+    })
+  }
+
   } catch (err) {
-    return next(new AppError(err.message,500))
+    return next(new AppError(err.message, 500))
   }
 }
 
