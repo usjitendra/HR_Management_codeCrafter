@@ -30,9 +30,6 @@ const createNotification = async ({ fromId = null, toId = null, title, message }
 const getUserNotifications = async (req, res,next) => {
   try {
     const userId = req.params.id; 
-      // console.log(userId,"hai bhai++");
-      // return;
-      
     const notifications = await notificationModel.find({ toId: userId }).sort({ createdAt: -1 });
     res.status(200).json(notifications);
   } catch (error) {

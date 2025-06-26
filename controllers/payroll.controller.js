@@ -6,6 +6,7 @@ import employeeWorkModel from "../models/employee.work.information.model.js";
 import salarySlipModel from "../models/salary.slip.model.js";
 import PDFDocument from 'pdfkit';
 import salaryPaymentModel from "../models/salaryPayment/salaryPaymentModel.js";
+import salaryModel from "../models/salaryPayment/salaryPaymentModel.js"; // adjust path if needed
 
 // const viewSallery_slipe = async (req, res, next) => {
 //   try {
@@ -62,7 +63,6 @@ const viewSallery_slipe = async (req, res, next) => {
   try {
     //for app ke liye
     const { startDate, endDate, year } = req.query;
-      console.log("yearxxx",year);
 
     if (startDate && endDate) {
       const now = new Date();
@@ -108,22 +108,37 @@ const viewSallery_slipe = async (req, res, next) => {
         data: result,
       });
     }
-
-   return
+       console.log(year);
+       
+    //  return
     if (year) {
-      console.log("aaaaa");
-      
       const numericYear = Number(year);
-      const allEmployees = await employeModel.find();
+      const currentYear = new Date().getFullYear();
+      if (numericYear > currentYear) {
+        return res.status(400).json({
+          success: false,
+          message: `Year ${numericYear} is in the future. Cannot generate data.`,
+          data: [],
+        });
+      }
+      const startOfYear = new Date(numericYear, 0, 1);
+      const endOfYear = new Date(numericYear, 11, 31, 23, 59, 59, 999);
+
+      const allEmployees = await employeModel.find(
+        { createdAt: { $gte: startOfYear, $lte: endOfYear } }
+      );
       const result = [];
+      // return
 
       await Promise.all(
         allEmployees.map(async (employee) => {
           const bankData = await employeeWorkModel.findOne({ employeeId: employee._id });
           const salary = bankData?.salary || "N/A";
-          const joiningDate = new Date(employee.createdAt || employee.joiningDate); 
+          const joiningDate = new Date(employee.createdAt || employee.joiningDate);
+
           const monthlyResults = await Promise.all(
             Array.from({ length: 12 }).map(async (_, month) => {
+              // 👉 Only generate salary for months after joining
               if (
                 numericYear < joiningDate.getFullYear() ||
                 (numericYear === joiningDate.getFullYear() && month < joiningDate.getMonth())
@@ -146,13 +161,14 @@ const viewSallery_slipe = async (req, res, next) => {
               const oneday_salary = salary !== "N/A" ? parseFloat(salary) / 30 : 0;
               const estimate_salary = oneday_salary * presentDays;
 
-              const paymentStatus = await salaryPaymentModel.findOne({
+              const paymentStatus = await salaryModel.findOne({
                 employeeId: employee._id,
                 year: numericYear,
                 month,
               });
 
               return {
+                 employeeId: employee._id,
                 employeeName: employee.name,
                 email: employee.email,
                 salary,
@@ -167,15 +183,13 @@ const viewSallery_slipe = async (req, res, next) => {
             })
           );
 
-          // Filter out `null` results (months before joining)
           result.push(...monthlyResults.filter((item) => item !== null));
         })
       );
-          console.log(result);
-          
+
       return res.status(200).json({
         success: true,
-        message: "Monthly salary slips (filtered by joining date)",
+        message: `Monthly salary slips for year ${numericYear}`,
         count: result.length,
         data: result,
       });
@@ -486,6 +500,33 @@ const download_salary_slip = async (req, res, next) => {
 };
 
 
+
+export const SalaryPay= async (req, res, next) => {
+  try {
+    const { employeeId, year, month, isPaid, paidAmount } = req.body;
+     
+      console.log(req.body);
+      // return
+    if (!employeeId ) {
+      return next(new AppError("Employee ID,are required.", 400));
+    }
+
+   const record = await salaryModel.create({
+        employeeId,
+        year,
+        month,
+        isPaid,
+        paidAmount:paidAmount
+      });
+    return res.status(200).json({
+      success: true,
+      message: "Salary payment status updated successfully.",
+      data: record,
+    });
+  } catch (error) {
+    return next(new AppError(error.message, 500));
+  }
+};
 
 
 
