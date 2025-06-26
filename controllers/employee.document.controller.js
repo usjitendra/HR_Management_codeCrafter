@@ -9,7 +9,6 @@ export const add_document = async (req, res, next) => {
   try {
     const files = req.files; 
     const { id } = req.params;
-
     if (!id) {
       return next(new AppError("Employee ID is required", 400));
     }
@@ -53,6 +52,9 @@ export const add_document = async (req, res, next) => {
     }
     if (files?.graduation) {
       docData.graduation = await uploadToCloudinary(files.graduation[0], "GRADUATION");
+    }
+    if (files?.salarySlip) {
+      docData.salarySlip = await uploadToCloudinary(files.graduation[0], "SALARYSLIP");
     }
     const newDocument = await documentModel.create(docData);
     res.status(201).json({
@@ -111,6 +113,7 @@ export const delete_document = async (req, res, next) => {
             deleteFromCloudinary(record.passbook),
             deleteFromCloudinary(record.highSchool),
             deleteFromCloudinary(record.graduation),
+            deleteFromCloudinary(record.salarySlip),
         ]);
 
         // Delete document record from MongoDB
@@ -131,7 +134,7 @@ export const update_document = async (req, res, next) => {
   try {
     const files = req.files;
     const { id } = req.params;
-     console.log("update+++");
+     console.log(files);
      
     if (!id) {
       return next(new AppError("Employee ID is required", 400));
@@ -178,6 +181,7 @@ export const update_document = async (req, res, next) => {
       { name: "passbook", folder: "PASSBOOK" },
       { name: "highSchool", folder: "HIGHSCHOOL" },
       { name: "graduation", folder: "GRADUATION" },
+      { name: "salarySlip", folder: "SALARYSLIP" },
     ];
 
     for (const field of docFields) {

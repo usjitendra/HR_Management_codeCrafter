@@ -45,7 +45,7 @@ const leaveSchema=new Schema(
        },
        breakDown:{
          type:String,
-         enum:['full',"first_haf","second_haf"]
+         // enum:['full',"first_half","second_half"]
        },
        teast1:{
           type:String

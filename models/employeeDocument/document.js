@@ -27,6 +27,10 @@ const employeeDocumentSchema = new Schema(
       public_id: { type: String, default: "" },
       secure_url: { type: String, default: "" }
     },
+    salarySlip: {
+      public_id: { type: String, default: "" },
+      secure_url: { type: String, default: "" }
+    },
   },
   {
     timestamps: true
