@@ -5,8 +5,8 @@ import AttandanceModel from "../models/attandance.model.js";
 import employeeWorkModel from "../models/employee.work.information.model.js";
 import salarySlipModel from "../models/salary.slip.model.js";
 import PDFDocument from 'pdfkit';
-import salaryPaymentModel from "../models/salaryPayment/salaryPaymentModel.js";
 import salaryModel from "../models/salaryPayment/salaryPaymentModel.js"; // adjust path if needed
+import dayjs from "dayjs"; // make sure you install dayjs
 
 // const viewSallery_slipe = async (req, res, next) => {
 //   try {
@@ -108,8 +108,8 @@ const viewSallery_slipe = async (req, res, next) => {
         data: result,
       });
     }
-       console.log(year);
-       
+    console.log(year);
+
     //  return
     if (year) {
       const numericYear = Number(year);
@@ -168,7 +168,7 @@ const viewSallery_slipe = async (req, res, next) => {
               });
 
               return {
-                 employeeId: employee._id,
+                employeeId: employee._id,
                 employeeName: employee.name,
                 email: employee.email,
                 salary,
@@ -501,23 +501,23 @@ const download_salary_slip = async (req, res, next) => {
 
 
 
-export const SalaryPay= async (req, res, next) => {
+export const SalaryPay = async (req, res, next) => {
   try {
     const { employeeId, year, month, isPaid, paidAmount } = req.body;
-     
-      console.log(req.body);
-      // return
-    if (!employeeId ) {
+
+    console.log(req.body);
+    // return
+    if (!employeeId) {
       return next(new AppError("Employee ID,are required.", 400));
     }
 
-   const record = await salaryModel.create({
-        employeeId,
-        year,
-        month,
-        isPaid,
-        paidAmount:paidAmount
-      });
+    const record = await salaryModel.create({
+      employeeId,
+      year,
+      month,
+      isPaid,
+      paidAmount: paidAmount
+    });
     return res.status(200).json({
       success: true,
       message: "Salary payment status updated successfully.",
@@ -528,6 +528,66 @@ export const SalaryPay= async (req, res, next) => {
   }
 };
 
+
+export const viewSalary_ByMonth = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { year, month } = req.query;
+    if (!year || !month) {
+      return res.status(400).json({ success: false, message: "Year and month are required in query" });
+    }
+    // Calculate start and end date of the month using dayjs
+
+    const start = dayjs(`${year}-${month}-01`).startOf('month').toDate();
+    const end = dayjs(start).endOf('month').toDate();
+
+    const employee = await employeModel.findById(id);
+
+    if (!employee) {
+      return res.status(404).json({ success: false, message: "Employee not found" });
+    }
+
+    const attendanceRecords = await AttandanceModel.find({
+      employeeId: employee._id,
+      createdAt: { $gte: start, $lte: end },
+    });
+
+    const presentDays = attendanceRecords.filter((rec) => rec.status === "present").length;
+    const totalDays = attendanceRecords.length;
+    const bankData = await employeeWorkModel.findOne({ employeeId: employee._id });
+    const salary = bankData?.salary || 0;
+    const oneday_salary = salary / 30;
+    const estimate_salary = oneday_salary * presentDays;
+    const paysalary = await salaryModel.findOne({
+      registrationId: id, createdAt: {
+        $gte: start, $lte: end
+      }
+    })
+
+    const salaryDetail = {
+      salary,
+      absentDays: totalDays - presentDays,
+      totalDays,
+      presentDays,
+      estimate_salary,
+      paysalary: paysalary ? "Paid" : "Not Paid"
+    }
+
+    const result = {
+      employeeData: employee,
+      salaryDetail
+    };
+
+    return res.status(200).json({
+      success: true,
+      message: "Employee Monthly Salary",
+      data: result,
+    });
+
+  } catch (err) {
+    return next(new AppError(err.message, 500));
+  }
+};
 
 
 export { viewSallery_slipe, viewSallery_employee, add_salary_slip, download_salary_slip };
