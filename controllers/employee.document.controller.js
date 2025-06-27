@@ -208,7 +208,12 @@ export const deleteUploadedDocuments_one = async (req, res, next) => {
   try {
     const files = req.files;
     console.log("Files received:", req.files);
-
+    if (!files || Object.keys(files).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "File is required",
+      });
+    }
     const { id } = req.params;
     if (!id) {
       return next(new AppError("Employee ID is required", 400));

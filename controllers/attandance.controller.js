@@ -175,7 +175,6 @@ const attandanceLogin = async (req, res, next) => {
   }
 };
 
-
 // const attandanceLogout = async (req, res, next) => {
 //   try {
 //     const { id } = req.params;

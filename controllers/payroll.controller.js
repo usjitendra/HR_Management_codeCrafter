@@ -282,21 +282,21 @@ const download_salary_slip = async (req, res, next) => {
   try {
 
     const { id } = req.params;
-    const { startDate, endDate } = req.query;
-    console.log("startDate", startDate);
-    console.log("endDate", endDate);
+    const { year, month } = req.query;
+   
     //  return;
 
-    if (!startDate || !endDate) {
+    if (!year || !month) {
       return res.status(400).json({
         success: false,
-        message: "Please select start date and end date",
+        message: "Please select year and month",
       });
     }
 
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    end.setHours(23, 59, 59, 999);
+    const startDate = new Date(year, month - 1, 1); // JS months 0-based hote hain
+    const endDate = new Date(year, month, 0); // 0th day of next month gives last day of current month
+    endDate.setHours(23, 59, 59, 999); // set end time to 23:59:59.999
+
 
     const employee = await employeModel.findById(id);
 
@@ -306,7 +306,7 @@ const download_salary_slip = async (req, res, next) => {
 
     const attendanceRecords = await AttandanceModel.find({
       employeeId: employee._id,
-      createdAt: { $gte: start, $lte: end },
+      createdAt: { $gte: startDate, $lte: endDate },
     });
 
     const presentDays = attendanceRecords.filter((rec) => rec.status === "present").length;
