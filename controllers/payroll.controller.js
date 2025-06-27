@@ -574,7 +574,7 @@ export const viewSalary_ByMonth = async (req, res, next) => {
     }
 
     const result = {
-      employeeData: employee,
+      // employeeData: employee,
       salaryDetail
     };
 
