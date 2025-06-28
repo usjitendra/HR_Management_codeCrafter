@@ -10,7 +10,7 @@ const salaryPaymentSchema = new Schema(
     year: { type: Number, required: true },
     month: { type: Number, required: true }, // 0 = Jan, 11 = Dec
     isPaid: { type: Boolean, default: false },
-    paidAmount: { type: Number }, // optional
+    paidAmount: { type: Schema.Types.Mixed }, // optional
   },
   {
     timestamps: true,

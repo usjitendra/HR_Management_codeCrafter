@@ -570,7 +570,7 @@ export const viewSalary_ByMonth = async (req, res, next) => {
       totalDays,
       presentDays,
       estimate_salary,
-      paysalary: paysalary ? "Paid" : "Not Paid"
+      status: paysalary ? "Paid" : "Pending"
     }
 
     const result = {

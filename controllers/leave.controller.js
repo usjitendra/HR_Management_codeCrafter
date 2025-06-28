@@ -54,8 +54,7 @@ const applyLeave = async (req, res, next) => {
     const message = `${isValid.name} leave Applay`;
     const fromId = id;
     const result = await createNotification(employeeData.fcmToken, title, message);
-
-    io.emit("new-message", "jitendra leave le lehlus re dada"); // 🔥 Total summary bhi emit karo
+    io.emit("new-message", `${isValid.name} leave le lehlus re dada`); // 🔥 Total summary bhi emit karo
     if (isValid.fcmToken) {
       const payload = {
         title: "Leave Request Submitted",
