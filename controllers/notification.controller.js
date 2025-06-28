@@ -6,12 +6,14 @@ import timezone from 'dayjs/plugin/timezone.js';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-// 🟢 Create a new notification
-const createNotification = async ({ fromId = null, toId = null, title, message }, io) => {
-           
+const createNotification = async ({ fromId = null, toId = null, employeeId,title, message }, io) => {      
   try {
-    const notification = await notificationModel.create({ fromId, toId, title, message });
-
+    // console.log("message",message);
+    // console.log("title",title);
+    // console.log("employeeId",employeeId);
+    
+    
+    const notification = await notificationModel.create({employeeId:employeeId,fromId, toId, title, message });
     if (io && toId) {
       io.to(toId.toString()).emit("new_notification", notification);
     }
@@ -24,13 +26,11 @@ const createNotification = async ({ fromId = null, toId = null, title, message }
 };
 
 
-//notification update....
 
-// 🔵 Get all notifications for a user (toId)
 const getUserNotifications = async (req, res,next) => {
   try {
     const userId = req.params.id; 
-    const notifications = await notificationModel.find({ toId: userId }).sort({ createdAt: -1 });
+    const notifications = await notificationModel.find({employeeId: userId }).sort({ createdAt: -1 });
     res.status(200).json(notifications);
   } catch (error) {
     return next(new AppError("notification not fund",401))
@@ -58,15 +58,11 @@ const getUserNotifications = async (req, res,next) => {
 
 const allnotification = async (req, res, next) => {
   try {
-    const startOfToday = dayjs().startOf('day').toDate(); // today 00:00:00
-    const endOfToday = dayjs().endOf('day').toDate();     // today 23:59:59
-
+    const startOfToday = dayjs().startOf('day').toDate(); 
+    const endOfToday = dayjs().endOf('day').toDate();     
     const result = await notificationModel.find({
       isRead: false,
-      // createdAt: {
-      //   $gte: startOfToday,
-      //   $lte: endOfToday,
-      // }
+      employeeId:null
     });
 
     if (!result || result.length === 0) {
@@ -78,6 +74,7 @@ const allnotification = async (req, res, next) => {
     return next(new AppError(err.message, 500));
   }
 };
+
 
 
 export{createNotification,getUserNotifications,markNotificationAsRead,allnotification}

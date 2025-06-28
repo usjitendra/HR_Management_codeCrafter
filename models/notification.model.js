@@ -1,8 +1,13 @@
 
-import mongoose, { Schema,model } from "mongoose";
+import mongoose, { Schema,SchemaType,model } from "mongoose";
 
 const notificationSchema=new Schema(
     {
+        employeeId:{
+           type:Schema.Types.ObjectId,
+           ref:"Employee",
+           default:null
+        },
         fromId:{
             type:Schema.Types.ObjectId,
             default:null

@@ -16,9 +16,9 @@ const notification=async()=>{
 }
 
 
-cron.schedule("0 1 * * *",async()=>{
-     console.log("Running dealy delete notification.");
-     notification()
-})
+// cron.schedule("0 1 * * *",async()=>{
+//      console.log("Running dealy delete notification.");
+//      notification()
+// })
 
-notification();
+// notification();

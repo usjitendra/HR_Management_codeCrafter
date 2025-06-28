@@ -14,12 +14,27 @@ const applyLeave = async (req, res, next) => {
 
     const { breakDown, reason, leaveType, startDate, endDate, description } = req.body;
 
+     if (!leaveType || !startDate || !endDate) {
+      return next(new AppError("Please provide leave type, start date, end date, and reason.", 400));
+    }
+
     const isValid = await employeModel.findById(id);
-
-
     if (!isValid) {
       return next(new AppError("Some error occured", 400));
     }
+     
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const now = new Date();
+
+    if (start > end) {
+      return next(new AppError("Start date cannot be after end date.", 400));
+    }
+
+    if (start < now.setHours(0, 0, 0, 0)) {
+      return next(new AppError("Start date cannot be in the past.", 400));
+    }
+
     const existingLeave = await leaveModel.findOne({
       employeeId: id,
       $or: [
@@ -30,9 +45,6 @@ const applyLeave = async (req, res, next) => {
       ],
     });
 
-    //  console.log("existingLeave",existingLeave);
-
-    // return
     if (existingLeave) {
       return next(new AppError("Leave all ready applay"));
     }
@@ -45,16 +57,17 @@ const applyLeave = async (req, res, next) => {
       description,
       breakDown,
     });
-    //  return;
-    const employeeData = await employeModel.findByIdAndUpdate(id, { leaveID: newLeave._id });
+
+     await employeModel.findByIdAndUpdate(id, { leaveID: newLeave._id });
 
     //create notification leave...
     const io = req.app.get("io");
     const title = " Leave Request";
-    const message = `${isValid.name} leave Applay`;
+    const message = `${isValid.name} has applied for leave from ${startDate} to ${endDate}.`;
     const fromId = id;
-    const result = await createNotification(employeeData.fcmToken, title, message);
+    const result = await createNotification({title, message},io);
     io.emit("new-message", `${isValid.name} leave le lehlus re dada`); // 🔥 Total summary bhi emit karo
+    
     if (isValid.fcmToken) {
       const payload = {
         title: "Leave Request Submitted",
@@ -62,7 +75,6 @@ const applyLeave = async (req, res, next) => {
       };
       await sendFirebaseNotification(isValid.fcmToken, payload);
     }
-
     return res.status(200).json({
       success: true,
       message: "Leave Apply Successfully",
@@ -123,11 +135,11 @@ const approveLeave = async (req, res, next) => {
     (response.status = "Approved");
 
     //create notification leave...
-    const title = "Leave";
-    const message = "Leave Approved";
-    const fromId = response.employeeId;
+    const title = "Leave Request Update";
+    const message = "Your leave request has been approved.";
+    const employeeId = response.employeeId;
     const io = req.app.get("io");
-    const result = await createNotification({ fromId, title, message }, io);
+   await createNotification({ employeeId, title, message }, io);
 
     const data = await response.save();
     return res
@@ -149,7 +161,12 @@ const rejectLeave = async (req, res, next) => {
     }
     response.status = "Rejected"
     await response.save()
-    //  return
+    
+   const title = "Leave Rejected";
+   const message = "Unfortunately, your leave request could not be approved at this time.";
+   const employeeId=response.employeeId;
+  const io = req.app.get("io");
+  await createNotification({ employeeId, title, message }, io);
     return res.status(200).json({ success: true, data: response, message: "Leave Reject" })
   } catch (err) {
     return next(new AppError(err.message, 500));

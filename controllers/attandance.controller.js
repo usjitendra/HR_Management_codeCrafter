@@ -47,7 +47,6 @@ const attandanceLogin = async (req, res, next) => {
 
     console.log(req.body);
 
-
     if (!latitude || !longitude) {
       return next(new AppError("Location in required", 400));
     }
@@ -158,13 +157,13 @@ const attandanceLogin = async (req, res, next) => {
     );
 
     // Notification
-    const title = "CheckIn";
-    const message = `${validEmployee.name} has checked in`;
+    const title = "Check-In";
+    const message = `${validEmployee.name} has successfully checked in.`;
     const fromId = validEmployee._id;
     const io = req.app.get("io");
-    await createNotification(validEmployee.fcmToken, title, message);
-    io.emit("new-message", `${validEmployee.name} has checked in`);
+    await createNotification({ title, message},io);
 
+    io.emit("new-message", `${validEmployee.name} has checked in`);
     res.status(200).json({
       success: true,
       message: "Attendance Marked Successfully",
@@ -305,12 +304,12 @@ const attandanceLogout = async (req, res, next) => {
     await todayAttendance.save();
 
     // Notification
-    const title = "Check Out";
-    const message = `${validEmployee.name} has checked out`;
+    const title = "Check-Out";
+    const message = `${validEmployee.name} has successfully checked out.`;
     const fromId = validEmployee._id;
     const io = req.app.get("io");
 
-    await createNotification(validEmployee.fcmToken, title, message);
+    await createNotification({ title, message }, io);
     io.emit("new-message", message);
 
     res.status(200).json({
@@ -651,7 +650,7 @@ const individual_attandance_detai = async (req, res, next) => {
         const year = date.getFullYear();
 
         return {
-          ...record._doc, 
+          ...record._doc,
           createdAt: `${day}-${month}-${year}`
         };
       });
