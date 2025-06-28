@@ -77,4 +77,24 @@ const allnotification = async (req, res, next) => {
 
 
 
+export const deleteNotification = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const deleted = await notificationModel.findByIdAndDelete(id);
+
+    if (!deleted) {
+      return next(new AppError("Notification not found.", 404));
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Notification deleted successfully.",
+    });
+  } catch (err) {
+    next(new AppError(err.message, 500));
+  }
+};
+
+
 export{createNotification,getUserNotifications,markNotificationAsRead,allnotification}

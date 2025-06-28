@@ -577,7 +577,7 @@ const attendanceFilter = async (req, res, next) => {
       message: "success",
       success: true,
       count: data.length,
-      attendanceData: attendanceData,
+      // attendanceData: attendanceData,
       data,
     });
   } catch (err) {
