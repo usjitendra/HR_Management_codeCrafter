@@ -152,8 +152,8 @@ const logout = async (req, res, next) => {
     try {
         res.clearCookie("authToken", {
             path: "/",
-            httpOnly: true,
-            secure: true,
+            httpOnly: false,
+            secure: false,
             sameSite: "none"
         });
         req.session?.destroy();

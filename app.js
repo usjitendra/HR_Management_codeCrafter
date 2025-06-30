@@ -29,6 +29,8 @@ import './middlewares/employee.attendance.cron.job.js'
 import "./middlewares/notification.cron.js"
 import compamyProfile from "./routes/company.profile.routes.js";
 import morgan from "morgan";
+import rateLimit from "express-rate-limit"
+import compression from "compression";
 
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -55,10 +57,7 @@ const io=new Server(server,{
 
 
 io.on('connection', (socket) => {
-  console.log('User connected:12345', socket.id);
-
-  
-  
+console.log('User connected:12345', socket.id);  
   socket.on('join', (data) => {
       // console.log("ayush duplicte don",data);
     // socket.join(userId); // Join room with userId
@@ -72,11 +71,18 @@ io.on('connection', (socket) => {
   });
 });
 
+ const limiter=rateLimit({
+  windowMs:15*60*1000,
+  max:3,
+  message:"Too many requests,please try again after 15 minutes"
+ })
+
 const upload=multer({dist:"uploads/"})
-app.use(morgan("dev"));
+app.use(morgan("dev")); 15
+app.use(compression());
 
 
-app.get('/',(req,res)=>{
+app.get('/',limiter,(req,res)=>{
   // res.send({satatu:200,message:"server start"})
   res.status(200).json({
      success:true,
@@ -97,7 +103,7 @@ app.use("/api/v1/employee/attendance",attandance)
 app.use('/api/v1/employee/bank',bank)
 app.use('/api/v1/employee/work',work)
 app.use('/api/v1/policy',policy)
-app.use('/api/v1/terms-constion',Terms)
+app.use('/api/v1/term-conditions',Terms)
 app.use('/api/v1/leave',leave)
 app.use('/api/v1/notification',notification)
 app.use('/api/v1/appointment',drappointment)
