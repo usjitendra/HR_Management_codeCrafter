@@ -16,6 +16,7 @@ import policy from "./routes/policy.js"
 import leave from "./routes/leave.routes.js";
 import drappointment from "./routes/dr.appointment.routes.js";
 import notification from "./routes/notification.routes.js"
+import Terms from "./routes/term&condition.routes.js";
 import http from 'http';
 import { Server } from 'socket.io';
 import performance from './routes/performance.routes.js'
@@ -96,6 +97,7 @@ app.use("/api/v1/employee/attendance",attandance)
 app.use('/api/v1/employee/bank',bank)
 app.use('/api/v1/employee/work',work)
 app.use('/api/v1/policy',policy)
+app.use('/api/v1/terms-constion',Terms)
 app.use('/api/v1/leave',leave)
 app.use('/api/v1/notification',notification)
 app.use('/api/v1/appointment',drappointment)
