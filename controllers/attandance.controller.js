@@ -552,13 +552,13 @@ const attendanceFilter = async (req, res, next) => {
         $project: {
           employeeId: 1,
           date: 1,
-          checkIn: 1,
+          checkIn:"$loginTime",
           checkOutTime: "$logoutTime",
           workDuration: "$totalWorkingHour",
           status: "$employeeStatus",
           leave: 1, // <-- Added leave boolean field
           leaveReason: "$reasonForLeave", // Optional rename
-          locationIn: 1,
+          location:"$location",
           locationOut: 1,
           ipAddress: 1,
           deviceDetails: 1,
