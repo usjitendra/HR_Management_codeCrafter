@@ -186,7 +186,7 @@ const viewSallery_slipe = async (req, res, next) => {
           result.push(...monthlyResults.filter((item) => item !== null));
         })
       );
-
+      
       return res.status(200).json({
         success: true,
         message: `Monthly salary slips for year ${numericYear}`,
@@ -194,8 +194,6 @@ const viewSallery_slipe = async (req, res, next) => {
         data: result,
       });
     }
-
-
   } catch (err) {
     return next(new AppError(err.message, 500));
   }

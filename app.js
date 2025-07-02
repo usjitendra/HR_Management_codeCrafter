@@ -73,7 +73,7 @@ console.log('User connected:12345', socket.id);
 
  const limiter=rateLimit({
   windowMs:15*60*1000,
-  max:3,
+  max:100,
   message:"Too many requests,please try again after 15 minutes"
  })
 
@@ -82,14 +82,7 @@ app.use(morgan("dev")); 15
 app.use(compression());
 
 
-app.get('/',limiter,(req,res)=>{
-  // res.send({satatu:200,message:"server start"})
-  res.status(200).json({
-     success:true,
-     message:"Service is Running "
-  })
-})
-
+app.use(limiter)
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json())
@@ -111,6 +104,8 @@ app.use('/api/v1/performance',performance)
 app.use('/api/v1/fcmNotification',fcmNotification)
 app.use('/api/v1/payroll',payroll)
 app.use('/api/v1/employee/document',employee_document_route)
+
+console.log("rateLimit");
 
 
 app.set('io', io); 
