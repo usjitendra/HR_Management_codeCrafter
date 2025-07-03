@@ -197,8 +197,8 @@ const otp_send = async (req, res, next) => {
 const otp_verify = async (req, res, next) => {
     try {
         const { email, otp, newPassword } = req.body;
-            // console.log("otp",otp);
-            
+        
+        // console.log("otp",otp);
         // Find OTP from DB
         const otpRecord = await otpModel.findOne({ email }).sort({createdAt: -1});
           console.log("otpRecord",otp);

@@ -19,6 +19,8 @@ import leaveModel from "../models/leave.model.js";
 import { validate } from "node-cron";
 import { sendMail } from "../util/sendMail.js";
 import moment from "moment";
+import employeeWorkModel from "../models/employee.work.information.model.js";
+import employeeBankModel from "../models/employee.bank.model.js";
 // const add_emploddyee = async (req, res, next) => {
 //   try {
 
@@ -335,11 +337,17 @@ const employee_Delete = async (req, res, next) => {
     if (!employee) {
       return next(new AppError("", 404));
     }
-    const result = await registrationModel.findByIdAndDelete(employee.registrationId);
-    await leaveModel.deleteMany({ employeeId: id })
-    await AttandanceModel.deleteMany({ employeeId: id })
+
+    console.log("employee.registrationId",employee.registrationId);
+    // return
+    
+    const  registration = await registrationModel.findByIdAndDelete(employee.registrationId);
+    const levave= await leaveModel.deleteMany({ employeeId: id })
+    const attendance= await AttandanceModel.deleteMany({ employeeId: id })
+                      await employeeWorkModel.findOneAndDelete({employeeId: id})
+                      await employeeBankModel.findOneAndDelete({employeeId: id})
     res.status(200)
-      .json({ success: true, message: "Employee deleted successfully" });
+      .json({ success: true, message: "Employee deleted successfully",registration:registration,levave:levave,attendance:attendance});
 
   } catch (err) {
     return next(new AppError(err.message, 500));

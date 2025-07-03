@@ -588,4 +588,16 @@ export const viewSalary_ByMonth = async (req, res, next) => {
 };
 
 
+ export const total_paid_unpaid=async(req,res,next)=>{
+        try{
+              const {year,month}=req.query;
+              console.log("year",year);
+              console.log("month",month);
+              
+        }catch(err){
+           return next(new AppError())
+        }            
+ }
+
+
 export { viewSallery_slipe, viewSallery_employee, add_salary_slip, download_salary_slip };

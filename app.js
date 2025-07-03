@@ -71,18 +71,18 @@ console.log('User connected:12345', socket.id);
   });
 });
 
- const limiter=rateLimit({
-  windowMs:15*60*1000,
-  max:100,
-  message:"Too many requests,please try again after 15 minutes"
- })
+//  const limiter=rateLimit({
+//   windowMs:15*60*1000,
+//   max:100,
+//   message:"Too many requests,please try again after 15 minutes"
+//  })
 
 const upload=multer({dist:"uploads/"})
 app.use(morgan("dev")); 15
 app.use(compression());
 
 
-app.use(limiter)
+// app.use(limiter)
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json())

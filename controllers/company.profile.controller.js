@@ -194,7 +194,7 @@ export const customAddress = async (req, res, next) => {
 
 
 export const announcement = async (req, res, next) => {
-    console.log("update");
+   
   try {
     const { message, overviewId} = req.body;
 
@@ -217,6 +217,55 @@ export const announcement = async (req, res, next) => {
     return next(new AppError(err.message, 500));
   }
 }
+
+export const updateAnnouncement = async (req, res, next) => {
+  try {
+    const { id } = req.params; // Announcement ID from URL params
+    const { message } = req.body;
+
+    if (!message || message.trim() === "") {
+      return next(new AppError("Message is required", 400));
+    }
+
+    const updatedAnnouncement = await announcementModel.findByIdAndUpdate(
+      id,
+      { message },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedAnnouncement) {
+      return next(new AppError("Announcement not found", 404));
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Announcement updated successfully",
+      data: updatedAnnouncement,
+    });
+  } catch (err) {
+    return next(new AppError(err.message, 500));
+  }
+};
+
+
+export const deleteAnnouncement = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const result = await announcementModel.findByIdAndDelete(id);
+
+    if (result) {
+      return res.status(200).json({
+        success: true,
+        message: "Announcement deleted successfully",
+        data: result,
+      });
+    }
+
+    return next(new AppError("Record not found", 404));
+  } catch (error) {
+    return next(new AppError(error.message, 500));
+  }
+};
 
 export const getOverviewData = async (req, res, next) => {
   try {
