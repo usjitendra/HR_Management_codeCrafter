@@ -67,6 +67,75 @@ export const company_overview = async (req, res, next) => {
   }
 };
 
+export const update_company_overview = async (req, res, next) => {
+  console.log("update company overview");
+
+  try {
+    const { id } = req.params; // Company overview ID from URL params
+
+    const {
+      companyName,
+      brandName,
+      companyOfficialEmail,
+      companyOfficialContact,
+      website,
+      domainName,
+      industryTypes,
+    } = req.body;
+
+    const updatedData = {
+      companyName,
+      brandName,
+      companyOfficialEmail,
+      companyOfficialContact,
+      website,
+      domainName,
+      industryTypes: industryTypes?.split(",") || [],
+    };
+
+    if (req.file) {
+      // Upload new logo if file provided
+      const uploadFromBuffer = (fileBuffer) => {
+        return new Promise((resolve, reject) => {
+          const stream = cloudinary.v2.uploader.upload_stream(
+            { folder: "CompanyLogos" },
+            (error, result) => {
+              if (result) resolve(result);
+              else reject(error);
+            }
+          );
+          stream.end(fileBuffer);
+        });
+      };
+
+      const result = await uploadFromBuffer(req.file.buffer);
+
+      updatedData.logo = {
+        public_id: result.public_id,
+        secure_url: result.secure_url,
+      };
+    }
+
+    const updatedCompany = await companyOverModel.findByIdAndUpdate(
+      id,
+      updatedData,
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedCompany) {
+      return next(new AppError("Company overview not found", 404));
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Company overview updated successfully.",
+      data: updatedCompany,
+    });
+  } catch (err) {
+    return next(new AppError(err.message, 500));
+  }
+};
+
 
 export const registrationOfficeAddress = async (req, res, next) => {
     console.log("update");
@@ -102,6 +171,62 @@ export const registrationOfficeAddress = async (req, res, next) => {
       success: true,
       message: "Registered office address added successfully.",
       data: newAddress
+    });
+  } catch (err) {
+    return next(new AppError(err.message, 500));
+  }
+};
+
+export const updateRegistrationOfficeAddress = async (req, res, next) => {
+  console.log("update registration address");
+  try {
+    const { id } = req.params; // address document ID from URL params
+
+    const {
+      address1,
+      address2,
+      city,
+      state,
+      country,
+      pincode,
+      overviewId, // optional: if overview also needs update
+    } = req.body;
+
+    // Step 1: Update existing address
+    const updatedAddress = await companyAddressModel.findByIdAndUpdate(
+      id,
+      {
+        address1,
+        address2,
+        city,
+        state,
+        country,
+        pincode,
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedAddress) {
+      return next(new AppError("Address record not found", 404));
+    }
+
+    // Step 2: If overviewId provided, update overview's registeredOfficeId
+    let updatedOverview = null;
+    if (overviewId) {
+      updatedOverview = await companyOverModel.findByIdAndUpdate(
+        overviewId,
+        { registeredOfficeId: updatedAddress._id },
+        { new: true }
+      );
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Registered office address updated successfully.",
+      data: {
+        updatedAddress,
+        updatedOverview,
+      },
     });
   } catch (err) {
     return next(new AppError(err.message, 500));
@@ -150,6 +275,62 @@ export const corporateOfficeAddress = async (req, res, next) => {
   }
 };
 
+export const updateCorporateOfficeAddress = async (req, res, next) => {
+  console.log("update corporate address");
+  try {
+    const { id } = req.params; // address document ID from URL params
+
+    const {
+      address1,
+      address2,
+      city,
+      state,
+      country,
+      pincode,
+      overviewId, // optional: if overview also needs update
+    } = req.body;
+
+    // Step 1: Update existing address
+    const updatedAddress = await companyAddressModel.findByIdAndUpdate(
+      id,
+      {
+        address1,
+        address2,
+        city,
+        state,
+        country,
+        pincode,
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedAddress) {
+      return next(new AppError("Corporate address record not found", 404));
+    }
+
+    // Step 2: If overviewId provided, update overview's corporateOfficeId
+    let updatedOverview = null;
+    if (overviewId) {
+      updatedOverview = await companyOverModel.findByIdAndUpdate(
+        overviewId,
+        { corporateOfficeId: updatedAddress._id },
+        { new: true }
+      );
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Corporate office address updated successfully.",
+      data: {
+        updatedAddress,
+        updatedOverview,
+      },
+    });
+  } catch (err) {
+    return next(new AppError(err.message, 500));
+  }
+};
+
 
 export const customAddress = async (req, res, next) => {
     console.log("update");
@@ -191,6 +372,63 @@ export const customAddress = async (req, res, next) => {
     return next(new AppError(err.message, 500));
   }
 };
+
+export const updateCustomAddress = async (req, res, next) => {
+  console.log("update custom address");
+  try {
+    const { id } = req.params; // address document ID from URL params
+
+    const {
+      address1,
+      address2,
+      city,
+      state,
+      country,
+      pincode,
+      overviewId, // optional: if overview also needs update
+    } = req.body;
+
+    // Step 1: Update existing address
+    const updatedAddress = await companyAddressModel.findByIdAndUpdate(
+      id,
+      {
+        address1,
+        address2,
+        city,
+        state,
+        country,
+        pincode,
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedAddress) {
+      return next(new AppError("Custom address record not found", 404));
+    }
+
+    // Step 2: If overviewId provided, update overview's customAddressId
+    let updatedOverview = null;
+    if (overviewId) {
+      updatedOverview = await companyOverModel.findByIdAndUpdate(
+        overviewId,
+        { customAddressId: updatedAddress._id },
+        { new: true }
+      );
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Custom address updated successfully.",
+      data: {
+        updatedAddress,
+        updatedOverview,
+      },
+    });
+  } catch (err) {
+    return next(new AppError(err.message, 500));
+  }
+};
+
 
 
 export const announcement = async (req, res, next) => {
