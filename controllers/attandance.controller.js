@@ -54,7 +54,7 @@ const attandanceLogin = async (req, res, next) => {
     console.log("locationName", locationName);
     // return;
 
-    const validEmployee = await employeModel.findOne({ registrationId: id });
+    const validEmployee = await employeModel.findById(id);
     if (!validEmployee) {
       return next(new AppError("Employee is Not Valid", 400));
     }
@@ -92,9 +92,9 @@ const attandanceLogin = async (req, res, next) => {
       return next(new AppError("You are checking in too early", 400));
     }
 
-    if (now1 > threePM) {
-      return next(new AppError("Check-in time is over for today", 400));
-    }
+    // if (now1 > threePM) {
+    //   return next(new AppError("Check-in time is over for today", 400));
+    // }
 
     const todayLeave = leaveData.some((leave) => {
       const leaveStartDate = new Date(leave.startDate);
@@ -237,7 +237,7 @@ const attandanceLogout = async (req, res, next) => {
     const { id } = req.params;
     console.log("jo id aa rahih", id);
     // return;
-    const validEmployee = await employeModel.findOne({ registrationId: id });
+    const validEmployee = await employeModel.findById(id);
 
     if (!validEmployee) {
       return next(new AppError("Employee is Not Valid", 400));
@@ -310,7 +310,7 @@ const attandanceLogout = async (req, res, next) => {
     const fromId = validEmployee._id;
     const io = req.app.get("io");
     const url="attendance/logs";
-    
+
     await createNotification({ title, message,url}, io);
     io.emit("new-message", message);
 
@@ -556,7 +556,7 @@ const attendanceFilter = async (req, res, next) => {
           date: 1,
           checkIn:"$loginTime",
           checkOutTime: "$logoutTime",
-          workDuration: "$totalWorkingHour",
+          workDuration: "$workingHours",
           status: "$employeeStatus",
           leave: 1, // <-- Added leave boolean field
           leaveReason: "$reasonForLeave", // Optional rename
@@ -574,7 +574,6 @@ const attendanceFilter = async (req, res, next) => {
         },
       },
     ]);
-
     return res.status(200).json({
       message: "success",
       success: true,
