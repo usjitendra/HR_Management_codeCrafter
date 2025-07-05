@@ -89,7 +89,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json())
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(cookieParser());
-// app.use(apiKeyAuth);
+app.use(apiKeyAuth);
 
 app.use('/api/v1/admin',admin)
 app.use('/api/v1/compay/profile',compamyProfile)
