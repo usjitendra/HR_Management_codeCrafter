@@ -161,7 +161,8 @@ const attandanceLogin = async (req, res, next) => {
     const message = `${validEmployee.name} has successfully checked in.`;
     const fromId = validEmployee._id;
     const io = req.app.get("io");
-    await createNotification({ title, message},io);
+    const url="attendance/logs"
+    await createNotification({ title, message,url},io);
 
     io.emit("new-message", `${validEmployee.name} has checked in`);
     res.status(200).json({
@@ -308,8 +309,9 @@ const attandanceLogout = async (req, res, next) => {
     const message = `${validEmployee.name} has successfully checked out.`;
     const fromId = validEmployee._id;
     const io = req.app.get("io");
-
-    await createNotification({ title, message }, io);
+    const url="attendance/logs";
+    
+    await createNotification({ title, message,url}, io);
     io.emit("new-message", message);
 
     res.status(200).json({

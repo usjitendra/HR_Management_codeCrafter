@@ -12,6 +12,10 @@ const notificationSchema=new Schema(
             type:Schema.Types.ObjectId,
             default:null
         },
+        url:{
+           type:String,
+           default:null
+        },
         toId:{
           type:Schema.Types.ObjectId,
           default:null  

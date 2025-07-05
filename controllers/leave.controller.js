@@ -65,7 +65,8 @@ const applyLeave = async (req, res, next) => {
     const title = " Leave Request";
     const message = `${isValid.name} has applied for leave from ${startDate} to ${endDate}.`;
     const fromId = id;
-    const result = await createNotification({title, message},io);
+    const url="leave/logs"
+    const result = await createNotification({title, message,url},io);
     io.emit("new-message", `${isValid.name} leave le lehlus re dada`); // 🔥 Total summary bhi emit karo
     
     if (isValid.fcmToken) {
@@ -139,7 +140,8 @@ const approveLeave = async (req, res, next) => {
     const message = "Your leave request has been approved.";
     const employeeId = response.employeeId;
     const io = req.app.get("io");
-   await createNotification({ employeeId, title, message }, io);
+    const url="leave/logs"
+   await createNotification({ employeeId, title, message,url}, io);
 
     const data = await response.save();
     return res
@@ -164,9 +166,10 @@ const rejectLeave = async (req, res, next) => {
     
    const title = "Leave Rejected";
    const message = "Unfortunately, your leave request could not be approved at this time.";
+   const url="leave/logs";
    const employeeId=response.employeeId;
   const io = req.app.get("io");
-  await createNotification({ employeeId, title, message }, io);
+  await createNotification({ employeeId, title, message,url}, io);
     return res.status(200).json({ success: true, data: response, message: "Leave Reject" })
   } catch (err) {
     return next(new AppError(err.message, 500));

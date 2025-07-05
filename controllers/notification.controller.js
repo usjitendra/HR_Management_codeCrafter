@@ -6,14 +6,14 @@ import timezone from 'dayjs/plugin/timezone.js';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-const createNotification = async ({ fromId = null, toId = null, employeeId,title, message }, io) => {      
+const createNotification = async ({ fromId = null, toId = null, employeeId,title, message,url}, io) => {      
   try {
     // console.log("message",message);
     // console.log("title",title);
     // console.log("employeeId",employeeId);
     
     
-    const notification = await notificationModel.create({employeeId:employeeId,fromId, toId, title, message });
+    const notification = await notificationModel.create({employeeId:employeeId,fromId, toId, title, message,url });
     if (io && toId) {
       io.to(toId.toString()).emit("new_notification", notification);
     }
