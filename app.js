@@ -31,6 +31,7 @@ import compamyProfile from "./routes/company.profile.routes.js";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit"
 import compression from "compression";
+import { apiKeyAuth } from "./middlewares/auth.js";
 
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -88,6 +89,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json())
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(cookieParser());
+app.use(apiKeyAuth);
 
 app.use('/api/v1/admin',admin)
 app.use('/api/v1/compay/profile',compamyProfile)

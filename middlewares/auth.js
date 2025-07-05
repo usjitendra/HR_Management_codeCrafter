@@ -48,6 +48,20 @@ const token_validate = async (req, res, next) => {
 };
 
 
+// middleware/apiKeyAuth.js
+import dotenv from 'dotenv';
+dotenv.config();
+
+export const apiKeyAuth = (req, res, next) => {
+  const clientKey = req.headers['x-api-key'];
+
+  if (!clientKey || clientKey !== process.env.MY_SECRET_API_KEY) {
+    return res.status(403).json({ message: 'Access Denied: Invalid API Key' });
+  }
+
+  next(); // ✅ API key valid hai, aage jao
+};
+// ayush_super_secret_123
 
 
 export { generate_Token,token_validate };
