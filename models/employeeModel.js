@@ -41,6 +41,11 @@ const employeeSchema = new Schema(
     maritalStatus: { type: String },
     children: { type: String },
     emergencyContact: { type: String },
+    empId: {
+      type: String,
+      unique: true,    // Prevent duplicate empId
+      required: true,  // Ensure it's always set
+    },
 
     employeeImage: {
       public_id: { type: String, default: "" },
@@ -100,11 +105,11 @@ const employeeSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Performance"
     },
-     employeeDocumentId:{
-      type:Schema.Types.ObjectId,
-      ref:"Document",
-      default:null
-     },
+    employeeDocumentId: {
+      type: Schema.Types.ObjectId,
+      ref: "Document",
+      default: null
+    },
     employeeUseName: {
       type: String
     },

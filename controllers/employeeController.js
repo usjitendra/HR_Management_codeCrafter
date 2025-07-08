@@ -21,6 +21,7 @@ import { sendMail } from "../util/sendMail.js";
 import moment from "moment";
 import employeeWorkModel from "../models/employee.work.information.model.js";
 import employeeBankModel from "../models/employee.bank.model.js";
+import { getNextEmployeeId } from "../middlewares/generate.employee.id.js";
 // const add_emploddyee = async (req, res, next) => {
 //   try {
 
@@ -49,8 +50,11 @@ import employeeBankModel from "../models/employee.bank.model.js";
 // };
 
 const add_employee = async (req, res, next) => {
-  console.log("sssss");
-  // return
+       const empId = await getNextEmployeeId();
+    console.log("Generated Employee ID:", empId);
+     console.log("empId");
+     
+  return
   try {
     const {
       name,
@@ -91,6 +95,7 @@ const add_employee = async (req, res, next) => {
       children,
       emergencyContact,
       role,
+      empId,
       employeeImage: {},
       employeeIdCard: {},
       employeeDocument: {},

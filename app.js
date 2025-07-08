@@ -72,6 +72,10 @@ console.log('User connected:12345', socket.id);
   });
 });
 
+app.get("/", (req, res) => {
+  res.send("API working");
+});
+
 //  const limiter=rateLimit({
 //   windowMs:15*60*1000,
 //   max:100,
