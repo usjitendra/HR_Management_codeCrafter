@@ -140,7 +140,7 @@ const add_employee = async (req, res, next) => {
     const result = await registrationModel.create({
       name,
       email,
-      password,
+       password : 'cws-' + mobile.toString().slice(-4),
       role: "employee",
     });
     //  console.log();

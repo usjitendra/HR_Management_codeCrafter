@@ -92,9 +92,9 @@ const attandanceLogin = async (req, res, next) => {
       return next(new AppError("You are checking in too early", 400));
     }
 
-    // if (now1 > threePM) {
-    //   return next(new AppError("Check-in time is over for today", 400));
-    // }
+    if (now1 > threePM) {
+      return next(new AppError("Check-in time is over for today", 400));
+    }
 
     const todayLeave = leaveData.some((leave) => {
       const leaveStartDate = new Date(leave.startDate);

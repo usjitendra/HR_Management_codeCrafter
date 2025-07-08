@@ -37,7 +37,7 @@ const employeeSchema = new Schema(
     state: { type: String, required: true },
     city: { type: String, required: true },
     qualification: { type: String },
-    experience: { type: String, required: true },
+    // experience: { type: String, required: true },
     maritalStatus: { type: String },
     children: { type: String },
     emergencyContact: { type: String },

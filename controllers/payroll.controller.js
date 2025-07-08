@@ -129,7 +129,6 @@ const viewSallery_slipe = async (req, res, next) => {
       );
       const result = [];
       // return
-
       await Promise.all(
         allEmployees.map(async (employee) => {
           const bankData = await employeeWorkModel.findOne({ employeeId: employee._id });
