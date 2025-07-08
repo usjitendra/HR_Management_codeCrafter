@@ -94,8 +94,8 @@ const login = async (req, res, next) => {
         //  console.log(employeeeData);
         res.cookie("authToken", token, {
             httpOnly: true,
-            secure: true,
-            sameSite: "none",
+            secure: false,
+            sameSite: "lax",
             maxAge: 24 * 60 * 60 * 1000
         });
 
@@ -122,13 +122,27 @@ const isLogin = async (req, res, next) => {
     try {
 
         const token = req.cookies?.authToken;
-        // if (!token) {
-        //     // return next(new AppError("", 401));
-        // }
+
+        console.log("token is 123",token);
+        
+        if (!token) {
+            console.log("kya hoga");
+            
+            return next(new AppError("kya hoha", 401));
+        }else{
+
+ 
         const decoded = jwt.verify(token, key);
         if (!decoded) {
+
+            console.log("mai chal kya");
+            
             return next(new AppError("Token expired", 401));
         }
+
+        console.log("decoded is",decoded);
+         console.log("mai hu don");
+         
 
         const data = await registrationModel.findById(decoded.id)
         const newData = {
@@ -142,6 +156,7 @@ const isLogin = async (req, res, next) => {
             message: "success",
             data: newData
         })
+    }
     } catch (err) {
         return next(new AppError("Invalid or expired token", 401));
         // return res.status(200).json({ success: false, data: null });
@@ -152,9 +167,9 @@ const logout = async (req, res, next) => {
     try {
         res.clearCookie("authToken", {
             path: "/",
-            httpOnly: false,
-            secure: false,
-            sameSite: "none"
+            httpOnly: true,       // must match how it was set
+            secure: false,        // because localhost is usually HTTP
+            sameSite: "lax"       // safer default than "none" for local dev
         });
         req.session?.destroy();
         res.status(200).json({ success: true, message: "Logout Successfully", });
@@ -186,7 +201,7 @@ const otp_send = async (req, res, next) => {
         // Send OTP to email
         await sendOtp(email, otp);
 
-        return res.status(200).json({success:true, message: "OTP sent successfully to your email" });
+        return res.status(200).json({ success: true, message: "OTP sent successfully to your email" });
     } catch (err) {
         console.error(err);
         return res.status(500).json({ message: err.message });
@@ -197,17 +212,17 @@ const otp_send = async (req, res, next) => {
 const otp_verify = async (req, res, next) => {
     try {
         const { email, otp, newPassword } = req.body;
-        
+
         // console.log("otp",otp);
         // Find OTP from DB
-        const otpRecord = await otpModel.findOne({ email }).sort({createdAt: -1});
-          console.log("otpRecord",otp);
-          console.log("otpRecord",otpRecord);
-          
-        if (!otpRecord|| otpRecord.otp.toString() !== otp.toString()) {
+        const otpRecord = await otpModel.findOne({ email }).sort({ createdAt: -1 });
+        console.log("otpRecord", otp);
+        console.log("otpRecord", otpRecord);
+
+        if (!otpRecord || otpRecord.otp.toString() !== otp.toString()) {
             console.log("aaaa");
-            
-          return next (new AppError("In validate otp",400));
+
+            return next(new AppError("In validate otp", 400));
         }
 
         const user = await registrationModel.findOne({ email });

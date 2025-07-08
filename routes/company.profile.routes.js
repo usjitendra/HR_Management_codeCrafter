@@ -34,7 +34,7 @@ compamyProfileRoute.get("/get/all/announcements",allAnnouncement)
 compamyProfileRoute.put("/update/announcement/:id",updateAnnouncement)
 compamyProfileRoute.delete("/delete/announcement/:id",deleteAnnouncement)
 
-console.log("aaa");
+
 
 
 compamyProfileRoute.get("/get/overview/data",getOverviewData)
