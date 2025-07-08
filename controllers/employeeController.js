@@ -54,7 +54,7 @@ const add_employee = async (req, res, next) => {
     console.log("Generated Employee ID:", empId);
      console.log("empId");
      
-  return
+  // return
   try {
     const {
       name,
