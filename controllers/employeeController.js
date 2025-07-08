@@ -50,10 +50,10 @@ import { getNextEmployeeId } from "../middlewares/generate.employee.id.js";
 // };
 
 const add_employee = async (req, res, next) => {
-       const empId = await getNextEmployeeId();
-    console.log("Generated Employee ID:", empId);
-     console.log("empId");
-     
+  const empId = await getNextEmployeeId();
+  console.log("Generated Employee ID:", empId);
+  console.log("empId");
+
   // return
   try {
     const {
@@ -135,7 +135,7 @@ const add_employee = async (req, res, next) => {
         secure_url: result.secure_url,
       };
     }
-    const password= 'cws-' + mobile.toString().slice(-4);
+    const password = 'cws-' + mobile.toString().slice(-4);
     const addEmp = await employeModel.create(newEmpData);
     const result = await registrationModel.create({
       name,
@@ -177,7 +177,7 @@ const add_employee = async (req, res, next) => {
     </div>
   </div>
 `;
-await sendMail(email, "Your HRMS Login Credentials", emailBody);
+    await sendMail(email, "Your HRMS Login Credentials", emailBody);
 
 
     res.status(200).json({
@@ -304,7 +304,11 @@ const employee_update = async (req, res, next) => {
 const all_employee = async (req, res, next) => {
   try {
     const all_data = await employeModel.find();
-
+    const allWorks = await employeeWorkModel.find()
+    let totalSalary = 0
+    allWorks.forEach(work => {
+      totalSalary += work.salary || 0;
+    })
     const today = moment().startOf("day").toDate();
     const todayPresent = await leaveModel.find({
       startDate: { $lte: today },
@@ -315,13 +319,15 @@ const all_employee = async (req, res, next) => {
     const totalEmployees = all_data.length;
     const present = todayPresent.length;
     const onLeave = totalEmployees - present;
+
     const data = {
       summary: {
         totalEmployees,
         onLeave,
-        present
+        present,
+        totalSalary,
       },
-    all_data:all_data
+      all_data: all_data
     }
     return res.status(200).json({
       success: true,
@@ -343,16 +349,16 @@ const employee_Delete = async (req, res, next) => {
       return next(new AppError("", 404));
     }
 
-    console.log("employee.registrationId",employee.registrationId);
+    console.log("employee.registrationId", employee.registrationId);
     // return
-    
-    const  registration = await registrationModel.findByIdAndDelete(employee.registrationId);
-    const levave= await leaveModel.deleteMany({ employeeId: id })
-    const attendance= await AttandanceModel.deleteMany({ employeeId: id })
-                      await employeeWorkModel.findOneAndDelete({employeeId: id})
-                      await employeeBankModel.findOneAndDelete({employeeId: id})
+
+    const registration = await registrationModel.findByIdAndDelete(employee.registrationId);
+    const levave = await leaveModel.deleteMany({ employeeId: id })
+    const attendance = await AttandanceModel.deleteMany({ employeeId: id })
+    await employeeWorkModel.findOneAndDelete({ employeeId: id })
+    await employeeBankModel.findOneAndDelete({ employeeId: id })
     res.status(200)
-      .json({ success: true, message: "Employee deleted successfully",registration:registration,levave:levave,attendance:attendance});
+      .json({ success: true, message: "Employee deleted successfully", registration: registration, levave: levave, attendance: attendance });
 
   } catch (err) {
     return next(new AppError(err.message, 500));
