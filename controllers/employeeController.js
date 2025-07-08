@@ -73,7 +73,6 @@ const add_employee = async (req, res, next) => {
       children,
       emergencyContact,
       role,
-      password,
     } = req.body;
     console.log(req.body);
     // return
@@ -136,11 +135,12 @@ const add_employee = async (req, res, next) => {
         secure_url: result.secure_url,
       };
     }
+    const password= 'cws-' + mobile.toString().slice(-4);
     const addEmp = await employeModel.create(newEmpData);
     const result = await registrationModel.create({
       name,
       email,
-       password : 'cws-' + mobile.toString().slice(-4),
+      password,
       role: "employee",
     });
     //  console.log();
