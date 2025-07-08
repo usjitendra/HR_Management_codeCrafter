@@ -307,7 +307,7 @@ const all_employee = async (req, res, next) => {
     const allWorks = await employeeWorkModel.find()
     let totalSalary = 0
     allWorks.forEach(work => {
-      totalSalary += work.salary || 0;
+      totalSalary += Number(work.salary) || 0;
     })
     const today = moment().startOf("day").toDate();
     const todayPresent = await leaveModel.find({
