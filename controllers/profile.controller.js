@@ -10,6 +10,9 @@ export const getProfiles = async (req, res) => {
         // Get only the first profile (latest one due to sort)
         const profiles = await ProfileModel.find().limit(1);
 
+        console.log(profiles);
+        
+
         return res.status(200).json({
             success: true,
             message: "first-profile",
@@ -32,22 +35,28 @@ export const addProfile = async (req, res) => {
         const profileData = req.body;
         
         // Validate required fields
-        if (!profileData.companyName) {
-            return res.status(400).json({
-                success: false,
-                message: "Company name is required"
-            });
-        }
+        // if (!profileData.companyName) {
+        //     return res.status(400).json({
+        //         success: false,
+        //         message: "Company name is required"
+        //     });
+        // }
         
         const newProfile = new ProfileModel(profileData);
         const savedProfile = await newProfile.save();
         
+     
+      
+        
+
         return res.status(201).json({
             success: true,
             data: savedProfile,
             message: "Profile created successfully"
         });
     } catch (error) {
+        console.log(error);
+        
         return res.status(500).json({
             success: false,
             error: error.message,

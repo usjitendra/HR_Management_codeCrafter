@@ -92,20 +92,20 @@ const login = async (req, res, next) => {
         await registrationModel.findByIdAndUpdate(loginData._id, { token });
         const employeeeData = await employeModel.findOne({ registrationId: loginData.id })
         //  console.log(employeeeData);
-        // res.cookie("authToken", token, {
-        //     httpOnly: true,
-        //     secure: false,
-        //     sameSite: "lax",
-        //     maxAge: 24 * 60 * 60 * 1000
-        // });
-
-
         res.cookie("authToken", token, {
-            httpOnly: true,       // ✅ Prevents JavaScript access to the cookie
-            secure: true,         // ✅ Ensures cookie is only sent over HTTPS
-            sameSite: "none",     // ✅ Required when using cross-site requests (e.g., frontend on different domain)
-            maxAge: 24 * 60 * 60 * 1000 // 1 day
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax",
+            maxAge: 24 * 60 * 60 * 1000
         });
+
+
+        // res.cookie("authToken", token, {
+        //     httpOnly: true,       // ✅ Prevents JavaScript access to the cookie
+        //     secure: true,         // ✅ Ensures cookie is only sent over HTTPS
+        //     sameSite: "none",     // ✅ Required when using cross-site requests (e.g., frontend on different domain)
+        //     maxAge: 24 * 60 * 60 * 1000 // 1 day
+        // });
 
 
         const data = {

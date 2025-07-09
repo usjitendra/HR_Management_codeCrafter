@@ -4,7 +4,7 @@ const overViewSchema = new Schema(
     {
         companyName: {
             type: String,
-            required: true,
+        
         },
         brandName: {
             type: String,
