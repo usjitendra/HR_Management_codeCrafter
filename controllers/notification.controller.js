@@ -65,7 +65,7 @@ const allnotification = async (req, res, next) => {
       employeeId:null
     }).sort({ createdAt: -1 });
 
-    if (!result || result.length === 0) {
+    if (!result) {
       return next(new AppError("No unread notifications for today", 404));
     }
 
