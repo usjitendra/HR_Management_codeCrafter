@@ -77,6 +77,12 @@ const add_employee = async (req, res, next) => {
     console.log(req.body);
     // return
 
+    const mobileResult = await employeModel.find({ mobile: mobile });
+
+    if (mobileResult.length > 0) {
+      return next(new AppError("Mobile number already exists", 400));
+    }
+
     const newEmpData = {
       name,
       email,
