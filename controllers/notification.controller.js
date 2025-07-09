@@ -31,6 +31,11 @@ const getUserNotifications = async (req, res,next) => {
   try {
     const userId = req.params.id; 
     const notifications = await notificationModel.find({employeeId: userId }).sort({ createdAt: -1 });
+    res.status(200).json({
+      success:true,
+      message:"user notifications",
+      data:notifications
+    })
     res.status(200).json(notifications);
   } catch (error) {
     return next(new AppError("notification not fund",401))

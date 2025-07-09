@@ -809,6 +809,9 @@ const getWeeklyAttendanceChart = async (req, res, next) => {
         createdAt: { $gte: start, $lte: end }
       });
 
+      console.log(attendance);
+      
+
       const isPresent =
         attendance &&
         attendance.status === "present" &&
