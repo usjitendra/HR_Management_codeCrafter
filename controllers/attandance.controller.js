@@ -82,7 +82,7 @@ const attandanceLogin = async (req, res, next) => {
     const threePM = new Date(now1);
     threePM.setHours(15, 0, 0, 0);
     const twelvePM = new Date(now1);
-    twelvePM.setHours(12, 0, 0, 0);
+    threePM.setHours(15, 0, 0, 0);;
 
     console.log("threePM", threePM);
     console.log("now", now);
@@ -128,7 +128,7 @@ const attandanceLogin = async (req, res, next) => {
 
     if (now1 >= nineAM && now1 <= tenAM) {
       isFullDay = true;
-    } else if (now1 > tenAM && now1 <= twelvePM) {
+    } else if (now1 > tenAM && now1 <= threePM) {
       isHalfDay = true;
     }
 
@@ -161,8 +161,8 @@ const attandanceLogin = async (req, res, next) => {
     const message = `${validEmployee.name} has successfully checked in.`;
     const fromId = validEmployee._id;
     const io = req.app.get("io");
-    const url="attendance/logs"
-    await createNotification({ title, message,url},io);
+    const url = "attendance/logs"
+    await createNotification({ title, message, url }, io);
 
     io.emit("new-message", `${validEmployee.name} has checked in`);
     res.status(200).json({
@@ -309,9 +309,9 @@ const attandanceLogout = async (req, res, next) => {
     const message = `${validEmployee.name} has successfully checked out.`;
     const fromId = validEmployee._id;
     const io = req.app.get("io");
-    const url="attendance/logs";
+    const url = "attendance/logs";
 
-    await createNotification({ title, message,url}, io);
+    await createNotification({ title, message, url }, io);
     io.emit("new-message", message);
 
     res.status(200).json({
@@ -554,13 +554,13 @@ const attendanceFilter = async (req, res, next) => {
         $project: {
           employeeId: 1,
           date: 1,
-          checkIn:"$loginTime",
+          checkIn: "$loginTime",
           checkOutTime: "$logoutTime",
           workDuration: "$workingHours",
           status: "$employeeStatus",
           leave: 1, // <-- Added leave boolean field
           leaveReason: "$reasonForLeave", // Optional rename
-          location:"$location",
+          location: "$location",
           locationOut: 1,
           ipAddress: 1,
           deviceDetails: 1,
