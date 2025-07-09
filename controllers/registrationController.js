@@ -9,7 +9,7 @@ import { sendOtp } from "../util/sendMail.js"; // path to the sendOtp function
 import { generate_Token, token_validate } from '../middlewares/auth.js'
 import employeModel from "../models/employeeModel.js";
 import crypto from "crypto"
-import { path } from "pdfkit";
+// import { path } from "pdfkit";
 
 // const pass=async(pass)=>{
 //      const has=crypto.pbkdf2Sync(pass,'5',1000,64,'sha512').toString('hex')
