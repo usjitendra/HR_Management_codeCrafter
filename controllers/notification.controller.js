@@ -63,7 +63,7 @@ const allnotification = async (req, res, next) => {
     const result = await notificationModel.find({
       isRead: false,
       employeeId:null
-    });
+    }).sort({ createdAt: -1 });
 
     if (!result || result.length === 0) {
       return next(new AppError("No unread notifications for today", 404));
