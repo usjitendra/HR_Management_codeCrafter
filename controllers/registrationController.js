@@ -92,12 +92,21 @@ const login = async (req, res, next) => {
         await registrationModel.findByIdAndUpdate(loginData._id, { token });
         const employeeeData = await employeModel.findOne({ registrationId: loginData.id })
         //  console.log(employeeeData);
+        // res.cookie("authToken", token, {
+        //     httpOnly: true,
+        //     secure: false,
+        //     sameSite: "lax",
+        //     maxAge: 24 * 60 * 60 * 1000
+        // });
+
+
         res.cookie("authToken", token, {
-            httpOnly: true,
-            secure: false,
-            sameSite: "lax",
-            maxAge: 24 * 60 * 60 * 1000
+            httpOnly: true,       // ✅ Prevents JavaScript access to the cookie
+            secure: true,         // ✅ Ensures cookie is only sent over HTTPS
+            sameSite: "none",     // ✅ Required when using cross-site requests (e.g., frontend on different domain)
+            maxAge: 24 * 60 * 60 * 1000 // 1 day
         });
+
 
         const data = {
             id: loginData._id,
@@ -123,40 +132,40 @@ const isLogin = async (req, res, next) => {
 
         const token = req.cookies?.authToken;
 
-        console.log("token is 123",token);
-        
+        console.log("token is 123", token);
+
         if (!token) {
             console.log("kya hoga");
-            
+
             return next(new AppError("kya hoha", 401));
-        }else{
+        } else {
 
- 
-        const decoded = jwt.verify(token, key);
-        if (!decoded) {
 
-            console.log("mai chal kya");
-            
-            return next(new AppError("Token expired", 401));
+            const decoded = jwt.verify(token, key);
+            if (!decoded) {
+
+                console.log("mai chal kya");
+
+                return next(new AppError("Token expired", 401));
+            }
+
+            console.log("decoded is", decoded);
+            console.log("mai hu don");
+
+
+            const data = await registrationModel.findById(decoded.id)
+            const newData = {
+                name: data.name,
+                email: data.email,
+                role: data.role,
+                id: data._id
+            }
+            return res.status(200).json({
+                success: true,
+                message: "success",
+                data: newData
+            })
         }
-
-        console.log("decoded is",decoded);
-         console.log("mai hu don");
-         
-
-        const data = await registrationModel.findById(decoded.id)
-        const newData = {
-            name: data.name,
-            email: data.email,
-            role: data.role,
-            id: data._id
-        }
-        return res.status(200).json({
-            success: true,
-            message: "success",
-            data: newData
-        })
-    }
     } catch (err) {
         return next(new AppError("Invalid or expired token", 401));
         // return res.status(200).json({ success: false, data: null });
