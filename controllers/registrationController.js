@@ -9,6 +9,7 @@ import { sendOtp } from "../util/sendMail.js"; // path to the sendOtp function
 import { generate_Token, token_validate } from '../middlewares/auth.js'
 import employeModel from "../models/employeeModel.js";
 import crypto from "crypto"
+import { path } from "pdfkit";
 
 // const pass=async(pass)=>{
 //      const has=crypto.pbkdf2Sync(pass,'5',1000,64,'sha512').toString('hex')
@@ -176,12 +177,21 @@ const isLogin = async (req, res, next) => {
 
 const logout = async (req, res, next) => {
     try {
+
         res.clearCookie("authToken", {
-            path: "/",
-            httpOnly: true,       // must match how it was set
-            secure: false,        // because localhost is usually HTTP
-            sameSite: "lax"       // safer default than "none" for local dev
+            path: "/",       // ✅ Prevents JavaScript access to the cookie
+            httpOnly: true,
+            secure: true,          // ✅ Ensures cookie is only sent over HTTPS
+            sameSite: "none",     // ✅ Required when using cross-site requests (e.g., frontend on different domain)
+        
         });
+
+        // res.clearCookie("authToken", {
+        //     path: "/",
+        //     httpOnly: true,       // must match how it was set
+        //     secure: false,        // because localhost is usually HTTP
+        //     sameSite: "lax"       // safer default than "none" for local dev
+        // });
         req.session?.destroy();
         res.status(200).json({ success: true, message: "Logout Successfully", });
     } catch (err) {
