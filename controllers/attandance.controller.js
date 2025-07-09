@@ -82,7 +82,7 @@ const attandanceLogin = async (req, res, next) => {
     const threePM = new Date(now1);
     threePM.setHours(15, 0, 0, 0);
     const twelvePM = new Date(now1);
-    threePM.setHours(15, 0, 0, 0);;
+    threePM.setHours(17, 0, 0, 0);;
 
     console.log("threePM", threePM);
     console.log("now", now);
@@ -92,9 +92,9 @@ const attandanceLogin = async (req, res, next) => {
       return next(new AppError("You are checking in too early", 400));
     }
 
-    if (now1 > threePM) {
-      return next(new AppError("Check-in time is over for today", 400));
-    }
+    // if (now1 > threePM) {
+    //   return next(new AppError("Check-in time is over for today", 400));
+    // }
 
     const todayLeave = leaveData.some((leave) => {
       const leaveStartDate = new Date(leave.startDate);
@@ -124,13 +124,14 @@ const attandanceLogin = async (req, res, next) => {
     }
 
     let isFullDay = false;
-    let isHalfDay = false;
+    let isHalfDay = true;
 
     if (now1 >= nineAM && now1 <= tenAM) {
       isFullDay = true;
-    } else if (now1 > tenAM && now1 <= threePM) {
-      isHalfDay = true;
-    }
+    } 
+    // else if (now1 > tenAM && now1 <= threePM) {
+    //   isHalfDay = true;
+    // }
 
     const addEmployee = await AttandanceModel.findOneAndUpdate(
       {

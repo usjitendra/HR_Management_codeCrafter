@@ -50,8 +50,7 @@ import { getNextEmployeeId } from "../middlewares/generate.employee.id.js";
 // };
 
 const add_employee = async (req, res, next) => {
-  const empId = await getNextEmployeeId();
-  console.log("Generated Employee ID:", empId);
+
   console.log("empId");
 
   // return
@@ -82,6 +81,9 @@ const add_employee = async (req, res, next) => {
     if (mobileResult.length > 0) {
       return next(new AppError("Mobile number already exists", 400));
     }
+
+    const empId = await getNextEmployeeId();
+    console.log("Generated Employee ID:", empId);
 
     const newEmpData = {
       name,
