@@ -193,4 +193,34 @@ const allData = async (req, res, next) => {
   }
 };
 
-export { work_Add, worka_update, work_delete, getWork, allData };
+const depart = async (req, res, next) => {
+  try {
+    const allEmployees = await employeeWorkModel.find();
+    const departmentCounts = {};
+    allEmployees.forEach((employee) => {
+      const dept = employee.department || "Unknown"; // null ke liye fallback
+      if (departmentCounts[dept]) {
+        departmentCounts[dept]++;
+      } else {
+        departmentCounts[dept] = 1;
+      }
+    });
+
+    // Optional: Convert object to array
+    const result = Object.entries(departmentCounts).map(([department, count]) => ({
+      department,
+      count
+    }));
+
+    res.status(200).json({
+      success: true,
+      data: result
+    });
+
+  } catch (err) {
+    return next(new AppError(err.message, 500));
+  }
+};
+
+
+export { work_Add, worka_update, work_delete, getWork, allData,depart};

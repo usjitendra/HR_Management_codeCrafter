@@ -128,7 +128,7 @@ const attandanceLogin = async (req, res, next) => {
 
     if (now1 >= nineAM && now1 <= tenAM) {
       isFullDay = true;
-    } 
+    }
     // else if (now1 > tenAM && now1 <= threePM) {
     //   isHalfDay = true;
     // }
@@ -554,7 +554,7 @@ const attendanceFilter = async (req, res, next) => {
       {
         $project: {
           employeeId: 1,
-          mpId: "$empId",  
+          mpId: "$empId",
           date: 1,
           checkIn: "$loginTime",
           checkOutTime: "$logoutTime",
@@ -572,7 +572,7 @@ const attendanceFilter = async (req, res, next) => {
           "employee.name": 1,
           "employee.email": 1,
           "employee.mobile": 1,
-          "employee.empId":1,
+          "employee.empId": 1,
           "projectName": "$projectName" // optional
         },
       },
@@ -638,14 +638,22 @@ const individual_attandance_detai = async (req, res, next) => {
     console.log(endDate);
 
     if (startDate || endDate) {
+      const start = new Date(startDate);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+
       const name = await employeModel.findById(id).select('name');
       const attendanceRecords = await AttandanceModel.find({
         employeeId: id,
         createdAt: {
-          $gte: new Date(startDate),
-          $lte: new Date(endDate)
+          $gte: start,
+          $lte: end
         }
       }).sort({ createdAt: -1 });
+
+      console.log("attendanceRecords", attendanceRecords);
+      // return;
 
       const attendance = attendanceRecords.map(record => {
         const date = new Date(record.createdAt);

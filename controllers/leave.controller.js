@@ -46,7 +46,7 @@ const applyLeave = async (req, res, next) => {
     });
 
     if (existingLeave) {
-      return next(new AppError("Leave all ready applay"));
+      return next(new AppError("Leave already applied", 400));
     }
     const newLeave = await leaveModel.create({
       employeeId: id,
