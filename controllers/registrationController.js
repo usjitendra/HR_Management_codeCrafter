@@ -63,7 +63,7 @@ const registrationAdmin = async () => {
         const user = await registrationModel.create({
             name: "codeCrafter",
             email: "codecrafter@gmail.com",
-            password: "Cc@12345c",
+            password: "12345",
             mobile: "123456",
             role: "Admin",
         })
@@ -74,6 +74,8 @@ const registrationAdmin = async () => {
     }
 }
 registrationAdmin();
+
+console.log("aaaa");
 
 
 const login = async (req, res, next) => {
