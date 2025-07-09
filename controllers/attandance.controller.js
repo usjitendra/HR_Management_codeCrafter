@@ -553,6 +553,7 @@ const attendanceFilter = async (req, res, next) => {
       {
         $project: {
           employeeId: 1,
+          mpId: "$empId",  
           date: 1,
           checkIn: "$loginTime",
           checkOutTime: "$logoutTime",
@@ -570,6 +571,7 @@ const attendanceFilter = async (req, res, next) => {
           "employee.name": 1,
           "employee.email": 1,
           "employee.mobile": 1,
+          "employee.empId":1,
           "projectName": "$projectName" // optional
         },
       },
@@ -578,7 +580,7 @@ const attendanceFilter = async (req, res, next) => {
       message: "success",
       success: true,
       count: data.length,
-      attendanceData: attendanceData,
+      // attendanceData: attendanceData,
       data,
     });
   } catch (err) {
