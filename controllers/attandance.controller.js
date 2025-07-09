@@ -796,9 +796,7 @@ const calendar_view = async (req, res, next) => {
 
 const getWeeklyAttendanceChart = async (req, res, next) => {
   try {
-    const totalEmployees = await employeModel.countDocuments();
-
-    // Last 7 days (Mon to Sun)
+    const { id } = req.params;
     const weeklyData = [];
 
     for (let i = 0; i < 7; i++) {
@@ -806,17 +804,20 @@ const getWeeklyAttendanceChart = async (req, res, next) => {
       const start = date.startOf("day").toDate();
       const end = date.endOf("day").toDate();
 
-      const presentCount = await AttandanceModel.countDocuments({
-        date: { $gte: start, $lte: end },
-        status: "present"
+      const attendance = await AttandanceModel.findOne({
+        employeeId: id,
+        createdAt: { $gte: start, $lte: end }
       });
 
-      const absentCount = totalEmployees - presentCount;
+      const isPresent =
+        attendance &&
+        attendance.status === "present" &&
+        (attendance.isFullDay || attendance.isHalfDay);
 
       weeklyData.push({
-        name: date.format("ddd"), // Mon, Tue, etc.
-        present: presentCount,
-        absent: absentCount
+        name: date.format("ddd"), // Sun, Mon, etc.
+        present: isPresent ? 1 : 0,
+        absent: isPresent ? 0 : 1
       });
     }
 

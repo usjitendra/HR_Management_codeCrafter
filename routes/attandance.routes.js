@@ -22,6 +22,6 @@ attandanceRoute.post("/monthly/detail",monthelydetail)
 attandanceRoute.get("/individual/:id",individual_attandance_detai)
 attandanceRoute.get('/today/CheckinData/:id',todayCheckData)
 attandanceRoute.get("/all/calendar/view",calendar_view)
-attandanceRoute.get("/weekly/attendance/chart",getWeeklyAttendanceChart)
+attandanceRoute.get("/weekly/attendance/chart/:id",getWeeklyAttendanceChart)
 
 export default attandanceRoute
