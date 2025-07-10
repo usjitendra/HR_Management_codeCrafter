@@ -571,6 +571,35 @@ const saveFcmToken = async (req, res, next) => {
 };
 
 
+const getTodayBirthdayEmployees = async (req, res) => {
+  try {
+    const today = new Date();
+    const day = today.getDate().toString().padStart(2, "0");      // e.g., "10"
+    const month = (today.getMonth() + 1).toString().padStart(2, "0"); // e.g., "07"
+
+    // dob assumed format: "YYYY-MM-DD"
+    const dobRegex = new RegExp(`-${month}-${day}$`); // Matches MM-DD at end
+
+    const birthdayEmployees = await employeModel.find({
+      dob: { $regex: dobRegex }
+    });
+
+    res.status(200).json({
+      success: true,
+      message:"Employees Birthday",
+      data:birthdayEmployees
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch birthday employees",
+      error: error.message
+    });
+  }
+};
+
+
+
 
 export {
   add_employee,
@@ -583,5 +612,6 @@ export {
   employeeAlldetail,
   employee_profile,
   single_employee_allDetail,
-  saveFcmToken
+  saveFcmToken,
+  getTodayBirthdayEmployees
 };

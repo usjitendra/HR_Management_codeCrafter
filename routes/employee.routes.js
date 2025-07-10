@@ -1,7 +1,8 @@
 import {Router} from "express";
 import { add_employee,employee_update,all_employee,employee_Delete,
     registration_employee,employee_login,oneEmployee,employeeAlldetail,employee_profile,
-    single_employee_allDetail,saveFcmToken}from "../controllers/employeeController.js";
+    single_employee_allDetail,saveFcmToken,
+    getTodayBirthdayEmployees}from "../controllers/employeeController.js";
 import express from "express";
 const app=express()
 const employee =Router();
@@ -34,6 +35,7 @@ employee.delete("/delete/:id", employee_Delete);
 employee.get("/get/:id",oneEmployee)
 employee.get("/all/detail/:id",employeeAlldetail)
 employee.get("/profile",employee_profile)
+employee.get("/birthday",getTodayBirthdayEmployees)
 employee.get("/single/all/detail/:id",single_employee_allDetail)
 employee.post("/save/fcmtoken",saveFcmToken)
 
