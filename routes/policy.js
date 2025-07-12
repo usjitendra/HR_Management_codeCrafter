@@ -8,5 +8,4 @@ Policy.put('/update/:id',policy_edit)
 Policy.delete('/delete/:id',delet_policy)
 Policy.get("/all",allPolicy)
 
-
 export default Policy

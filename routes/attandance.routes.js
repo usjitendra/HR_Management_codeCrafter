@@ -4,10 +4,7 @@ import { attandanceLogin,attandanceLogout,absent,employee_attendence, all_employ
     todayCheckData,calendar_view,getWeeklyAttendanceChart
  } from "../controllers/attandance.controller.js";
 // import test from "node:test";
-
-
 const attandanceRoute=Router()
-
 
 attandanceRoute.post("/checkIn/:id",attandanceLogin)
 attandanceRoute.put("/checkout/:id",attandanceLogout)

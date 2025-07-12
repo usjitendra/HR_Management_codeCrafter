@@ -383,6 +383,59 @@ const singleLeave = async (req, res, next) => {
 }
 
 
+const todayLeave = async (req, res, next) => {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    const leaves = await leaveModel.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gte: today,
+            $lt: tomorrow
+          }
+        }
+      },
+      {
+        $lookup: {
+          from: "employees", // 👈 collection name in MongoDB (usually lowercase plural)
+          localField: "employeeId",
+          foreignField: "_id",
+          as: "employeeInfo"
+        }
+      },
+      {
+        $unwind: "$employeeInfo"
+      },
+      {
+        $project: {
+          _id: 1,
+          leaveDate: 1,
+          reason: 1,
+          employeeId: 1,
+          employeeName: "$employeeInfo.name"
+        }
+      }
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      message: "Today's leaves fetched successfully",
+      data: leaves
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error fetching today's leaves",
+      error: error.message
+    });
+  }
+};
+
+
 
 export {
   applyLeave,
@@ -394,5 +447,6 @@ export {
   leaveEdit,
   allEmployeeLeaveDetail,
   allLeave,
-  singleLeave
+  singleLeave,
+  todayLeave
 };

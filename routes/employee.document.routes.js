@@ -14,6 +14,7 @@ employee_document_route.post("/add/:id", upload.fields([
   { name: "highSchool", maxCount: 1 },
   { name: "graduation", maxCount: 1 },
   { name: "salarySlip", maxCount: 1 },
+  // { name: "additional", maxCount: 1 },
 ]), add_document)
 
 

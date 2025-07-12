@@ -273,16 +273,10 @@ const add_salary_slip = async (req, res, next) => {
   }
 }
 
-
-
 const download_salary_slip = async (req, res, next) => {
   try {
-
     const { id } = req.params;
     const { year, month } = req.query;
-   
-    //  return;
-
     if (!year || !month) {
       return res.status(400).json({
         success: false,
@@ -294,9 +288,7 @@ const download_salary_slip = async (req, res, next) => {
     const endDate = new Date(year, month, 0); // 0th day of next month gives last day of current month
     endDate.setHours(23, 59, 59, 999); // set end time to 23:59:59.999
 
-
     const employee = await employeModel.findById(id);
-
     if (!employee) {
       return res.status(404).json({ success: false, message: "Employee not found" });
     }
@@ -307,13 +299,17 @@ const download_salary_slip = async (req, res, next) => {
     });
 
     const presentDays = attendanceRecords.filter((rec) => rec.status === "present").length;
+    const hafDay=attendanceRecords.filter((rec)=>rec.isHalfDay==true).length;
+    
+    console.log("hafDay",hafDay);
+    // return;
+    
     const totalDays = attendanceRecords.length;
 
     const bankData = await employeeWorkModel.findOne({ employeeId: employee._id });
     const salary = bankData?.salary || 0;
     const oneday_salary = salary / 30;
     const estimate_salary = oneday_salary * presentDays;
-
     const result = {
       employeeData: employee,
       work_data: bankData,
@@ -322,10 +318,9 @@ const download_salary_slip = async (req, res, next) => {
       totalDays,
       presentDays,
       estimate_salary,
-    };
+    };    
 
     console.log("result", result);
-
     const doc = new PDFDocument({ size: 'A4', margin: 40 });
     const filename = `salary-slip-${new Date().getMonth() + 1}-${new Date().getFullYear()}.pdf`;
 
@@ -334,12 +329,14 @@ const download_salary_slip = async (req, res, next) => {
     doc.pipe(res);
 
     // Company Logo placeholder and header
-    doc.rect(50, 50, 80, 60).stroke(); // Logo placeholder box
-    doc.fontSize(10).text('logo', 55, 75);
+    // doc.rect(50, 50, 80, 60).stroke(); // Logo placeholder box
+    // doc.fontSize(10).text('logo', 55, 75);
+    // doc.fontSize(14).font('Helvetica-Bold').text(`Code Crafter Web Solutions`, 400, 50);
 
     // Company name and address at top right
-    doc.fontSize(14).font('Helvetica-Bold').text(`${result.work_data.company}`, 400, 50);
-    doc.fontSize(10).font('Helvetica').text('Lucknow', 400, 70);
+   
+    doc.fontSize(14).font('Helvetica-Bold').text(`Code Crafter Web Solutions`,{  align: 'left', }, 50, 50);
+    doc.fontSize(10).font('Helvetica').text('', 400, 70);
 
     // Payslip title
     // doc.fontSize(12).font('Helvetica-Bold').text('Payslip for the month of April, 2024', 50, 130);
@@ -368,7 +365,7 @@ const download_salary_slip = async (req, res, next) => {
     doc.font('Helvetica').text(`${result.work_data.department}`, rightCol, startY + 45);
 
     doc.font('Helvetica-Bold').text('Employee ID', leftCol, startY + 60);
-    doc.font('Helvetica').text(`${result.employeeData._id}`, rightCol, startY + 60);
+    doc.font('Helvetica').text(`${result.employeeData.empId}`, rightCol, startY + 60);
 
     doc.font('Helvetica-Bold').text('Date of Joining (dd-mm-yyyy)', leftCol, startY + 75);
     doc.font('Helvetica').text(
@@ -495,7 +492,6 @@ const download_salary_slip = async (req, res, next) => {
     return res.status(500).json({ message: err.message });
   }
 };
-
 
 
 export const SalaryPay = async (req, res, next) => {

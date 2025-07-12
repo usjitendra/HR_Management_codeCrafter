@@ -87,9 +87,7 @@ const upload=multer({dist:"uploads/"})
 app.use(morgan("dev")); 15
 app.use(compression());
 
-
 // app.use(limiter)
-
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json())
 app.use(bodyParser.urlencoded({extended:true}));

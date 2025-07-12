@@ -577,7 +577,7 @@ const getTodayBirthdayEmployees = async (req, res) => {
     const day = today.getDate().toString().padStart(2, "0");      // e.g., "10"
     const month = (today.getMonth() + 1).toString().padStart(2, "0"); // e.g., "07"
 
-    // dob assumed format: "YYYY-MM-DD"
+     // dob assumed format: "YYYY-MM-DD"
     const dobRegex = new RegExp(`-${month}-${day}$`); // Matches MM-DD at end
 
     const birthdayEmployees = await employeModel.find({

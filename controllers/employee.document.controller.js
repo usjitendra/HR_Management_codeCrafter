@@ -56,6 +56,9 @@ export const add_document = async (req, res, next) => {
     if (files?.salarySlip) {
       docData.salarySlip = await uploadToCloudinary(files.graduation[0], "SALARYSLIP");
     }
+    // if (files?.additional) {
+    //   docData.salarySlip = await uploadToCloudinary(files.graduation[0], "Additional");
+    // }
     const newDocument = await documentModel.create(docData);
     res.status(201).json({
       success: true,

@@ -134,7 +134,10 @@ const worka_update = async (req, res, next) => {
       },
       { new: true }
     );
-        
+    
+    console.log("result",result);
+    
+
     if (result) {
       return res
         .status(200)
@@ -193,12 +196,12 @@ const allData = async (req, res, next) => {
   }
 };
 
-const depart = async (req, res, next) => {
+const Department  = async (req, res, next) => {
   try {
     const allEmployees = await employeeWorkModel.find();
     const departmentCounts = {};
     allEmployees.forEach((employee) => {
-      const dept = employee.department || "Unknown"; // null ke liye fallback
+      const dept = employee.department || "Unknown"; 
       if (departmentCounts[dept]) {
         departmentCounts[dept]++;
       } else {
@@ -223,4 +226,4 @@ const depart = async (req, res, next) => {
 };
 
 
-export { work_Add, worka_update, work_delete, getWork, allData,depart};
+export { work_Add, worka_update, work_delete, getWork, allData,Department};
