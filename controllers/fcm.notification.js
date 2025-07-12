@@ -31,10 +31,7 @@ const sendNotification = async (deviceToken, title, body) => {
       },
     };
 
-
     console.log("send notifcation is ",deviceToken);
-    
-
     // ✅ Send message using Firebase Admin
     const response = await admin.messaging().send(message);
     console.log("Notification sent:", response);

@@ -49,7 +49,7 @@ import { getNextEmployeeId } from "../middlewares/generate.employee.id.js";
 //   }
 // };
 
-const add_employee = async (req, res, next) => {
+const   add_employee = async (req, res, next) => {
 
   console.log("empId");
 
@@ -579,10 +579,18 @@ const getTodayBirthdayEmployees = async (req, res) => {
 
      // dob assumed format: "YYYY-MM-DD"
     const dobRegex = new RegExp(`-${month}-${day}$`); // Matches MM-DD at end
-
     const birthdayEmployees = await employeModel.find({
       dob: { $regex: dobRegex }
     });
+    
+    const  io=req.app.get("io");
+
+      if(birthdayEmployees.length>0){
+           birthdayEmployees.forEach(emp=>{
+            const message=`🎉 Today is ${emp.name}'s birthday! 🎂`
+             io.emit("birthday-notification",message);
+           })
+      }
 
     res.status(200).json({
       success: true,

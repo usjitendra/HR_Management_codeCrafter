@@ -286,7 +286,7 @@ const allEmployeeLeaveDetail = async (req, res, next) => {
     // Step 1: Get all leave records with basic employee info
     const leaveData = await leaveModel
       .find()
-      .populate("employeeId", "name email mobile")
+      .populate("employeeId", "name email mobile empId")
       .sort({ createdAt: -1 });
 
     // Step 2: Extract employee IDs from leave records
@@ -297,7 +297,8 @@ const allEmployeeLeaveDetail = async (req, res, next) => {
       { employeeId: { $in: employeeIds } },
       { employeeId: 1, department: 1 } // ❗ Only select employeeId and department
     );
-
+    
+    
     // Step 4: Merge department into each leave record
     const mergedData = leaveData.map(leave => {
       const work = workDetails.find(

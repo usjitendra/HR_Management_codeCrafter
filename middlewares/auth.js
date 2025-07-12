@@ -1,5 +1,8 @@
 import AppError from "../util/appError.js";
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+dotenv.config();
+
 const key="abcdef";
 import { registrationModel } from "../models/registrationModel.js";
 
@@ -48,13 +51,9 @@ const token_validate = async (req, res, next) => {
 };
 
 
-// middleware/apiKeyAuth.js
-import dotenv from 'dotenv';
-dotenv.config();
 
 export const apiKeyAuth = (req, res, next) => {
   const clientKey = req.headers['x-api-key'];
-
   if (!clientKey || clientKey !== process.env.MY_SECRET_API_KEY) {
     return res.status(403).json({ message: 'Access Denied: Invalid API Key' });
   }

@@ -44,18 +44,19 @@ const app=express();
 dotenv.config();
 
 app.use(cors({
-  origin: ["http://localhost:5173","http://localhost:3000","https://hrms112.netlify.app","https://updatehrmsa.netlify.app","https://dr-monika.netlify.app"], 
-  origin: ["http://localhost:5173","http://localhost:3000","https://hrms112.netlify.app","https://updatehrmsa.netlify.app","http://localhost:5174","sadbhawanaclinic.com","https://www.sadbhawanaclinic.com/", "https://sadbhawanaclinic.com/"], 
+  origin: ["http://localhost:5173","http://localhost:3000","https://hrms112.netlify.app","https://updatehrmsa.netlify.app","https://dr-monika.netlify.app","https://updatehrmsa111.netlify.app"], 
+  origin: ["http://localhost:5173","http://localhost:3000","https://hrms112.netlify.app","https://updatehrmsa.netlify.app","http://localhost:5174","https://updatehrmsa111.netlify.app","sadbhawanaclinic.com","https://www.sadbhawanaclinic.com/", "https://sadbhawanaclinic.com/"], 
   credentials: true,
 }));
 
 const server=http.createServer(app);
 const io=new Server(server,{
        cors:{
-        origin:["http://localhost:5173","http://localhost:3000","https://hrms112.netlify.app","https://updatehrmsa.netlify.app"],
+        origin:["http://localhost:5173","https://updatehrmsa111.netlify.app","http://localhost:3000","https://hrms112.netlify.app","https://updatehrmsa.netlify.app"],
         credentials: true,
        }
 })
+
 
 
 io.on('connection', (socket) => {
@@ -124,7 +125,6 @@ app.use(errorMiddleware)
 
 
 const PORT=process.env.PORT||6000;
-
 
 server.listen(PORT,async()=>{
     await dbConnection()

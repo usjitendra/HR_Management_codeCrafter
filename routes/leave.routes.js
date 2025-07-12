@@ -4,7 +4,7 @@ import multer from "multer";
 const upload=multer()
 
 import { applyLeave,singleLeave,getMyLeaves,approveLeave,deleteLeave,rejectLeave,
-    alldetail,leaveEdit,allEmployeeLeaveDetail,allLeave,todayLeave} from "../controllers/leave.controller.js";
+ alldetail,leaveEdit,allEmployeeLeaveDetail,allLeave,todayLeave} from "../controllers/leave.controller.js";
 
 
 leaveRoutes.post("/add/:id",upload.none(),applyLeave)
