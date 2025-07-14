@@ -84,7 +84,8 @@ const   add_employee = async (req, res, next) => {
 
     const empId = await getNextEmployeeId();
     console.log("Generated Employee ID:", empId);
-
+     console.log("Ma'am CRM project ka back end project set up karu ?");
+     
     const newEmpData = {
       name,
       email,

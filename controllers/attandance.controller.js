@@ -587,8 +587,6 @@ const attendanceFilter = async (req, res, next) => {
   }
 };
 
-
-
 const monthelydetail = async (req, res, next) => {
   try {
     const { month, year, employeeId } = req.body;
@@ -685,7 +683,6 @@ const individual_attandance_detai = async (req, res, next) => {
   }
 }
 
-
 const todayCheckData = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -722,8 +719,6 @@ const todayCheckData = async (req, res, next) => {
     return next(new AppError(err.message, 500));
   }
 };
-
-
 
 const calendar_view = async (req, res, next) => {
   try {
@@ -789,8 +784,6 @@ const calendar_view = async (req, res, next) => {
     return next(new AppError(err.message, 500));
   }
 };
-
-
 
 const getWeeklyAttendanceChart = async (req, res, next) => {
   try {
