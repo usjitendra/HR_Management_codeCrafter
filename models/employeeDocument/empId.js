@@ -8,5 +8,5 @@ const employeeIdGenerateSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const empIdModel = mongoose.model("CounterEMP", employeeIdGenerateSchema);
+const empIdModel = mongoose.model("UniqueEmpID", employeeIdGenerateSchema);
 export default empIdModel;

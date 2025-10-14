@@ -5,6 +5,8 @@ import companyOverModel from "../models/companyProfile/overview.model.js";
 import companyAddressModel from "../models/companyProfile/company.address.model.js";
 import announcementModel from "../models/companyProfile/announcements.model.js";
 
+
+
 export const company_overview = async (req, res, next) => {
     console.log("update");
     
@@ -554,3 +556,6 @@ export const allAnnouncement=async(req,res,next)=>{
        return next(new AppError(err.message,500))
   }
 }
+
+
+

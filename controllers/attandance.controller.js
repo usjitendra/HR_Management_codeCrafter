@@ -20,24 +20,7 @@ const key = process.env.JWT_SECRET;
 //****if employee Registration  id comming then.... */
 
 const getLocationFromCoordinates = async (latitude, longitude) => {
-  try {
-    const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json`, {
-      params: {
-        latlng: `${latitude},${longitude}`,  // ✅ reverse geocode using latlng
-        key: 'AIzaSyC9ZOZHwHmyTWXqACqpZY2TL7wX2_Zn05U',
-        region: 'IN',
-      },
-    });
-
-    if (response.data && response.data.results.length > 0) {
-      return response.data.results[0].formatted_address; // ✅ full address string
-    } else {
-      throw new Error('Location not found for given coordinates');
-    }
-  } catch (error) {
-    console.error('Error fetching address from coordinates:', error.message);
-    return null;
-  }
+   
 };
 
 const attandanceLogin = async (req, res, next) => {
@@ -50,8 +33,8 @@ const attandanceLogin = async (req, res, next) => {
     if (!latitude || !longitude) {
       return next(new AppError("Location in required", 400));
     }
-    const locationName = await getLocationFromCoordinates(latitude, longitude);
-    console.log("locationName", locationName);
+    // const locationName = await getLocationFromCoordinates(latitude, longitude);
+    // console.log("locationName", locationName);
     // return;
 
     const validEmployee = await employeModel.findById(id);
@@ -146,11 +129,11 @@ const attandanceLogin = async (req, res, next) => {
           isFullDay,
           isHalfDay,
           checkIn: true,
-          location: {
-            type: "Point",
-            coordinates: [longitude, latitude],
-            name: locationName
-          },
+          // location: {
+          //   type: "Point",
+          //   coordinates: [longitude, latitude],
+          //   name: locationName
+          // },
         },
       },
       { new: true, upsert: true }
